@@ -10,24 +10,36 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      decomposeParDict;
+    object      coupledSolution;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-numberOfSubdomains 4;
+regions
+(
+    ( inner (icoFluid transportTemperature) )
+    ( outer (icoFluid transportTemperature) )
+    ( solid (conductTemperature) )
+);
 
-method      simple;
-
-simpleCoeffs
+partitionedCoupling
 {
-    n               (2 1 2);
-    delta           0.001;
+    maxCoupleIter 6;
 }
 
-distributed     no;
+DNA
+{
+    T
+    {
+        maxCoupleIter 20;
 
-roots
-(
-);
+        residualControl
+        {
+            maxJumpRes 1e-07;
+            outputJumpResField no;
+            maxFluxRes 1e-07;
+            outputFluxResField no;
+        }
+    }
+}
 
 // ************************************************************************* //

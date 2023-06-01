@@ -10,24 +10,15 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      decomposeParDict;
+    object      fvSolution;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-numberOfSubdomains 4;
-
-method      simple;
-
-simpleCoeffs
+PIMPLE
 {
-    n               (2 1 2);
-    delta           0.001;
+    nOuterCorrectors            3; 
+    nNonOrthogonalCorrectors    1;
 }
 
-distributed     no;
-
-roots
-(
-);
 
 // ************************************************************************* //
