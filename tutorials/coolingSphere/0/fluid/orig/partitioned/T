@@ -29,15 +29,15 @@ boundaryField
         interfaceType           heatTransferInterface;
         k                       "k";
 
-        accType               fixed;
+        accType                 fixed;
         relax                   1.0;
 
-        // accType               aitken;
-        // relax                   0.75;
+        // accType              aitken;
+        // relax                0.75;
 
-        // accType               IQN-ILS;
-        // relax                   0.75;
-        // couplingReuse           0; //2;
+        // accType              IQN-ILS;
+        // relax                0.75;
+        // couplingReuse        0; //2;
 
 
         neighbourRegionName     solid;

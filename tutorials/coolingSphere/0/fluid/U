@@ -22,7 +22,6 @@ boundaryField
 {
     fluid_to_solid
     {
-/*        type            noSlip;*/
         type            fixedValue;
         value           uniform (0 0 0);
     }
@@ -37,11 +36,7 @@ boundaryField
     }
     defaultFaces
     {
-        type            zeroGradient;
-    }
-    frontAndBack
-    {
-        type            empty;
+        type            slip;
     }
 }
 

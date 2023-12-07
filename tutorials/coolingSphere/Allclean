@@ -29,6 +29,8 @@ rm -r constant/polyMesh 2>/dev/null
 rm -r constant/fluid/polyMesh 2>/dev/null
 rm -r constant/solid/polyMesh 2>/dev/null
 
+rm -r system/snappyHexMeshDict 2>/dev/null
+
 rm constant/fluid/faMesh/faBoundary 2>/dev/null
 rm constant/fluid/faMesh/faceLabels 2>/dev/null
 

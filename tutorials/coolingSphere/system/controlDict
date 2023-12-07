@@ -69,27 +69,28 @@ functions
 
     heatFlux1
     {
-        type heatFlux;
+        type               heatFlux;
 	functionObjectLibs ("libsimpleFunctionObjects.so");
-        region          fluid;
-        enabled         true;
-        outputControl   outputTime;
-	log			   true;
-        K              k;
+        region             fluid;
+        enabled            true;
+        outputControl      outputTime;
+	log		   true;
+        K                  k;
         
     }
-	    heatFlux2
+    
+    heatFlux2
     {
-        type heatFlux;
+        type               heatFlux;
 	functionObjectLibs ("libsimpleFunctionObjects.so");
-        region          solid;
-        enabled         true;
-        outputControl   outputTime;
-		log			   true;
-        K              k;
-        log             true;
-        valueOutput     true;
-        surfaceFormat   foamFile;
+        region             solid;
+        enabled            true;
+        outputControl      outputTime;
+	log		   true;
+        K                  k;
+        log                true;
+        valueOutput        true;
+        surfaceFormat      foamFile;
     }
 
     faceAverageInlet

@@ -29,10 +29,6 @@ boundaryField
     {
         type            zeroGradient;
     }
-    walls
-    {
-        type            zeroGradient;
-    }
     outlet
     {
         type            fixedValue;
@@ -41,10 +37,6 @@ boundaryField
     defaultFaces
     {
         type            zeroGradient;
-    }
-    frontAndBack
-    {
-        type            empty;
     }
 }
 

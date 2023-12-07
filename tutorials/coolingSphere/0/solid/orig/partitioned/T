@@ -35,10 +35,6 @@ boundaryField
         nonOrthCorr             true;
         value                   $internalField;
     }
-    defaultFaces
-    {
-        type            empty;
-    }
 }
 
 // ************************************************************************* //

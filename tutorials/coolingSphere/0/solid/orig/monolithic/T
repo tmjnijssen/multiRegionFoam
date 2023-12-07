@@ -32,23 +32,6 @@ boundaryField
         remoteField             T;
         value                   $internalField;
     }
-    left
-    {
-        type            zeroGradient;
-    }
-    right
-    {
-        type            zeroGradient;
-    }
-    bottom
-    {
-        type            fixedValue;
-        value           $internalField;
-    }
-    defaultFaces
-    {
-        type            empty;
-    }
 }
 
 // ************************************************************************* //

@@ -26,8 +26,4 @@ boundaryField
         remoteField     k;
         value           $internalField;
     }
-    defaultFaces
-    {
-        type            empty;
-    }
 }

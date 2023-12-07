@@ -25,11 +25,11 @@ boundaryField
 {
     fluid_to_solid
     {
-        type                    monolithicTemperature;
-        radiation               off;
-        K                       k;
-        remoteField             T;
-        value                   $internalField;
+        type            monolithicTemperature;
+        radiation       off;
+        K               k;
+        remoteField     T;
+        value           $internalField;
     }
     inlet
     {
@@ -43,10 +43,6 @@ boundaryField
     defaultFaces
     {
         type            zeroGradient;
-    }
-    frontAndBack
-    {
-        type            empty;
     }
 }
 
