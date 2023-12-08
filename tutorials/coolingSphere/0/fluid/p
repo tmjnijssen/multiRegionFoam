@@ -34,7 +34,7 @@ boundaryField
         type            fixedValue;
         value           uniform 101325;
     }
-    defaultFaces
+    sides
     {
         type            zeroGradient;
     }
