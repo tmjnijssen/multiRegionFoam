@@ -72,11 +72,14 @@ Description
 #include "surfaceFields.H"
 #include "IOReferencer.H"
 #include "HashPtrTable.H"
-#include "rhoPimpleControl.H"
+#include "pimpleControl.H"
 #include "solutionControl.H"
 #include "volFieldsFwd.H"
-#include "singlePhaseTransportModel.H"
+#include "bound.H"
+//TODO currently name conflict of incompressible and compressible 
+//     turbulenceModel header files
 #include "turbulenceModel.H"
+#include "basicPsiThermo.H"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -101,53 +104,44 @@ class rhoPimpleFluid
         //- PIMPLE control
         pimpleControl pimple_;
 
-        //- Transport model
-        autoPtr<singlePhaseTransportModel> laminarTransport_;
+        //- Compressible thremo model
+        autoPtr<basicPsiThermo> pThermo_;
 
-        //- density
-        autoPtr<dimensionedScalar> rho_;
+        //- Pressure
+        autoPtr<volScalarField> p_;
 
-        //- Turbulence model
-        autoPtr<compressible::turbulenceModel> turbulence_;
+        //- Enthalpy
+        autoPtr<volScalarField> h_;
+
+        //- Compressibility
+        autoPtr<volScalarField> psi_;
+
+        //- Density
+        autoPtr<volScalarField> rho_;
 
         //- Velocity
         autoPtr<volVectorField> U_;
 
         //- Face flux
         autoPtr<surfaceScalarField> phi_;
-        
-        //- compressible term
-        autoPtr<surfaceScalarField> psi_;
 
-        //- Kinematic pressure
-        autoPtr<volScalarField> pKin_;
-        
-        //- Absolute
-        autoPtr<volScalarField> pAbs_;
+        //- Turbulence model
+        autoPtr<compressible::turbulenceModel> turbulence_;
 
-        //- Pressure
-        autoPtr<volScalarField> p_;
-        
-        //- Density
-        autoPtr<volScalarField> rho_;
-        
-        //- Thermo density
-        autoPtr<volScalarField> thermo.rho_;
-        
         //- Temperature
         autoPtr<volScalarField> T_;
 
         //- forces
         autoPtr<volSymmTensorField> sigma_;
 
+        //- Teomporal derivative of pressure field
+        autoPtr<volScalarField> DpDt_;
+
         //- Reziprocal diagonal elements of convection-diffusion matrix
         autoPtr<volScalarField> rAU_;
 
-        //- Reference pressure cell
-        label pRefCell_;
-
-        //- Reference pressure value
-        scalar pRefValue_;
+        //- Reference minimum pressure value
+        dimensionedScalar pMin_;
 
         //- Moving reference frames
         MovingReferenceFrameZones mrfZones_;
@@ -170,13 +164,9 @@ class rhoPimpleFluid
         scalar globalContErr_;
         scalar cumulativeContErr_;
 
-        //- Cached time derivative matrix
+        //- Cached U equation
         //  shared between the momentum predictor and pressure corrector
-        tmp<fvVectorMatrix> tddtUEqn;
-
-        //- Cached convection-diffusion matrix
-        //  shared between the momentum predictor and pressure corrector
-        tmp<fvVectorMatrix> tHUEqn;
+        tmp<fvVectorMatrix> tUEqn;
 
 public:
 
@@ -197,17 +187,27 @@ public:
     // Member Functions
 
         // Access
-        const volVectorField& U() const
+        const basicPsiThermo& pThermo() const
         {
-            return U_();
+            return pThermo_();
         }
 
-        const volScalarField& p() const
+        volScalarField& p()
         {
             return p_();
         }
-        
-        const volScalarField& rho() const
+
+        volScalarField& h()
+        {
+            return h_();
+        }
+
+        volScalarField& psi()
+        {
+            return psi_();
+        }
+
+        volScalarField& rho()
         {
             return rho_();
         }
@@ -217,29 +217,19 @@ public:
             return U_();
         }
 
-        volScalarField& p()
+        surfaceScalarField& phi()
         {
-            return p_();
+            return phi_();
         }
-        
-        volScalarField& p_Abs()
+
+        volScalarField& T()
         {
-            return p_Abs();
+            return T_();
         }
-        
-        volScalarField& psi_()
+
+        volSymmTensorField& sigma()
         {
-            return psi_();
-        }
-        
-        volScalarField& rho()
-        {
-            return rho_();
-        }
-        
-        volScalarField& rho()
-        {
-            return thermo.rho_();
+            return sigma_();
         }
 
         virtual word regionTypeName() const

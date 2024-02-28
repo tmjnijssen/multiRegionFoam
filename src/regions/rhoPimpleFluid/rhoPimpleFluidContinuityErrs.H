@@ -30,22 +30,14 @@ Description
 \*---------------------------------------------------------------------------*/
 
 {
-    // Compressible implementation src/fvm/compressibleContErrors.H
-    /*
-     sumLocalContErr =
-        runTime.deltaT().value()*
-        mag
-        (
-            fvc::ddt(rho_())
-          + fvc::div(phi_())
-        )().weightedAverage(rho*mesh.V()).value();
+    // TODO: rho_() and thermo.rho() are currently the same
+    dimensionedScalar totalMass = fvc::domainIntegrate(rho_());
+
+    sumLocalContErr =
+        (fvc::domainIntegrate(mag(rho_() - thermo.rho()))/totalMass).value();
 
     globalContErr =
-          runTime.deltaT().value()*
-          (
-              fvc::ddt(rho_())
-            + fvc::div(phi_())
-          )().weightedAverage(rho*mesh.V()).value();
+        (fvc::domainIntegrate(rho_() - thermo.rho())/totalMass).value();
 
     cumulativeContErr += globalContErr;
 
@@ -53,23 +45,6 @@ Description
         << ", global = " << globalContErr
         << ", cumulative = " << cumulativeContErr
         << endl;
-    */
-    // compressible adding rho term from file above
-    volScalarField contErr = fvc::div(phi_()) + fvc::ddt(rho_());
-
-    sumLocalContErr_ = mesh().time().deltaT().value()*
-        mag(contErr)().weightedAverage(mesh().V()).value();
-
-    globalContErr_ = mesh().time().deltaT().value()*
-        contErr.weightedAverage(mesh().V()).value();
-
-    cumulativeContErr_ += globalContErr_;
-
-    Info<< "time step continuity errors : sum local = " << sumLocalContErr_
-        << ", global = " << globalContErr_
-        << ", cumulative = " << cumulativeContErr_
-        << endl;
-    */ 
 }
 
 
