@@ -27,9 +27,12 @@ boundaryField
     top
     {
         type                    monolithicTemperature;
+        interfaceType           heatTransferInterface;
         radiation               off;
         K                       k;
-        remoteField             T;
+        neighbourFieldName      T;
+        neighbourRegionName     fluid;
+        neighbourPatchName      interface;
         value                   $internalField;
     }
     left

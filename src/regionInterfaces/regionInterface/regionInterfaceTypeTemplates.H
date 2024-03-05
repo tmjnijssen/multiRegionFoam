@@ -27,6 +27,7 @@ License
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #include "primitiveFieldsFwd.H"
+#include "scalar.H"
 namespace Foam
 {
 
@@ -471,6 +472,8 @@ scalar regionInterfaceType::normFluxRes(const word& fldName) const
     return GREAT;
 }
 
+//- TODO: Use macro for the specialisations
+
 //-Specialisations
 template<>
 tmp<Field<scalar> > regionInterfaceType::interpolateFacesFromA
@@ -482,6 +485,12 @@ template<>
 tmp<Field<vector> > regionInterfaceType::interpolateFacesFromA
 (
     const Field<vector>& fromField
+) const;
+
+template<>
+tmp<Field<VectorN<scalar, 4> > > regionInterfaceType::interpolateFacesFromA
+(
+    const Field<VectorN<scalar, 4> >& fromField
 ) const;
 
 template<>
@@ -497,6 +506,12 @@ tmp<Field<vector> > regionInterfaceType::interpolateFacesFromB
 ) const;
 
 template<>
+tmp<Field<VectorN<scalar, 4> > > regionInterfaceType::interpolateFacesFromB
+(
+    const Field<VectorN<scalar, 4> >& fromField
+) const;
+
+template<>
 tmp<Field<scalar> > regionInterfaceType::interpolatePointsFromA
 (
     const Field<scalar>& fromField
@@ -509,6 +524,12 @@ tmp<Field<vector> > regionInterfaceType::interpolatePointsFromA
 ) const;
 
 template<>
+tmp<Field<VectorN<scalar, 4> > > regionInterfaceType::interpolatePointsFromA
+(
+    const Field<VectorN<scalar, 4> >& fromField
+) const;
+
+template<>
 tmp<Field<scalar> > regionInterfaceType::interpolatePointsFromB
 (
     const Field<scalar>& fromField
@@ -518,6 +539,12 @@ template<>
 tmp<Field<vector> > regionInterfaceType::interpolatePointsFromB
 (
     const Field<vector>& fromField
+) const;
+
+template<>
+tmp<Field<VectorN<scalar, 4> > > regionInterfaceType::interpolatePointsFromB
+(
+    const Field<VectorN<scalar, 4> >& fromField
 ) const;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

@@ -22,9 +22,12 @@ boundaryField
 {
     interface
     {
-        type            monolithicThermalDiffusivity;
-        remoteField     k;
-        value           $internalField;
+        type                    monolithicThermalDiffusivity;
+        interfaceType           heatTransferInterface;
+        neighbourFieldName      k;
+        neighbourRegionName     solid;
+        neighbourPatchName      top;
+        value                   $internalField;
     }
     inlet
     {

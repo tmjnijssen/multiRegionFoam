@@ -26,9 +26,12 @@ boundaryField
     interface
     {
         type                    monolithicTemperature;
+        interfaceType           heatTransferInterface;
         radiation               off;
         K                       k;
-        remoteField             T;
+        neighbourFieldName      T;
+        neighbourRegionName     solid;
+        neighbourPatchName      top;
         value                   $internalField;
     }
     inlet
