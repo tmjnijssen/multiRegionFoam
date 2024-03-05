@@ -137,9 +137,6 @@ class rhoPimpleFluid
         //- Teomporal derivative of pressure field
         autoPtr<volScalarField> DpDt_;
 
-        //- Reziprocal diagonal elements of convection-diffusion matrix
-        autoPtr<volScalarField> rAU_;
-
         //- Reference minimum pressure value
         dimensionedScalar pMin_;
 
@@ -210,6 +207,11 @@ public:
         volScalarField& rho()
         {
             return rho_();
+        }
+
+        const volScalarField& thermoRho() const
+        {
+            return pThermo_().rho();
         }
 
         volVectorField& U()

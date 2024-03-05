@@ -33,17 +33,17 @@ Description
     // TODO: rho_() and thermo.rho() are currently the same
     dimensionedScalar totalMass = fvc::domainIntegrate(rho_());
 
-    sumLocalContErr =
-        (fvc::domainIntegrate(mag(rho_() - thermo.rho()))/totalMass).value();
+    sumLocalContErr_ =
+        (fvc::domainIntegrate(mag(rho_() - pThermo_().rho()))/totalMass).value();
 
-    globalContErr =
-        (fvc::domainIntegrate(rho_() - thermo.rho())/totalMass).value();
+    globalContErr_ =
+        (fvc::domainIntegrate(rho_() - pThermo_().rho())/totalMass).value();
 
-    cumulativeContErr += globalContErr;
+    cumulativeContErr_ += globalContErr_;
 
-    Info<< "time step continuity errors : sum local = " << sumLocalContErr
-        << ", global = " << globalContErr
-        << ", cumulative = " << cumulativeContErr
+    Info<< "time step continuity errors : sum local = " << sumLocalContErr_
+        << ", global = " << globalContErr_
+        << ", cumulative = " << cumulativeContErr_
         << endl;
 }
 

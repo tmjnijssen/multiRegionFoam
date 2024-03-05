@@ -151,6 +151,7 @@ Foam::regionTypes::pimpleFluid::pimpleFluid
         true,
         rho_().value()*pKin_()
     );
+    p_.storePrevIter();
 
     sigma_ = lookupOrRead<volSymmTensorField>
     (

@@ -74,7 +74,6 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
     sigma_(nullptr),
 
     DpDt_(nullptr),
-    rAU_(nullptr),
 
     pMin_(pimple_.dict().lookup("pMin")),
 
@@ -110,6 +109,7 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
         true,
         true
     );
+    p_().storePrevIter();
 
     h_ = lookupOrRead<volScalarField>
     (
@@ -135,6 +135,7 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
         true,
         pThermo_().rho()
     );
+    rho_().storePrevIter();
 
     U_ = lookupOrRead<volVectorField>
     (
@@ -189,20 +190,6 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
             surfaceScalarField("phiU", phi_()/fvc::interpolate(rho_())),
             p_()
         )
-    );
-
-    wordList rAUPatchFieldTypes
-    (
-        U_().boundaryField().size(),
-        zeroGradientFvPatchScalarField::typeName
-    );
-    rAU_ = lookupOrRead<volScalarField>
-    (
-        mesh(),
-        "rAU",
-        mesh().time().deltaT(),
-        rAUPatchFieldTypes,
-        true
     );
 
     // phid_ = lookupOrRead<surfaceScalarField>
@@ -298,7 +285,7 @@ void Foam::regionTypes::rhoPimpleFluid::momentumPredictor()
         )
     );
 
-    rAU_() = 1.0/UEqn.A();
+    volScalarField rAU = 1.0/UEqn.A();
 
     if (pimple_.momentumPredictor())
     {
@@ -310,7 +297,7 @@ void Foam::regionTypes::rhoPimpleFluid::momentumPredictor()
     }
     else
     {
-        U_() = rAU_()*(UEqn.H() - fvc::grad(p_()));
+        U_() = rAU*(UEqn.H() - fvc::grad(p_()));
         U_().correctBoundaryConditions();
     }
 
@@ -350,10 +337,10 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
     // --- PISO loop
     while (pimple_.correct())
     {
-        rAU_() = 1.0/UEqn.A();
+        volScalarField rAU = 1.0/UEqn.A();
 
         // Calculate U from convection-diffusion matrix
-        U_() = rAU_()*UEqn.H();
+        U_() = rAU*UEqn.H();
 
         if (pimple_.transonic())
         {
@@ -363,7 +350,7 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
                 fvc::interpolate(psi_())
                *(
                     (fvc::interpolate(U_()) & mesh().Sf())
-                  + fvc::ddtPhiCorr(rAU_(), rho_(), U_(), phi_())
+                  + fvc::ddtPhiCorr(rAU, rho_(), U_(), phi_())
                 )
             );
 
@@ -373,7 +360,7 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
                 (
                     fvm::ddt(psi_(), p_())
                   + fvm::div(phid, p_())
-                  - fvm::laplacian(rho_()*rAU_(), p_())
+                  - fvm::laplacian(rho_()*rAU, p_())
                 );
 
                 pEqn.solve
@@ -405,7 +392,7 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
                 (
                     fvm::ddt(psi_(), p_())
                   + fvc::div(phi_())
-                  - fvm::laplacian(rho_()*rAU_(), p_())
+                  - fvm::laplacian(rho_()*rAU, p_())
                 );
 
                 pEqn.solve
@@ -425,16 +412,22 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
 
         // Solve continuity for density
         solve(fvm::ddt(rho_()) + fvc::div(phi_()));
+        #include "rhoPimpleFluidContinuityErrs.H"
 
-        // Explicitly relax pressure for momentum corrector
-        p_().relax();
+        {
+            // Explicitly relax pressure for momentum corrector
+            Info << "Got here 1" << endl;
+            p_().relax();
 
-        rho_() = pThermo_().rho();
-        rho_().relax();
-        Info<< "rho max/min : " << max(rho_()).value()
-            << " " << min(rho_()).value() << endl;
+            rho_() = pThermo_().rho();
+            Info << "Got here 2" << endl;
+            rho_().relax();
+            Info<< "rho max/min : " << max(rho_()).value()
+                << " " << min(rho_()).value() << endl;
+        }
 
-        U_() -= rAU_()*fvc::grad(p_());
+        Info << "Got here 3" << endl;
+        U_() -= rAU*fvc::grad(p_());
         U_().correctBoundaryConditions();
 
         DpDt_() = fvc::DDt
