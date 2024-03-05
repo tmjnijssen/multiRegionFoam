@@ -1,0 +1,155 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.0                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+ddtSchemes
+{
+}
+
+d2dt2Schemes
+{
+}
+
+interpolationSchemes
+{
+}
+
+divSchemes
+{
+}
+
+gradSchemes
+{
+}
+
+snGradSchemes
+{
+}
+
+laplacianSchemes
+{
+}
+
+fluxRequired
+{
+}
+
+
+// ************************************************************************* //
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+PIMPLE
+{
+    nOuterCorrectors            3; 
+    nNonOrthogonalCorrectors    1;
+}
+
+
+
+
+// ************************************************************************* //
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.1                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  | For copyright notice see file Copyright         |
+\*---------------------------------------------------------------------------*/
+Build  : 4.1-70b064d0f326
+Exec   : blockMesh
+Date   : Mar 05 2024
+Time   : 15:27:59
+Host   : "sqh-OF-WS"
+PID    : 37909
+CtrlDict : "/home/sqh/foam/multiregionfoam/tutorials/rhoSphereTest/system/controlDict"
+Case   : /home/sqh/foam/multiregionfoam/tutorials/rhoSphereTest
+nProcs : 1
+sigFpe : Enabling floating point exception trapping (FOAM_SIGFPE).
+allowSystemOperations : Disallowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+
+Creating block mesh from
+    "/home/sqh/foam/multiregionfoam/tutorials/rhoSphereTest/constant/polyMesh/blockMeshDict"
+
+Creating curved edges
+Creating topology blocks
+Creating topology patches
+
+Creating block mesh topology
+--> FOAM Warning : 
+    From function polyMesh::polyMesh(... construct from shapes...)
+    in file meshes/polyMesh/polyMeshFromShapeMesh.C at line 905
+    Found 2 undefined faces in mesh; adding to default patch.
+
+Check topology
+
+	Basic statistics
+		Number of internal faces : 0
+		Number of boundary faces : 6
+		Number of defined boundary faces : 6
+		Number of undefined boundary faces : 0
+	Checking patch -> block consistency
+
+Creating block offsets
+Creating merge list .
+
+Creating polyMesh from blockMesh
+Creating patches
+Creating cells
+Creating points with scale 0.01
+    Block 0 cell size :
+        i : 0.0025454545 .. 0.0025454545
+        j : 0.0022857143 .. 0.0022857143
+        k : 0.0022857143 .. 0.0022857143
+
+
+Writing polyMesh
+----------------
+Mesh Information
+----------------
+  boundingBox: (-0.04 -0.04 -0.04) (0.1 0.04 0.04)
+  nPoints: 72576
+  nCells: 67375
+  nFaces: 207200
+  nInternalFaces: 197050
+----------------
+Patches
+----------------
+  patch 0 (start: 197050 size: 1225) name: inlet
+  patch 1 (start: 198275 size: 1225) name: outlet
+  patch 2 (start: 199500 size: 3850) name: frontAndBack
+  patch 3 (start: 203350 size: 3850) name: defaultFaces
+
+End
+

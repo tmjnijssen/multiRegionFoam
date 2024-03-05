@@ -1,0 +1,202 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    T
+    {
+        solver              GAMG;
+        tolerance           1e-8;
+        relTol              1e-5;
+        smoother            GaussSeidel;
+        cacheAgglomeration  true;
+        nCellsInCoarsestLevel   10;
+        agglomerator    	faceAreaPair;
+        mergeLevels     	1;
+        minIter         	2;
+        maxIter         	50;
+    };
+
+/*    T*/
+/*    {*/
+/*        solver          PBiCG;*/
+/*        preconditioner  diagonal;*/
+/*        tolerance       1e-15;*/
+/*        relTol          1e-2;*/
+/*        minIter         2;*/
+/*        maxIter         50;*/
+/*    };*/
+
+    Tcoupled
+    {
+        solver           BiCGStab;
+        
+        preconditioner      
+        {                   
+            preconditioner  Cholesky;
+        }
+
+        tolerance        1e-8;
+        relTol           1e-5;
+
+        minIter          0;
+        maxIter          200;
+    };
+
+    rho
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-05;
+        relTol          0;
+    }
+
+    U
+    {
+        solver          BiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-05;
+        relTol          0.1;
+    }
+
+    UFinal
+    {
+        solver          BiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-05;
+        relTol          0;
+    }
+
+    p
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-06;
+        relTol          0.01;
+    }
+
+    pFinal
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-06;
+        relTol          0;
+    }
+
+    h
+    {
+        solver          BiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-05;
+        relTol          0.1;
+    }
+
+    hFinal
+    {
+        solver          BiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-05;
+        relTol          0;
+    }
+
+    R
+    {
+        solver          BiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-05;
+        relTol          0;
+    }
+
+    k
+    {
+        solver          BiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-05;
+        relTol          0;
+    }
+
+    epsilon
+    {
+        solver          BiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-05;
+        relTol          0;
+    }
+
+    omega
+    {
+        solver          BiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-05;
+        relTol          0;
+    }
+}
+
+SIMPLE
+{
+    nNonOrthogonalCorrectors 3;
+
+    residualControl
+    {
+        T               1e-5;
+    }
+}
+
+PISO
+{
+    pRefPoint (0 0 0); 
+    pRefValue 0;
+}
+
+PIMPLE
+{
+    // p-U coupling
+    nOuterCorrectors            2; // SIMPLEC loops
+    nCorrectors                 2; // PISO loops
+    nNonOrthogonalCorrectors    1;
+    pMin            pMin [ 1 -1 -2 0 0 0 0 ] 1000;
+	
+    residualControl
+    {
+        p
+        {
+            relTol         1e-5;
+            tolerance      1e-8;
+        }
+
+        U
+        {
+            relTol         1e-5;
+            tolerance      1e-8;
+        }
+    }
+}
+
+relaxationFactors
+{
+    U               0.7;
+    UFinal          1.0;
+    p               0.3;
+    rho             0.05;
+    h               0.7;
+    hFinal          1.0;
+    k               0.7;
+    omega           0.7;
+}
+
+
+
+// ************************************************************************* //
