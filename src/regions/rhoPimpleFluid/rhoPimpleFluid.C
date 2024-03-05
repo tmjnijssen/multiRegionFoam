@@ -131,7 +131,7 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
     (
         mesh(),
         "rho",
-        true,
+        false,
         true,
         pThermo_().rho()
     );
