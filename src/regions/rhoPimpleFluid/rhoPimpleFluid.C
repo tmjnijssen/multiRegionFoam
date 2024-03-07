@@ -416,17 +416,14 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
 
         {
             // Explicitly relax pressure for momentum corrector
-            Info << "Got here 1" << endl;
             p_().relax();
 
             rho_() = pThermo_().rho();
-            Info << "Got here 2" << endl;
             rho_().relax();
             Info<< "rho max/min : " << max(rho_()).value()
                 << " " << min(rho_()).value() << endl;
         }
 
-        Info << "Got here 3" << endl;
         U_() -= rAU*fvc::grad(p_());
         U_().correctBoundaryConditions();
 
