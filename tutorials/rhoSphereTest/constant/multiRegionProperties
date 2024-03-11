@@ -16,7 +16,7 @@ FoamFile
 
 regions
 (
-    (fluid (rhoPimpleFluid transportTemperature) )
+    (fluid (rhoPimpleFluid ) )
     (solid (conductTemperature) )
 );
 

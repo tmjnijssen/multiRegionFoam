@@ -16,7 +16,7 @@ FoamFile
 
 PIMPLE
 {
-    nOuterCorrectors            3; 
+    nOuterCorrectors            1; 
     nNonOrthogonalCorrectors    1;
 }
 

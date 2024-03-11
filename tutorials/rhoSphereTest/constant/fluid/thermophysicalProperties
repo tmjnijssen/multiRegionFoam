@@ -17,7 +17,7 @@ FoamFile
 
 thermoType      hPsiThermo<pureMixture<sutherlandTransport<specieThermo<hConstThermo<perfectGas>>>>>;
 
-mixture         air 1 28.9 1007 0 1.4792e-06 116;
+mixture         air 1 28.9 1005 0 1.8e-05 0.7;
 
 
 // ************************************************************************* //

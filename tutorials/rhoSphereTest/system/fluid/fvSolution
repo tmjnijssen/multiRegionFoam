@@ -164,8 +164,8 @@ PISO
 PIMPLE
 {
     // p-U coupling
-    nOuterCorrectors            2; // SIMPLEC loops
-    nCorrectors                 2; // PISO loops
+    nOuterCorrectors            1; // SIMPLEC loops
+    nCorrectors                 1; // PISO loops
     nNonOrthogonalCorrectors    1;
     pMin            pMin [ 1 -1 -2 0 0 0 0 ] 1000;
 	

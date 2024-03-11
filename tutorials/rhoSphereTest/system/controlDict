@@ -68,7 +68,7 @@ functions
         );
     }
 
-    heatFlux1
+   /* heatFlux1
     {
         type heatFlux;
 	functionObjectLibs ("libsimpleFunctionObjects.so");
@@ -92,6 +92,7 @@ functions
         valueOutput     true;
         surfaceFormat   foamFile;
     }
+    */
 
     faceAverageInlet
     {
