@@ -109,6 +109,9 @@ class rhoPimpleFluid
 
         //- Pressure
         autoPtr<volScalarField> p_;
+        
+        //- Pressure
+        autoPtr<volScalarField> cp_;
 
         //- Enthalpy
         autoPtr<volScalarField> h_;
@@ -194,6 +197,11 @@ public:
             return p_();
         }
 
+	volScalarField& cp()
+        {
+            return cp_();
+        }
+
         volScalarField& h()
         {
             return h_();
@@ -273,3 +281,4 @@ public:
 #endif
 
 // ************************************************************************* //
+

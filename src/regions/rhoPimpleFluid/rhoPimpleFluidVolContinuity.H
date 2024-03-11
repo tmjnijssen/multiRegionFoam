@@ -60,3 +60,4 @@ if (mesh().moving())
         << ", sum local = " << sumLocalContErr
         << ", global = " << globalContErr << endl;
 }
+

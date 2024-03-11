@@ -64,6 +64,7 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
     pThermo_(basicPsiThermo::New(mesh())),
 
     p_(nullptr),
+    cp_(nullptr),
     h_(nullptr),
     psi_(nullptr),
     rho_(nullptr),
@@ -72,6 +73,8 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
     turbulence_(nullptr),
     T_(nullptr),
     sigma_(nullptr),
+
+    
 
     DpDt_(nullptr),
 
@@ -115,7 +118,7 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
     (
         mesh(),
         "h",
-        true,
+        false,
         true
     );
 
@@ -123,7 +126,15 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
     (
         mesh(),
         "psi",
-        true,
+        false,
+        true
+    );
+    
+    cp_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        "cp",
+        false,
         true
     );
 
@@ -416,14 +427,17 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
 
         {
             // Explicitly relax pressure for momentum corrector
+            Info << "Got here 1" << endl;
             p_().relax();
 
             rho_() = pThermo_().rho();
+            Info << "Got here 2" << endl;
             rho_().relax();
             Info<< "rho max/min : " << max(rho_()).value()
                 << " " << min(rho_()).value() << endl;
         }
 
+        Info << "Got here 3" << endl;
         U_() -= rAU*fvc::grad(p_());
         U_().correctBoundaryConditions();
 
@@ -484,3 +498,4 @@ void Foam::regionTypes::rhoPimpleFluid::meshMotionCorrector()
 }
 
 // ************************************************************************* //
+
