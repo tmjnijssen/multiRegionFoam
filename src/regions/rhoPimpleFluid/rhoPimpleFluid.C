@@ -64,7 +64,6 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
     pThermo_(basicPsiThermo::New(mesh())),
 
     p_(nullptr),
-    cp_(nullptr),
     h_(nullptr),
     psi_(nullptr),
     rho_(nullptr),
@@ -73,8 +72,6 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
     turbulence_(nullptr),
     T_(nullptr),
     sigma_(nullptr),
-
-    
 
     DpDt_(nullptr),
 
@@ -118,7 +115,7 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
     (
         mesh(),
         "h",
-        false,
+        true,
         true
     );
 
@@ -126,15 +123,7 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
     (
         mesh(),
         "psi",
-        false,
-        true
-    );
-    
-    cp_ = lookupOrRead<volScalarField>
-    (
-        mesh(),
-        "cp",
-        false,
+        true,
         true
     );
 
@@ -498,4 +487,3 @@ void Foam::regionTypes::rhoPimpleFluid::meshMotionCorrector()
 }
 
 // ************************************************************************* //
-

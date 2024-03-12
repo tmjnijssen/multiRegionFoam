@@ -29,8 +29,7 @@ writeCompression 	uncompressed;
 timeFormat      	general;
 timePrecision   	10;
 runTimeModifiable 	no;
-maxCo			0.5;
-pMin			1000;
+maxCo			0.75;
 maxDeltaT		5E-3;
 		
 functions
@@ -68,7 +67,7 @@ functions
         );
     }
 
-   /* heatFlux1
+    heatFlux1
     {
         type heatFlux;
 	functionObjectLibs ("libsimpleFunctionObjects.so");
@@ -92,7 +91,6 @@ functions
         valueOutput     true;
         surfaceFormat   foamFile;
     }
-    */
 
     faceAverageInlet
     {

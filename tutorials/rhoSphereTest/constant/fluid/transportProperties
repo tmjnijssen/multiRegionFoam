@@ -19,10 +19,16 @@ FoamFile
 
 // air properties taken from https://www.engineeringtoolbox.com/air-properties-d_156.html
 
+// Density - Dimensions: kg/m3
+rho             rho [1 -3 0 0 0 0 0] 1.2;
+
+// Dynamic viscosity - Dimensions: Pa s
+mu              mu [ 1 -1 -1 0 0 0 0 ] 1.8e-5;
+
+// Specific heat - Dimensions: J/kg-K
+cp              cp  [0 2 -2 -1 0 0 0] 1005;
+
 // Thermal conductivity - Dimensions: W/m-K
 k            	k   [1 1 -3 -1 0 0 0] 0.025;
-
-
-//pMin            pMin [ 1 -1 -2 0 0 0 0 ] 1000;
 
 // ************************************************************************* //

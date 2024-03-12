@@ -84,7 +84,7 @@ PIMPLE
 
 relaxationFactors
 {
-	T	1.0;
+	T	0.9;
 }
 
 

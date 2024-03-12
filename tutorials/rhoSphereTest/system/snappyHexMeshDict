@@ -89,7 +89,7 @@ castellatedMeshControls
     	"sphere.*"
     	{
     	     // Surface-wise min and max refinement level
-    	     level (3 3);
+    	     level (4 4);
     	}
     }
 
@@ -162,7 +162,7 @@ addLayersControls
     {
         "sphere.*"
         {
-            nSurfaceLayers 2;
+            nSurfaceLayers 1;
         }
     }
 
@@ -172,7 +172,7 @@ addLayersControls
     //- Wanted thickness of final added cell layer. If multiple layers
     //  is the thickness of the layer furthest away from the wall.
     //  See relativeSizes parameter.
-    finalLayerThickness 0.7;
+    finalLayerThickness 0.2;
 
     //- Minimum thickness of cell layer. If for any reason layer
     //  cannot be above minThickness do not add layer.

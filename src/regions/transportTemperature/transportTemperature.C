@@ -25,8 +25,6 @@ License
 
 #include "fvCFD.H"
 #include "transportTemperature.H"
-#include "rhoPimpleFluid.H"
-#include "basicPsiThermo.H"
 #include "zeroGradientFvPatchFields.H"
 #include "addToRunTimeSelectionTable.H"
 
@@ -60,10 +58,24 @@ Foam::regionTypes::transportTemperature::transportTemperature
 
     regionName_(regionName),
 
-    U_(nullptr),
+    transportProperties_
+    (
+        IOobject
+        (
+            "transportProperties",
+            mesh().time().constant(),
+            mesh(),
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE
+        )
+    ),
+    k_(transportProperties_.lookup("k")),
+    cp_(transportProperties_.lookup("cp")),
+    
+    
     rho_(nullptr),
-    cp_(nullptr),
-    k_(nullptr),
+    U_(nullptr),
+    kappa_(nullptr),
     phi_(nullptr),
     T_(nullptr)
 {
@@ -72,9 +84,6 @@ Foam::regionTypes::transportTemperature::transportTemperature
     // another regionType, e.g. icoFluid, and thus to be re-used.
     U_ = lookupOrRead<volVectorField>(mesh(), "U");
     rho_ = lookupOrRead<volScalarField>(mesh(), "rho");
-    cp_ = lookupOrRead<volScalarField>(mesh(), "cp");
-    k_ = lookupOrRead<volScalarField>(mesh(), "k");
-
     // set flux field
     phi_ = lookupOrRead<surfaceScalarField>
     (
@@ -83,6 +92,15 @@ Foam::regionTypes::transportTemperature::transportTemperature
         false,
         true,
         linearInterpolate(rho_()*U_()) & mesh().Sf()
+    );
+
+    // set thermal conductivity field
+    kappa_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        "k", 
+        k_,
+        true
     );
 
     // set temperature field
@@ -99,7 +117,7 @@ Foam::regionTypes::transportTemperature::~transportTemperature()
 
 void Foam::regionTypes::transportTemperature::correct()
 {
-    k_().correctBoundaryConditions();
+    kappa_().correctBoundaryConditions();
 }
 
 
@@ -113,13 +131,13 @@ void Foam::regionTypes::transportTemperature::setCoupledEqns()
 {
     TEqn =
     (
-        rho_()*cp_()
+        cp_
        *(
-            fvm::ddt(T())
+            fvm::ddt(rho_(), T())
           + fvm::div(phi_(), T())
         )
      ==
-        fvm::laplacian(k_(), T())
+        fvm::laplacian(kappa_(), T())
     );
 
     fvScalarMatrices.set

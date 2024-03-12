@@ -97,17 +97,23 @@ class transportTemperature
 
         //surfaceScalarField phi_;
 
+        //- transport properties dictionary
+        IOdictionary transportProperties_;
+
+        //- thermal conductivity
+        dimensionedScalar k_;
+
+        //- specific heat
+        dimensionedScalar cp_;
+
+        //- density
+        autoPtr<volScalarField> rho_;
+
         //- transport
         autoPtr<volVectorField> U_;
 
         //- thermal conductivity field
-        autoPtr<volScalarField> k_;
-        
-        //- specific heat
-        autoPtr<volScalarField> cp_;
-        
-        //- density
-        autoPtr<volScalarField> rho_;
+        autoPtr<volScalarField> kappa_;
 
         //- flux
         autoPtr<surfaceScalarField> phi_;
@@ -148,20 +154,9 @@ public:
             return T_();
         }
         
-
         volScalarField& rho()
         {
             return rho_();
-        }
-
-        volScalarField& cp()
-        {
-            return cp_();
-        }
-
-        volScalarField& k()
-        {
-            return k_();
         }
 
         virtual word regionTypeName() const
