@@ -1,2 +1,0 @@
-faceSet fluid_to_solid_zone new patchToFace fluid_to_solid;
-quit;
