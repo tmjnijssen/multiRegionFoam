@@ -1,0 +1,7 @@
+#!/bin/sh
+
+m4 constant/fluid/polyMesh/blockMeshDict.m4 > constant/fluid/polyMesh/blockMeshDict
+
+blockMesh -region fluid
+
+multiRegionFoam
