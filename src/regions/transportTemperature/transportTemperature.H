@@ -107,7 +107,7 @@ class transportTemperature
         dimensionedScalar cp_;
 
         //- density
-        autoPtr<volScalarField> rho_;
+        dimensionedScalar rho_;
 
         //- transport
         autoPtr<volVectorField> U_;
@@ -152,11 +152,6 @@ public:
         volScalarField& T()
         {
             return T_();
-        }
-        
-        volScalarField& rho()
-        {
-            return rho_();
         }
 
         virtual word regionTypeName() const
