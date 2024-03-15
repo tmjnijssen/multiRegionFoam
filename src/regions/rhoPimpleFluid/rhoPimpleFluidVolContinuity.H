@@ -17,7 +17,7 @@ if (mesh().moving())
     scalarField volChange = (V - V0)/V;
 
     scalarField divFlux =
-      - fvc::div(mesh().rhoPhi())().internalField()*dt - fvc::div(mesh().rho())().internalField()*dt;
+      - fvc::div(mesh().phi())().internalField()*dt - fvc::div(mesh().rho())().internalField()*dt;
 
     //  - fvc::interpolate(rho_())           /* Implementation in compressibleCorrectPhi, phi calculated by correctPhi.H */
     //    *((fvc::interpolate(U_()) & mesh.Sf()) - fvc::meshPhi(rho_(), U));

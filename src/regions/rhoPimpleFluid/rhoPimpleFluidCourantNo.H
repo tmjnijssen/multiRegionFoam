@@ -40,10 +40,10 @@ scalar velMag = 0.0;
 // to a single cell.
 if (mesh().nInternalFaces() || Pstream::parRun())
 {
-    surfaceScalarField phi = mag(rhoPhi_())/fvc::interpolate(rho_());
+    surfaceScalarField phiOverRho = mag(phi_())/fvc::interpolate(rho_());
 
     surfaceScalarField SfUfbyDelta =
-        mesh().surfaceInterpolation::deltaCoeffs()*phi;
+        mesh().surfaceInterpolation::deltaCoeffs()*phiOverRho;
 
     const scalar deltaT = mesh().time().deltaT().value();
 
@@ -51,7 +51,7 @@ if (mesh().nInternalFaces() || Pstream::parRun())
 
     meanCoNum = (sum(SfUfbyDelta)/sum(mesh().magSf())).value()*deltaT;
 
-    velMag = max(phi/mesh().magSf()).value();
+    velMag = max(phiOverRho/mesh().magSf()).value();
 }
 else
 {

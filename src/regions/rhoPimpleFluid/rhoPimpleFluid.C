@@ -68,7 +68,7 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
     psi_(nullptr),
     rho_(nullptr),
     U_(nullptr),
-    rhoPhi_(nullptr),
+    phi_(nullptr),
     turbulence_(nullptr),
     T_(nullptr),
     sigma_(nullptr),
@@ -145,10 +145,10 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
         true
     );
 
-    rhoPhi_ = lookupOrRead<surfaceScalarField>
+    phi_ = lookupOrRead<surfaceScalarField>
     (
         mesh(),
-        "rhoPhi",
+        "phi",
         false,
         true,
         linearInterpolate(rho_()*U_()) & mesh().Sf()
@@ -158,7 +158,7 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
     (
         rho_(),
         U_(),
-        rhoPhi_(),
+        phi_(),
         pThermo_()
     );
 
@@ -187,7 +187,7 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
         true,
         fvc::DDt
         (
-            surfaceScalarField("phiU", rhoPhi_()/fvc::interpolate(rho_())),
+            surfaceScalarField("phiU", phi_()/fvc::interpolate(rho_())),
             p_()
         )
     );
@@ -240,7 +240,7 @@ void Foam::regionTypes::rhoPimpleFluid::postSolve()
     {
         mrfZones_.translationalMRFs().correctMRF();
 
-        mrfZones_.translationalMRFs().correctBoundaryVelocity(U_(), rhoPhi_());
+        mrfZones_.translationalMRFs().correctBoundaryVelocity(U_(), phi_());
 
         myTimeIndex_ = mesh().time().timeIndex();
     }
@@ -250,7 +250,7 @@ void Foam::regionTypes::rhoPimpleFluid::postSolve()
 void Foam::regionTypes::rhoPimpleFluid::solveRegion()
 {
     // Solve the continuity for density.
-    solve(fvm::ddt(rho_()) + fvc::div(rhoPhi_()));
+    solve(fvm::ddt(rho_()) + fvc::div(phi_()));
 }
 
 void Foam::regionTypes::rhoPimpleFluid::prePredictor()
@@ -270,7 +270,7 @@ void Foam::regionTypes::rhoPimpleFluid::momentumPredictor()
     tUEqn =
         (
             fvm::ddt(rho_(), U_())
-          + fvm::div(rhoPhi_(), U_())
+          + fvm::div(phi_(), U_())
           + turbulence_().divDevRhoReff()
         );
     fvVectorMatrix& UEqn = tUEqn();
@@ -304,7 +304,7 @@ void Foam::regionTypes::rhoPimpleFluid::momentumPredictor()
     fvScalarMatrix hEqn
     (
         fvm::ddt(rho_(), h_())
-      + fvm::div(rhoPhi_(), h_())
+      + fvm::div(phi_(), h_())
       - fvm::laplacian(turbulence_().alphaEff(), h_())
      ==
         DpDt_()
@@ -350,7 +350,7 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
                 fvc::interpolate(psi_())
                *(
                     (fvc::interpolate(U_()) & mesh().Sf())
-                  + fvc::ddtPhiCorr(rAU, rho_(), U_(), rhoPhi_())
+                  + fvc::ddtPhiCorr(rAU, rho_(), U_(), phi_())
                 )
             );
 
@@ -373,13 +373,13 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
 
                 if (pimple_.finalNonOrthogonalIter())
                 {
-                    rhoPhi_() == pEqn.flux();
+                    phi_() == pEqn.flux();
                 }
             }
         }
         else
         {
-            rhoPhi_() =
+            phi_() =
                 fvc::interpolate(rho_())*
                 (
                     (fvc::interpolate(U_()) & mesh().Sf())
@@ -391,7 +391,7 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
                 fvScalarMatrix pEqn
                 (
                     fvm::ddt(psi_(), p_())
-                  + fvc::div(rhoPhi_())
+                  + fvc::div(phi_())
                   - fvm::laplacian(rho_()*rAU, p_())
                 );
 
@@ -405,13 +405,13 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
 
                 if (pimple_.finalNonOrthogonalIter())
                 {
-                    rhoPhi_() += pEqn.flux();
+                    phi_() += pEqn.flux();
                 }
             }
         }
 
         // Solve continuity for density
-        solve(fvm::ddt(rho_()) + fvc::div(rhoPhi_()));
+        solve(fvm::ddt(rho_()) + fvc::div(phi_()));
         #include "rhoPimpleFluidContinuityErrs.H"
 
         {
@@ -432,7 +432,7 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
 
         DpDt_() = fvc::DDt
             (
-                surfaceScalarField("phiU", rhoPhi_()/fvc::interpolate(rho_())),
+                surfaceScalarField("phiU", phi_()/fvc::interpolate(rho_())),
                 p_()
             );
 

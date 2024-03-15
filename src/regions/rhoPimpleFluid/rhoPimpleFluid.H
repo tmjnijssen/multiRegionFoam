@@ -123,7 +123,7 @@ class rhoPimpleFluid
         autoPtr<volVectorField> U_;
 
         //- Face flux
-        autoPtr<surfaceScalarField> rhoPhi_;
+        autoPtr<surfaceScalarField> phi_;
 
         //- Turbulence model
         autoPtr<compressible::turbulenceModel> turbulence_;
@@ -219,9 +219,9 @@ public:
             return U_();
         }
 
-        surfaceScalarField& rhoPhi()
+        surfaceScalarField& phi()
         {
-            return rhoPhi_();
+            return phi_();
         }
 
         volScalarField& T()
