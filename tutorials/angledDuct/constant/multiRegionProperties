@@ -27,18 +27,7 @@ partitionedCoupling
 
 DNA
 {
-    T
-    {
-        maxCoupleIter 20;
 
-        residualControl
-        {
-            maxJumpRes 1e-07;
-            outputJumpResField no;
-            maxFluxRes 1e-07;
-            outputFluxResField no;
-        }
-    }
 }
 
 // ************************************************************************* //
