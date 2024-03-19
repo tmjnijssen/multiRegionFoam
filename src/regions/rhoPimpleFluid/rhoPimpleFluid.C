@@ -337,6 +337,7 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
     // --- PISO loop
     while (pimple_.correct())
     {
+        rho_() = pThermo_().rho();
         volScalarField rAU = 1.0/UEqn.A();
 
         // Calculate U from convection-diffusion matrix
@@ -448,7 +449,7 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
         << "  mean: " << gAverage(p_()) << nl
         << mesh().name() << " Velocity:" << nl
         << "  max: " << gMax(U_()) << nl
-        << "  min: "<< gMax(U_()) << nl
+        << "  min: "<< gMin(U_()) << nl
         << "  mean: " << gAverage(U_()) << nl
         << mesh().name() << " Volume: "
         << gSum(mesh().V()) << nl
