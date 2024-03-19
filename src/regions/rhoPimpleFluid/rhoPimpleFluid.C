@@ -109,7 +109,6 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
         true,
         true
     );
-    p_().storePrevIter();
 
     h_ = lookupOrRead<volScalarField>
     (
@@ -135,7 +134,7 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
         true,
         pThermo_().rho()
     );
-    rho_().storePrevIter();
+    
 
     U_ = lookupOrRead<volVectorField>
     (
@@ -258,6 +257,8 @@ void Foam::regionTypes::rhoPimpleFluid::prePredictor()
     Info<< nl << "Pre-predictor for " << this->typeName
         << " in region " << mesh().name()
         << nl << endl;
+        rho_().storePrevIter();
+        p_().storePrevIter();
 }
 
 void Foam::regionTypes::rhoPimpleFluid::momentumPredictor()
