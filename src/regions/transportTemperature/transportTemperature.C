@@ -71,17 +71,18 @@ Foam::regionTypes::transportTemperature::transportTemperature
     ),
     k_(transportProperties_.lookup("k")),
     cp_(transportProperties_.lookup("cp")),
-    rho_(transportProperties_.lookup("rho")),
 
     U_(nullptr),
     kappa_(nullptr),
     phi_(nullptr),
+    rho_(nullptr),
     T_(nullptr)
 {
     // set velocity field
     // Postponing field creation since U is probably provided by
     // another regionType, e.g. icoFluid, and thus to be re-used.
     U_ = lookupOrRead<volVectorField>(mesh(), "U");
+    rho_ = lookupOrRead<volScalarField>(mesh(), "rho");
 
     // set flux field
     phi_ = lookupOrRead<surfaceScalarField>
@@ -90,7 +91,7 @@ Foam::regionTypes::transportTemperature::transportTemperature
         "phi",
         false,
         true,
-        linearInterpolate(U_()) & mesh().Sf()
+        linearInterpolate(rho_()*U_()) & mesh().Sf()
     );
 
     // set thermal conductivity field
@@ -130,9 +131,9 @@ void Foam::regionTypes::transportTemperature::setCoupledEqns()
 {
     TEqn =
     (
-        rho_*cp_
+        cp_
        *(
-            fvm::ddt(T())
+            fvm::ddt(T(), rho_())
           + fvm::div(phi_(), T())
         )
      ==

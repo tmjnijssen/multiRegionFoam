@@ -1,0 +1,18 @@
+#!/bin/sh
+
+. $WM_PROJECT_DIR/bin/tools/CleanFunctions
+
+find -type l -delete
+
+rm -rf 0.* [1-9]* log* proc* VTK
+
+rm constant/fluid/polyMesh/blockMeshDict 2>/dev/null
+rm constant/fluid/polyMesh/boundary 2>/dev/null
+rm constant/fluid/polyMesh/cellZones 2>/dev/null
+rm constant/fluid/polyMesh/faces 2>/dev/null
+rm constant/fluid/polyMesh/neighbour 2>/dev/null
+rm constant/fluid/polyMesh/owner 2>/dev/null
+rm constant/fluid/polyMesh/points 2>/dev/null
+rm -r constant/fluid/polyMesh/sets 2>/dev/null
+
+cleanCase
