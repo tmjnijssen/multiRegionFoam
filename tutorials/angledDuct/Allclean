@@ -15,4 +15,6 @@ rm constant/fluid/polyMesh/owner 2>/dev/null
 rm constant/fluid/polyMesh/points 2>/dev/null
 rm -r constant/fluid/polyMesh/sets 2>/dev/null
 
+rm result.foam
+
 cleanCase
