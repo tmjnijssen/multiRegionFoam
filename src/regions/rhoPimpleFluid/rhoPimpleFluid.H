@@ -134,7 +134,10 @@ class rhoPimpleFluid
         //- forces
         autoPtr<volSymmTensorField> sigma_;
 
-        //- Teomporal derivative of pressure field
+        //- Effective thermal diffusivity
+        autoPtr<volScalarField> kappaEff_;
+
+        //- Temporal derivative of pressure field
         autoPtr<volScalarField> DpDt_;
 
         //- Reference minimum pressure value
@@ -232,6 +235,11 @@ public:
         volSymmTensorField& sigma()
         {
             return sigma_();
+        }
+
+        volScalarField& kappaEff()
+        {
+            return kappaEff_();
         }
 
         virtual word regionTypeName() const

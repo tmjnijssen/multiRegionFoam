@@ -72,6 +72,7 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
     turbulence_(nullptr),
     T_(nullptr),
     sigma_(nullptr),
+    kappaEff_(nullptr),
 
     DpDt_(nullptr),
 
@@ -176,6 +177,15 @@ Foam::regionTypes::rhoPimpleFluid::rhoPimpleFluid
         false,
         true,
         -p_()*symmTensor(1,0,0,1,0,1) - turbulence_().devRhoReff()
+    );
+
+    kappaEff_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        "kappaEff",
+        false,
+        true,
+        turbulence_().alphaEff() / pThermo_().Cp()
     );
 
     DpDt_ = lookupOrRead<volScalarField>
@@ -442,6 +452,8 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
     }
 
     turbulence_().correct();
+
+    kappaEff_() = turbulence_().alphaEff() / pThermo_().Cp();
 
     Info<< nl
         << mesh().name() << " Pressure:" << nl
