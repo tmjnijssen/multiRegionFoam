@@ -107,10 +107,7 @@ class transportTemperature
         dimensionedScalar cp_;
 
         //- density
-        //dimensionedScalar rho_;
-        
-        //- density field
-        autoPtr<volScalarField> rho_;
+        dimensionedScalar rho_;
 
         //- transport
         autoPtr<volVectorField> U_;
@@ -195,3 +192,4 @@ public:
 #endif
 
 // ************************************************************************* //
+
