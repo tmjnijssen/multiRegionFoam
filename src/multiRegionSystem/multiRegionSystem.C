@@ -553,32 +553,33 @@ void Foam::multiRegionSystem::solve()
 
     // Solve pressure-velocity system using PIMPLE
     // Check if at least one region implements PIMPLE loop
-    if (
-            regions_->usesPIMPLE()
-            &&
-            !partitionedCoupledFldNames_.contains("pUPimple")
-            &&
-            !partitionedCoupledFldNames_.contains("D")
-        )
-    {
-        // PIMPLE p-U-coupling
-        regions_->solvePIMPLE();
+    bool couplePIMPLE = false;
 
-        Info<< "Solved PIMPLE without coupling in "
-            << runTime_.cpuTimeIncrement() << " s." << endl;
+    if (regions_->usesPIMPLE())
+    {
+        couplePIMPLE = bool(Switch(lookup("couplePIMPLE")));
+
+        if (!couplePIMPLE)
+        {
+            // PIMPLE p-U-coupling
+            regions_->solvePIMPLE();
+
+            Info<< "Solved PIMPLE without coupling in "
+                << runTime_.cpuTimeIncrement() << " s." << endl;
+        }
     }
+
+    bool updateMesh = lookupOrDefault<Switch>("updateMesh", false);
 
     // Solve region-region coupling (partitioned)
     forAll (partitionedCoupledFldNames_, fldI)
     {
         word fldName = partitionedCoupledFldNames_[fldI];
 
-        bool fsiOrMultiphase = (fldName == "pUPimple" || fldName == "D");
-
         //- Solve pressure-velocity system using PIMPLE
         while (dnaControls_[fldName]->loop())
         {
-            if (fsiOrMultiphase)
+            if (couplePIMPLE)
             {
                 // PIMPLE p-U-coupling
                 regions_->solvePIMPLE();
@@ -594,7 +595,7 @@ void Foam::multiRegionSystem::solve()
 
             //assembleAndSolveEqns<symmTensor>(fldName);
 
-            if (fsiOrMultiphase)
+            if (updateMesh)
             {
                 // ALE mesh motion corrector
                 regions_->meshMotionCorrector();
@@ -604,7 +605,7 @@ void Foam::multiRegionSystem::solve()
 
         }
 
-        if (fsiOrMultiphase)
+        if (couplePIMPLE)
         {
             regions_->postSolvePIMPLE();
         }
