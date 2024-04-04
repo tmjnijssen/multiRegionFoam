@@ -264,18 +264,18 @@ void Foam::regionTypes::rhoPimpleFluid::solveRegion()
 
 void Foam::regionTypes::rhoPimpleFluid::prePredictor()
 {
-    Info<< nl << "Pre-predictor for " << this->typeName
+    Info<< "Pre-predictor for " << this->typeName
         << " in region " << mesh().name()
-        << nl << endl;
+        << endl;
         rho_().storePrevIter();
         p_().storePrevIter();
 }
 
 void Foam::regionTypes::rhoPimpleFluid::momentumPredictor()
 {
-    Info<< nl << "Momentum predictor for " << this->typeName
+    Info<< "Momentum predictor for " << this->typeName
         << " in region " << mesh().name()
-        << nl << endl;
+        << endl;
 
     // Convection-diffusion matrix
     tUEqn =
@@ -338,9 +338,9 @@ void Foam::regionTypes::rhoPimpleFluid::momentumPredictor()
 
 void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
 {
-    Info<< nl << "Pressure corrector for " << this->typeName
+    Info<< "Pressure corrector for " << this->typeName
         << " in region " << mesh().name()
-        << nl << endl;
+        << endl;
 
     // Get cached matricies from momentum predictor
     fvVectorMatrix& UEqn = tUEqn();
@@ -432,8 +432,10 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
 
             rho_() = pThermo_().rho();
             rho_().relax();
-            Info<< "rho max/min : " << max(rho_()).value()
-                << " " << min(rho_()).value() << endl;
+            Info<< "  " << mesh().name() << ": rho min/mean/max: " 
+                << gMin(rho_()) << "/"
+                << gAverage(rho_()) << "/"
+                << gMax(rho_()) << endl;
         }
 
         U_() -= rAU*fvc::grad(p_());
@@ -455,18 +457,16 @@ void Foam::regionTypes::rhoPimpleFluid::pressureCorrector()
 
     kappaEff_() = turbulence_().alphaEff() * pThermo_().Cp();
 
-    Info<< nl
-        << mesh().name() << " Pressure:" << nl
-        << "  max: " << gMax(p_()) << nl
-        << "  min: " << gMin(p_()) << nl
-        << "  mean: " << gAverage(p_()) << nl
-        << mesh().name() << " Velocity:" << nl
-        << "  max: " << gMax(U_()) << nl
-        << "  min: "<< gMin(U_()) << nl
-        << "  mean: " << gAverage(U_()) << nl
-        << mesh().name() << " Volume: "
-        << gSum(mesh().V()) << nl
-        << endl;
+    Info<< "  " << mesh().name() << ": pressure min/mean/max: "
+        << gMin(p_()) << "/"
+        << gAverage(p_()) << "/"
+        << gMax(p_()) << nl
+        << "  " << mesh().name() << ": velocity min/mean/max: "
+        << gMin(U_()) << "/"
+        << gAverage(U_()) << "/"
+        << gMax(U_()) << nl
+        << "  " << mesh().name() << ": volume: "
+        << gSum(mesh().V()) << endl;
 }
 
 void Foam::regionTypes::rhoPimpleFluid::meshMotionCorrector()

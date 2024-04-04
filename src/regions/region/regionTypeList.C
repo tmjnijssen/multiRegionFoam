@@ -211,9 +211,11 @@ void Foam::regionTypeList::solvePIMPLE()
 
     int nOuterCorr(readInt(pimple.lookup("nOuterCorrectors")));
 
-    //- PIMPLE loop
+    //- PIMPLE: 
     for (int oCorr=0; oCorr<nOuterCorr; oCorr++)
     {
+        Info << nl << "PIMPLE iteration: " << (oCorr+1) << endl;
+
         forAll(*this, i)
         {
             this->operator[](i).prePredictor();
