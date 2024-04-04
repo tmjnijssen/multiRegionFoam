@@ -19,6 +19,9 @@ regions
     (fluid (rhoPimpleFluid) )
 );
 
+couplePIMPLE no;
+updateMesh   no;
+
 
 partitionedCoupling
 {
