@@ -134,8 +134,14 @@ class rhoPimpleFluid
         //- forces
         autoPtr<volSymmTensorField> sigma_;
 
-        //- Effective thermal diffusivity
+        //- Laminar thermal conductivity
+        autoPtr<volScalarField> kappa_;
+
+        //- Effective thermal conductivity (laminar + turbulent)
         autoPtr<volScalarField> kappaEff_;
+
+        //- Constant-pressure heat capacity
+        autoPtr<volScalarField> Cp_;
 
         //- Temporal derivative of pressure field
         autoPtr<volScalarField> DpDt_;
@@ -237,9 +243,19 @@ public:
             return sigma_();
         }
 
+        volScalarField& kappa()
+        {
+            return kappa_();
+        }
+
         volScalarField& kappaEff()
         {
             return kappaEff_();
+        }
+
+        volScalarField& Cp()
+        {
+            return Cp_();
         }
 
         virtual word regionTypeName() const
