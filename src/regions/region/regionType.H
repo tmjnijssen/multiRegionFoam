@@ -119,6 +119,8 @@ protected:
         HashPtrTable<fvMatrix<tensor> > fvTensorMatrices;
         HashPtrTable<fvBlockMatrix<vector4> > fvVector4Matrices;
 
+        bool loopPIMPLE_;
+
     // Protected member functions
 
         //- Lookup or read field
@@ -219,6 +221,16 @@ public:
         bool update()
         {
             return mesh().update();
+        }
+
+        bool loopPIMPLE() const
+        {
+            return loopPIMPLE_;
+        }
+
+        void resetPIMPLE()
+        {
+            loopPIMPLE_ = true;
         }
 
         // virtual functions

@@ -267,8 +267,15 @@ void Foam::regionTypes::rhoPimpleFluid::prePredictor()
     Info<< "Pre-predictor for " << this->typeName
         << " in region " << mesh().name()
         << endl;
-        rho_().storePrevIter();
-        p_().storePrevIter();
+
+    loopPIMPLE_ = pimple_.loop();
+
+    if (!loopPIMPLE_)
+    {
+        Info<< "Breaking PIMPLE loop for " << this->typeName
+        << " in region " << mesh().name()
+        << endl;
+    }
 }
 
 void Foam::regionTypes::rhoPimpleFluid::momentumPredictor()

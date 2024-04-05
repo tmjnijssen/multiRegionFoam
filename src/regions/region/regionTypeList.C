@@ -74,6 +74,29 @@ bool Foam::regionTypeList::usesPIMPLE(const bool warn) const
     return a;
 }
 
+bool Foam::regionTypeList::loopPIMPLE() const
+{
+    bool a = false;
+    forAll(*this, i)
+    {
+        if (this->operator[](i).usesPIMPLE())
+        {
+            a = a || this->operator[](i).loopPIMPLE();
+        }
+    }
+    return a;
+}
+
+void Foam::regionTypeList::resetPIMPLE()
+{
+    forAll(*this, i)
+    {
+        if (this->operator[](i).usesPIMPLE())
+        {
+            this->operator[](i).resetPIMPLE();
+        }
+    }
+}
 
 void Foam::regionTypeList::reset(const regionProperties& rp)
 {
@@ -203,32 +226,33 @@ void Foam::regionTypeList::solveRegion()
 
 void Foam::regionTypeList::solvePIMPLE()
 {
-    // We do not have a top-level mesh. Construct the fvSolution for
-    // the runTime instead.
-    fvSolution solutionDict(runTime_);
-
-    const dictionary& pimple = solutionDict.subDict("PIMPLE");
-
-    int nOuterCorr(readInt(pimple.lookup("nOuterCorrectors")));
+    resetPIMPLE();
 
     //- PIMPLE: 
-    for (int oCorr=0; oCorr<nOuterCorr; oCorr++)
+    while (loopPIMPLE())
     {
-        Info << nl << "PIMPLE iteration: " << (oCorr+1) << endl;
-
         forAll(*this, i)
         {
-            this->operator[](i).prePredictor();
+            if (this->operator[](i).loopPIMPLE())
+            {
+                this->operator[](i).prePredictor();
+            }
         }
 
         forAll(*this, i)
         {
-            this->operator[](i).momentumPredictor();
+            if (this->operator[](i).loopPIMPLE())
+            {
+                this->operator[](i).momentumPredictor();
+            }
         }
 
         forAll(*this, i)
         {
-            this->operator[](i).pressureCorrector();
+            if (this->operator[](i).loopPIMPLE())
+            {
+                this->operator[](i).pressureCorrector();
+            }
         }
     }
 }

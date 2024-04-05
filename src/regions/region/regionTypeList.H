@@ -127,6 +127,12 @@ public:
         //- Return active PIMPLE status
         bool usesPIMPLE(const bool warn = false) const;
 
+        //- Return whether PIMPLE should be looped
+        bool loopPIMPLE() const;
+
+        //- Reset loopPIMPLE switches
+        void resetPIMPLE();
+
         //- Reset the source list
         void reset(const regionProperties& region);
 

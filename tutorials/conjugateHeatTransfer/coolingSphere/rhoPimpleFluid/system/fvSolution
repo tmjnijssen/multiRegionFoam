@@ -14,12 +14,6 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-PIMPLE
-{
-    nOuterCorrectors            10; 
-    nNonOrthogonalCorrectors    1;
-}
-
 
 
 
