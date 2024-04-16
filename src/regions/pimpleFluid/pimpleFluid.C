@@ -151,7 +151,6 @@ Foam::regionTypes::pimpleFluid::pimpleFluid
         true,
         rho_().value()*pKin_()
     );
-    p_.storePrevIter();
 
     sigma_ = lookupOrRead<volSymmTensorField>
     (
@@ -233,6 +232,16 @@ void Foam::regionTypes::pimpleFluid::prePredictor()
     Info<< nl << "Pre-predictor for " << this->typeName
         << " in region " << mesh().name()
         << nl << endl;
+
+    loopPIMPLE_ = pimple_.loop();
+    
+    if (!loopPIMPLE_)
+    {
+        Info<< "Breaking PIMPLE loop for " << this->typeName
+        << " in region " << mesh().name()
+        << endl;
+        return;
+    }
 
     if (mesh().changing() && correctPhi_)
     {

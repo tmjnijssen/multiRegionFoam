@@ -295,6 +295,7 @@ void Foam::regionTypes::rhoPimpleFluid::prePredictor()
         Info<< "Breaking PIMPLE loop for " << this->typeName
         << " in region " << mesh().name()
         << endl;
+        return;
     }
 }
 

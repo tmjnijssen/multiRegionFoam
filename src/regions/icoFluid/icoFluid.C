@@ -307,6 +307,16 @@ void Foam::regionTypes::icoFluid::prePredictor()
     Info<< nl << "Pre-predictor for " << this->typeName
         << " in region " << mesh().name()
         << nl << endl;
+    
+    loopPIMPLE_ = pimple_.loop();
+    
+    if (!loopPIMPLE_)
+    {
+        Info<< "Breaking PIMPLE loop for " << this->typeName
+        << " in region " << mesh().name()
+        << endl;
+        return;
+    }
 
     if (myTimeIndex_ < mesh().time().timeIndex())
     {
