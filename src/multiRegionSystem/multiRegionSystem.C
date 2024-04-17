@@ -583,6 +583,9 @@ void Foam::multiRegionSystem::solve()
             {
                 // PIMPLE p-U-coupling
                 regions_->solvePIMPLE();
+
+                Info<< "Solved PIMPLE with coupling in "
+                    << runTime_.cpuTimeIncrement() << " s." << endl;                
             }
 
             assembleAndSolveEqns<fvMatrix, scalar>(fldName);
