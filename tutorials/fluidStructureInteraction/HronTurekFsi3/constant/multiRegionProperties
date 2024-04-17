@@ -20,6 +20,9 @@ regions
     ( solid (solidStVK) )
 );
 
+couplePIMPLE yes;
+updateMesh   yes;
+
 DNA
 {
     D
