@@ -59,7 +59,22 @@ Foam::regionType::regionType
             false
         )
     ),
-    meshPtr_(nullptr)
+
+    meshPtr_(nullptr),
+
+    maxCorr_(),
+    relativeTolerance_(),
+    convergenceTolerance_(),
+    convergenceInfoFeq_(),
+
+    fvScalarMatrices(),
+    fvVectorMatrices(),
+    fvSymmTensorMatrices(),
+    fvTensorMatrices(),
+    fvVector4Matrices(),
+
+    loopPIMPLE_(false)
+
 {
     // look up mesh from object registry
     if (runTime.foundObject<dynamicFvMesh>(regionName))
