@@ -112,13 +112,23 @@ public:
 
     // Public Member Functions
 
+        virtual bool couplePIMPLE() const
+        {
+            return true;
+        };
+
+        virtual bool meshMotionCorrection() const
+        {
+            return true;
+        };
+
         // Access
 
         // Correct interface physics - here surface tension
-        void correct();
+        virtual void correct();
 
         // Get min time step based on stability criteria
-        scalar getMinDeltaT();
+        virtual scalar getMinDeltaT();
 
         // Edit
 
@@ -196,7 +206,7 @@ public:
 
         // Info
 
-        void info() const;
+        virtual void info() const;
 
         void surfaceForces() const;
 

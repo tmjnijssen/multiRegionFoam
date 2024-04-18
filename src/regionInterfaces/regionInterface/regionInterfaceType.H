@@ -285,6 +285,10 @@ public:
 
     // Member Functions
 
+            virtual bool couplePIMPLE() const = 0;
+
+            virtual bool meshMotionCorrection() const = 0;
+
         // Access
 
             //- Return reference to region properties

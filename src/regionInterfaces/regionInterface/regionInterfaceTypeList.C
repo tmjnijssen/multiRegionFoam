@@ -276,5 +276,29 @@ Foam::scalar Foam::regionInterfaceTypeList::getMinDeltaT()
     return minDeltaT;
 }
 
+bool Foam::regionInterfaceTypeList::couplePIMPLE()
+{
+    bool a = false;
+
+    forAll(*this, i)
+    {
+        a = a || this->operator[](i).couplePIMPLE();
+    }
+
+    return a;
+}
+
+bool Foam::regionInterfaceTypeList::meshMotionCorrection()
+{
+    bool a = false;
+
+    forAll(*this, i)
+    {
+        a = a || this->operator[](i).meshMotionCorrection();
+    }
+
+    return a;
+}
+
 
 // ************************************************************************* //

@@ -553,12 +553,11 @@ void Foam::multiRegionSystem::solve()
 
     // Solve pressure-velocity system using PIMPLE
     // Check if at least one region implements PIMPLE loop
-    bool couplePIMPLE = false;
+    bool couplePIMPLE = interfaces_->couplePIMPLE();
+    bool meshMotionCorrection = interfaces_->meshMotionCorrection();
 
     if (regions_->usesPIMPLE())
     {
-        couplePIMPLE = bool(Switch(lookup("couplePIMPLE")));
-
         if (!couplePIMPLE)
         {
             // PIMPLE p-U-coupling
@@ -568,8 +567,6 @@ void Foam::multiRegionSystem::solve()
                 << runTime_.cpuTimeIncrement() << " s." << endl;
         }
     }
-
-    bool updateMesh = lookupOrDefault<Switch>("updateMesh", false);
 
     // Solve region-region coupling (partitioned)
     forAll (partitionedCoupledFldNames_, fldI)
@@ -585,7 +582,7 @@ void Foam::multiRegionSystem::solve()
                 regions_->solvePIMPLE();
 
                 Info<< "Solved PIMPLE with coupling in "
-                    << runTime_.cpuTimeIncrement() << " s." << endl;                
+                    << runTime_.cpuTimeIncrement() << " s." << endl;
             }
 
             assembleAndSolveEqns<fvMatrix, scalar>(fldName);
@@ -598,7 +595,7 @@ void Foam::multiRegionSystem::solve()
 
             //assembleAndSolveEqns<symmTensor>(fldName);
 
-            if (updateMesh)
+            if (meshMotionCorrection)
             {
                 // ALE mesh motion corrector
                 regions_->meshMotionCorrector();
