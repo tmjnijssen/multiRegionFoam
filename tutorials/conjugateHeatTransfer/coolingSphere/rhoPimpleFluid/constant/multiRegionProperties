@@ -20,9 +20,6 @@ regions
     (solid (conductTemperature) )
 );
 
-couplePIMPLE    yes;
-updateMesh      no;
-
 partitionedCoupling
 {
     maxCoupleIter 6;

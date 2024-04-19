@@ -60,7 +60,12 @@ Foam::regionInterfaces::heatTransferInterface::heatTransferInterface
 
     dict_(dict.subDict(type + "Coeffs")),
 
-    K_(dimensionedScalar(dict_.lookup("K")))
+    K_(dimensionedScalar(dict_.lookup("K"))),
+
+    couplePIMPLE_
+    (
+        dict_.lookupOrDefault<Switch>("couplePIMPLE", false)
+    )
 {}
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
