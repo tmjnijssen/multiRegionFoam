@@ -21,23 +21,23 @@ solvers
     {
         solver          PCG;
         preconditioner  DIC;
-        tolerance       1e-05;
-        relTol          0;
+        tolerance       1e-06;
+        relTol          0.01;
     }
 
     U
     {
         solver          BiCGStab;
         preconditioner  DILU;
-        tolerance       1e-05;
-        relTol          0.1;
+        tolerance       1e-06;
+        relTol          0.01;
     }
 
     UFinal
     {
         solver          BiCGStab;
         preconditioner  DILU;
-        tolerance       1e-05;
+        tolerance       1e-06;
         relTol          0;
     }
 
@@ -61,15 +61,15 @@ solvers
     {
         solver          BiCGStab;
         preconditioner  DILU;
-        tolerance       1e-05;
-        relTol          0.1;
+        tolerance       1e-06;
+        relTol          0.01;
     }
 
     hFinal
     {
         solver          BiCGStab;
         preconditioner  DILU;
-        tolerance       1e-05;
+        tolerance       1e-06;
         relTol          0;
     }
 
@@ -77,7 +77,7 @@ solvers
     {
         solver          BiCGStab;
         preconditioner  DILU;
-        tolerance       1e-05;
+        tolerance       1e-06;
         relTol          0;
     }
 
@@ -85,7 +85,7 @@ solvers
     {
         solver          BiCGStab;
         preconditioner  DILU;
-        tolerance       1e-05;
+        tolerance       1e-06;
         relTol          0;
     }
 
@@ -93,7 +93,7 @@ solvers
     {
         solver          BiCGStab;
         preconditioner  DILU;
-        tolerance       1e-05;
+        tolerance       1e-06;
         relTol          0;
     }
 
@@ -101,30 +101,56 @@ solvers
     {
         solver          BiCGStab;
         preconditioner  DILU;
-        tolerance       1e-05;
+        tolerance       1e-06;
         relTol          0;
     }
 }
 
 PIMPLE
 {
-    nOuterCorrectors 10;
-    nCorrectors     1;
-    nNonOrthogonalCorrectors 0;
+    nOuterCorrectors 5;
+    nCorrectors     2;
+    nNonOrthogonalCorrectors 1;
     momentumPredictor yes;
     pMin            pMin [ 1 -1 -2 0 0 0 0 ] 1000;
+    
+    residualControl
+    {
+        p
+        {
+            relTol         0.01;
+            tolerance      1e-05;
+        }
+
+        U
+        {
+            relTol         0.01;
+            tolerance      1e-05;
+        }
+        rho
+        {
+            relTol         0.01;
+            tolerance      1e-05;
+        }
+        h
+        {
+            relTol         0.01;
+            tolerance      1e-05;
+        }
+        
+    }
 }
 
 relaxationFactors
 {
-    U               0.7;
-    UFinal          1.0;
-    p               0.3;
-    rho             0.05;
-    h               0.7;
-    hFinal          1.0;
-    k               0.7;
-    omega           0.7;
+    U               0.9;
+    UFinal          0.9;
+    p               0.4;
+    rho             0.15;
+    h               0.9;
+    hFinal          0.9;
+    k               0.9;
+    omega           0.9;
 }
 
 

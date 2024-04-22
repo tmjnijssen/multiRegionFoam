@@ -68,7 +68,7 @@ do
             runApplication -l log.decomposePar.fluid decomposePar -region fluid
             runApplication -l log.decomposePar.solid  decomposePar -region solid
 
-            mpirun -np 4 multiRegionFoam -noFunctionObjects -parallel 2>&1 > log.multiRegionFoam
+            mpirun -np 2 multiRegionFoam -parallel 2>&1 > log.multiRegionFoam
 	    touch result.foam
             ;;
 

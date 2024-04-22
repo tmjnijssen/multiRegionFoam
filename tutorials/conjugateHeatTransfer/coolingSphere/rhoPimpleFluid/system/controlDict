@@ -25,12 +25,12 @@ startFrom       	startTime;
 startTime       	0;
 stopAt          	endTime;
 endTime         	10;
-deltaT          	1E-1;
+deltaT          	5E-3;
 writeControl    	runTime;
 writeInterval   	0.1;
 purgeWrite      	0;
 writeFormat     	ascii;
-writePrecision  	8;
+writePrecision  	6;
 writeCompression 	uncompressed;
 timeFormat      	general;
 timePrecision   	10;
@@ -40,7 +40,7 @@ maxDeltaT		    1;
 		
 functions
 (
-    massflow
+    massflow1
     {
         type            faceSource;
         functionObjectLibs ("libfieldFunctionObjects.so");
@@ -70,6 +70,41 @@ functions
         fields
         (
            phi
+           h
+        );
+    }
+    
+    massflow2
+    {
+        type            faceSource;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+
+        region          fluid;
+        enabled         true;
+        outputControl   outputTime;
+
+        // Output to log&file (true) or to file only
+        log             true;
+
+        // Output field values as well
+        valueOutput     true;
+
+        // Output value format
+        surfaceFormat   foamFile;
+
+        // Type of source: patch/faceZone/sampledSurface
+        source          patch;
+
+        // if patch or faceZone: name of patch or faceZone
+        sourceName      outlet;
+
+        // Operation: areaAverage/sum/weightedAverage ...
+        operation       sum;
+
+        fields
+        (
+           phi
+           h
         );
     }
 
@@ -80,8 +115,10 @@ functions
         region             fluid;
         enabled            true;
         outputControl      outputTime;
-	log		   true;
         K                  kappaEff;
+        log                true;
+        valueOutput        true;
+        surfaceFormat      foamFile;
         
     }
     
@@ -131,6 +168,16 @@ functions
             p
             T
             U
+            k
+            kappaEff
+            mu
+            mut
+            alpha
+            alphat
+            nu
+            nut
+            rho
+            cp
         );
     }
 
@@ -166,6 +213,57 @@ functions
             p
             T
             U
+            k
+            kappaEff
+            mu
+            mut
+            alpha
+            alphat
+            nu
+            nut
+            rho
+            cp
+        );
+    }
+    
+    faceAverageSphere
+    {
+        type            faceSource;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+
+        region          fluid;
+        enabled         true;
+        outputControl   outputTime;
+
+        // Output to log&file (true) or to file only
+        log             true;
+
+        // Output field values as well
+        valueOutput     true;
+
+        // Output value format
+        surfaceFormat   foamFile;
+
+        // Type of source: patch/faceZone/sampledSurface
+        source          patch;
+
+        // if patch or faceZone: name of patch or faceZone
+        sourceName      fluid_to_solid;
+
+        // Operation: areaAverage/sum/weightedAverage ...
+        operation       areaAverage;
+
+        fields
+        (
+            T
+            k
+            kappaEff
+            alpha
+            alphat
+            nu
+            nut
+            mu
+            mut
         );
     }
 
@@ -188,8 +286,18 @@ functions
         fields
         (
             p
-            U
             T
+            U
+            k
+            kappaEff
+            mu
+            mut
+            alpha
+            alphat
+            nu
+            nut
+            rho
+            cp
         );
     }
 
@@ -198,7 +306,7 @@ functions
         type            cellSource;
         functionObjectLibs ("libfieldFunctionObjects.so");
 
-        region          fluid;
+        region          solid;
         enabled         true;
         outputControl   outputTime;
         log             true;
@@ -212,6 +320,5 @@ functions
         );
     }
 );
-
 
 // ************************************************************************* //
