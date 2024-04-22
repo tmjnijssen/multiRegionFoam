@@ -35,6 +35,8 @@ partitionedCoupledPatches
         {
             // Jump coefficient
             K               K [ 0 0 0 0 0 0 0 ] 1;
+            // Couple PIMPLE across interface
+            couplePIMPLE    true;
         }
     }
 );

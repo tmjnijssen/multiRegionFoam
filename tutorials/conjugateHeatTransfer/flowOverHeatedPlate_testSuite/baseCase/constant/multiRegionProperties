@@ -20,8 +20,6 @@ regions
     (solid (conductTemperature) )
 );
 
-couplePIMPLE no;
-updateMesh   no;
 
 partitionedCoupling
 {

@@ -230,7 +230,14 @@ public:
 
         void resetPIMPLE()
         {
-            loopPIMPLE_ = true;
+            if (usesPIMPLE())
+            {
+                loopPIMPLE_ = true;
+            }
+            else
+            {
+                loopPIMPLE_ = false;
+            }
         }
 
         // virtual functions

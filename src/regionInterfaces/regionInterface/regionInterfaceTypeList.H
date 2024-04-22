@@ -202,6 +202,12 @@ public:
 
         //- Get min time step over regions
         scalar getMinDeltaT();
+
+        //- Should PIMPLE coupling accross interface be employed
+        bool couplePIMPLE();
+
+        //- Should mesh motion correction be employed
+        bool meshMotionCorrection();
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

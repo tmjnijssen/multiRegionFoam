@@ -129,6 +129,16 @@ protected:
 
 public:
 
+    virtual bool couplePIMPLE() const
+    {
+        return true;
+    };
+
+    virtual bool meshMotionCorrection() const
+    {
+        return true;
+    };
+
     // Correct interface physics
     void setTotalForce(const vector& totalForce) const;
 

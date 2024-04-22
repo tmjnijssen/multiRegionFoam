@@ -72,6 +72,7 @@ Description
 #ifndef heatTransferInterface_H
 #define heatTransferInterface_H
 
+#include "Switch.H"
 #include "regionInterfaceType.H"
 #include "IOReferencer.H"
 #include "HashPtrTable.H"
@@ -100,6 +101,11 @@ class heatTransferInterface
         // Surface tension
         dimensionedScalar K_;
 
+        // Couple PIMPLE across the interface
+        // - might be needed if a compressible fluid region type is used on one
+        //   side of the interface
+        Switch couplePIMPLE_;
+
 public:
 
     TypeName("heatTransferInterface");
@@ -121,14 +127,24 @@ public:
 
     const dimensionedScalar& K() const;
 
+    virtual bool couplePIMPLE() const
+    {
+        return couplePIMPLE_;
+    };
+
+    virtual bool meshMotionCorrection() const
+    {
+        return false;
+    };
+
     // Correct interface physics
-    void correct();
+    virtual void correct();
 
     // Get min time step based on stability criteria
-    scalar getMinDeltaT();
+    virtual scalar getMinDeltaT();
 
     // Log interface specific information
-    void info() const
+    virtual void info() const
     {};
 };
 

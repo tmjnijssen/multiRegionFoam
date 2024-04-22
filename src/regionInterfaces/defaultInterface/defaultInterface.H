@@ -112,14 +112,24 @@ public:
     virtual ~defaultInterface()
     {}
 
+    virtual bool couplePIMPLE() const
+    {
+        return false;
+    };
+
+    virtual bool meshMotionCorrection() const
+    {
+        return false;
+    };
+
     // Correct interface physics
-    void correct();
+    virtual void correct();
 
     // Get min time step based on stability criteria
-    scalar getMinDeltaT();
+    virtual scalar getMinDeltaT();
 
     // Log interface specific information
-    void info() const
+    virtual void info() const
     {};
 };
 
