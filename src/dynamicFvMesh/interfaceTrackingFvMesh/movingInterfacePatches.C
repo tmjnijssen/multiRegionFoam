@@ -1140,6 +1140,33 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
         scalarField sweptVolCorr =
             phi.boundaryField()[patchID()];
 
+            Pout << "MESH" << endl;
+
+        // MP - Mesh Motion due to mass Transfer
+        if (mesh().lookupObject<IOdictionary>("transportProperties").found("mDot"))
+        {
+            scalarField massTransferPhi = sweptVolCorr*0.0;
+            scalarField Af = mesh().boundary()[patchID()].magSf();              
+            dimensionedScalar massTransferRate
+            (
+                mesh().lookupObject<IOdictionary>("transportProperties")
+                .lookup("mDot")
+            );
+
+            dimensionedScalar rhoFluid
+            (
+                mesh().lookupObject<IOdictionary>("transportProperties")
+                .lookup("rho")
+            );
+
+            forAll(massTransferPhi,faces)
+            {
+                massTransferPhi[faces] = massTransferRate.value()/rhoFluid.value()*Af[faces];
+                
+            }
+            sweptVolCorr -= massTransferPhi;
+        }
+
         Info<< "phi boundary field BEFORE mesh motion :"
             << " sum local = " << gSum(mag(sweptVolCorr))
             << ", global = " << gSum(sweptVolCorr)
@@ -1147,13 +1174,23 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
 
         const volVectorField& U =
             mesh().objectRegistry::lookupObject<volVectorField>("U");
-
-        const volScalarField& rho =
-            mesh().objectRegistry::lookupObject<volScalarField>("rho");
-
-        sweptVolCorr -=
-            fvc::meshPhi(rho, U)().boundaryField()[patchID()];
-
+            
+        scalarField meshPhi = sweptVolCorr;
+        
+        if (mesh().objectRegistry::foundObject<volScalarField>("rho"))
+        {
+            const volScalarField& rho =
+                mesh().objectRegistry::lookupObject<volScalarField>("rho");
+                
+            meshPhi = fvc::meshPhi(rho, U)().boundaryField()[patchID()];
+        }
+        else
+        {
+            meshPhi = fvc::meshPhi(U)().boundaryField()[patchID()];      
+        }
+        
+        sweptVolCorr -= meshPhi;
+        
         Info<< "mesh.phi boundary field BEFORE mesh motion :"
             << " sum local = " << gSum(mag(mesh().phi().boundaryField()[patchID()]))
             << ", global = " << gSum(mesh().phi().boundaryField()[patchID()])
@@ -1165,8 +1202,8 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
             << endl;
 
         Info<< "fvc::meshPhi boundary field BEFORE mesh motion :"
-            << " sum local = " << gSum(mag(fvc::meshPhi(rho, U)().boundaryField()[patchID()]))
-            << ", global = " << gSum(fvc::meshPhi(rho, U)().boundaryField()[patchID()])
+            << " sum local = " << gSum(mag(meshPhi))
+            << ", global = " << gSum(meshPhi)
             << endl;
 
         newMeshPoints_ = mesh().allPoints();
