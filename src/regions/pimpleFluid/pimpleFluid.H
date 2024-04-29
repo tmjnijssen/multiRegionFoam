@@ -119,6 +119,9 @@ class pimpleFluid
         //- Kinematic pressure
         autoPtr<volScalarField> pKin_;
 
+        //- correct pressure
+        autoPtr<volScalarField> pcorr_;
+        
         //- Pressure
         autoPtr<volScalarField> p_;
 

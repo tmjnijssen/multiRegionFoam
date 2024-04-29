@@ -69,6 +69,7 @@ Foam::regionTypes::pimpleFluid::pimpleFluid
     U_(nullptr),
     phi_(nullptr),
     pKin_(nullptr),
+    pcorr_(nullptr),
     p_(nullptr),
 
     sigma_(nullptr),
@@ -124,6 +125,32 @@ Foam::regionTypes::pimpleFluid::pimpleFluid
         true,
         true
     );
+    
+    if (correctPhi_)
+    {
+        wordList pcorrTypes
+        (
+            pKin_().boundaryField().size(),
+            zeroGradientFvPatchScalarField::typeName
+        );
+
+        for (label i = 0; i<pKin_().boundaryField().size(); i++)
+        {
+            if (pKin_().boundaryField()[i].fixesValue())
+            {
+                pcorrTypes[i] = fixedValueFvPatchScalarField::typeName;
+            }
+        };
+
+        pcorr_ = lookupOrRead<volScalarField>
+        (
+            mesh(),
+            "pcorr",
+            dimensionedScalar("pcorr", pKin_().dimensions(), 0.0),
+            pcorrTypes,
+            true
+        );
+    }
 
     phi_ = lookupOrRead<surfaceScalarField>
     (

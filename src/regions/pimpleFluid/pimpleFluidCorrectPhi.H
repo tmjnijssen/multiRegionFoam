@@ -1,19 +1,18 @@
 {
-    volScalarField pcorr("pcorr", pKin_());
-    pcorr *= 0;
+    pcorr_() *= 0;
 
     // Initialise flux with interpolated velocity
     phi_() = fvc::interpolate(U_()) & mesh().Sf();
 
-    adjustPhi(phi_(), U_(), pcorr);
+    adjustPhi(phi_(), U_(), pcorr_());
 
-    mesh().schemesDict().setFluxRequired(pcorr.name());
+    mesh().schemesDict().setFluxRequired(pcorr_().name());
 
     while (pimple_.correctNonOrthogonal())
     {
         fvScalarMatrix pcorrEqn
         (
-            fvm::laplacian(rAU_(), pcorr) == fvc::div(phi_())
+            fvm::laplacian(rAU_(), pcorr_()) == fvc::div(phi_())
         );
 
         pcorrEqn.setReference(pRefCell_, pRefValue_);
