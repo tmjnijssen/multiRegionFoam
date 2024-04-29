@@ -108,15 +108,33 @@ tmp<vectorField> Foam::regionCoupledVelocityValue::valueJump() const
 
     const volVectorField& U =
         refMesh().objectRegistry::lookupObject<volVectorField>("U");
+        
+    // MP-Start
+    //const volScalarField& rho =
+        //refMesh().objectRegistry::lookupObject<volScalarField>("rho");
 
-    const volScalarField& rho =
-        refMesh().objectRegistry::lookupObject<volScalarField>("rho");
 
+    scalarField meshPhi = 0.0*fvc::meshPhi(U)().boundaryField()[refPatchID()];
+    
+    if (refMesh().objectRegistry::foundObject<volScalarField>("rho"))
+    {
+        const volScalarField& rho =
+            refMesh().objectRegistry::lookupObject<volScalarField>("rho");
+            
+        meshPhi = fvc::meshPhi(rho, U)().boundaryField()[refPatchID()];
+    }
+    else
+    {
+        meshPhi = fvc::meshPhi(U)().boundaryField()[refPatchID()];      
+    }
+    // MP-End
     return
     (
         - nf*(nf & UsNbrToOwn)
-        + nf * fvc::meshPhi(rho,U)().boundaryField()[refPatchID()]/
+        + nf * meshPhi/
          refMesh().boundary()[refPatchID()].magSf()
+        //+ nf * fvc::meshPhi(rho,U)().boundaryField()[refPatchID()]/
+        // refMesh().boundary()[refPatchID()].magSf()
     );
 }
 

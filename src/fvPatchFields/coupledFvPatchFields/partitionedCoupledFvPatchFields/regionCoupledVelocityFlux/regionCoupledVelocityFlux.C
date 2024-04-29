@@ -131,8 +131,8 @@ tmp<vectorField> regionCoupledVelocityFlux::fluxJump() const
         surfaceTensionForce
       - sigma
        *capInterface().aMesh().faceCurvatures().internalField()*nf;
-
-    dimensionedScalar muFluidNbr
+       
+   dimensionedScalar muFluidNbr
     (
         nbrMesh().lookupObject<IOdictionary>("transportProperties")
         .lookup("mu")
@@ -144,6 +144,58 @@ tmp<vectorField> regionCoupledVelocityFlux::fluxJump() const
         .lookup("mu")
     );
 
+    if (refMesh().foundObject<volScalarField>("pKin"))
+    {
+        dimensionedScalar nuFluid
+        (
+            refMesh().lookupObject<IOdictionary>("transportProperties")
+            .lookup("nu")
+        );   
+        
+        dimensionedScalar rhoFluid
+        (
+            refMesh().lookupObject<IOdictionary>("transportProperties")
+            .lookup("rho")
+        );  
+        
+        dimensionedScalar muFluidCalc = nuFluid*rhoFluid; 
+        if (muFluidCalc.value() != muFluid.value())
+        {
+            FatalErrorInFunction  << this->typeName 
+                << " Dynamic viscosity entry of region "
+                << refMesh().name() << " " << muFluid.value() << " is different from the product of rho and nu "
+                << muFluidCalc.value()
+                << endl
+                << exit(FatalError);        
+        } 
+    }  
+
+    if (nbrMesh().foundObject<volScalarField>("pKin"))
+    {
+        dimensionedScalar nuFluidNbr
+        (
+            nbrMesh().lookupObject<IOdictionary>("transportProperties")
+            .lookup("nu")
+        );   
+        
+        dimensionedScalar rhoFluidNbr
+        (
+            nbrMesh().lookupObject<IOdictionary>("transportProperties")
+            .lookup("rho")
+        );  
+        
+        dimensionedScalar muFluidCalcNbr = nuFluidNbr*rhoFluidNbr; 
+
+        if (muFluidCalcNbr.value() != muFluidNbr.value())
+        {
+            FatalErrorInFunction << this->typeName 
+                << " Dynamic viscosity entry of region "
+                << refMesh().name() << " " << muFluidNbr.value() << " is different from the product of rho and nu "
+                << muFluidCalcNbr.value()
+                << endl
+                << exit(FatalError);        
+        } 
+    } 
     return
     (
       - nf*(nf & UfluxNbrToOwn)

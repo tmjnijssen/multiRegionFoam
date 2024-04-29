@@ -193,8 +193,7 @@ tmp<scalarField> regionCoupledPressureFlux::fluxJump() const
     return
     (
       - pfluxNbrToOwn
-      - rhoFluid.value()
-       *(
+      - (
             nB&fvc::ddt(U)().boundaryField()[refPatchID()]
         )
     );
