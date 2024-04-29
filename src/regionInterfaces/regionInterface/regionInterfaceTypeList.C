@@ -92,7 +92,7 @@ void Foam::regionInterfaceTypeList::reset(const regionInterfaceProperties& rip)
     {
         const dictionary& dict = rip[cpldPatchI].dict();
 
-        word interfaceType(dict.lookup("interfaceType"));
+        wordList interfaceTypes(dict.lookup("interfaceType"));
         coupledFields fields(dict.lookup("coupledFields"));
         coupledPatchPair patchPair(dict.lookup("coupledPatchPair"));
 
@@ -137,19 +137,21 @@ void Foam::regionInterfaceTypeList::reset(const regionInterfaceProperties& rip)
 
         const fvPatch& secondPatch = 
             secondRegion.boundary()[secondPatchID];
-
-        this->set
-        (
-            index_++,
-            regionInterfaceType::New
+        forAll (interfaceTypes, interfaceI)
+        {       
+            this->set
             (
-                interfaceType,
-                dict,
-                runTime_,
-                firstPatch,
-                secondPatch
-            )
-        );
+                index_++,
+                regionInterfaceType::New
+                (
+                    interfaceTypes[interfaceI],
+                    dict,
+                    runTime_,
+                    firstPatch,
+                    secondPatch
+                )
+            );
+        }
     }
 }
 
@@ -165,7 +167,7 @@ void Foam::regionInterfaceTypeList::setFieldNamesPartitionedCoupling
 
         coupledPatchPair patchPair(dict.lookup("coupledPatchPair"));
         coupledFields fields(dict.lookup("coupledFields"));
-
+        Info << fields << endl;
         const interfaceKey key
         (
             patchPair[0].first() + patchPair[0].second(),
@@ -178,7 +180,7 @@ void Foam::regionInterfaceTypeList::setFieldNamesPartitionedCoupling
             fields
         );
     }
-
+    Info << partitionedCoupledFields() << endl;
     //- get unique list of coupled field names (partitioned)
     forAllConstIter(fieldsTable, partitionedCoupledFields(), iter)
     {
@@ -192,6 +194,7 @@ void Foam::regionInterfaceTypeList::setFieldNamesPartitionedCoupling
             }
         }
     }
+    Info << partitionedCoupledFields() << endl;
 }
 
 void Foam::regionInterfaceTypeList::setFieldNamesMonolithicCoupling
