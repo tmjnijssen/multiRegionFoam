@@ -1164,7 +1164,7 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
                 massTransferPhi[faces] = massTransferRate.value()/rhoFluid.value()*Af[faces];
                 
             }
-            sweptVolCorr -= massTransferPhi;
+            sweptVolCorr += massTransferPhi;
         }
 
         Info<< "phi boundary field BEFORE mesh motion :"
