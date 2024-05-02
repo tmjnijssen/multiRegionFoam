@@ -162,8 +162,9 @@ tmp<scalarField> regionCoupledPhaseChangeHeatFlux::fluxJump() const
     Info << patch().name() << endl;
     surfaceScalarField snGradT = fvc::snGrad(TSatField);
     surfaceScalarField nbrSnGradT = fvc::snGrad(nbrTSatField);
+    scalarField nbrSnGradTInterpolated = interpolateFromNbrField<scalar>(nbrSnGradT.boundaryField()[nbrPatch().index()]);
 
-    scalarField saturateFlux = k.value()*snGradT.boundaryField()[patch().index()] + nbrk.value()*nbrSnGradT.boundaryField()[nbrPatch().index()];
+    scalarField saturateFlux = k.value()*snGradT.boundaryField()[patch().index()] + nbrk.value()*nbrSnGradTInterpolated; //nbrSnGradT.boundaryField()[nbrPatch().index()];
 
     Info << k.value() << endl;
     return ( -TfluxNbrToOwn + saturateFlux);

@@ -140,7 +140,6 @@ tmp<vectorField> Foam::regionCoupledMassTransferVelocityValue::valueJump() const
         .lookup("mDot")
     );
 
-    Pout << "BOUNDARY" << endl;
     // MP-End
     return
     (
