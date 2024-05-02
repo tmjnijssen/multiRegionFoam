@@ -1159,11 +1159,8 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
                 .lookup("rho")
             );
 
-            forAll(massTransferPhi,faces)
-            {
-                massTransferPhi[faces] = massTransferRate.value()/rhoFluid.value()*Af[faces];
-                
-            }
+            massTransferPhi = massTransferRate.value()/rhoFluid.value()*Af;
+
             sweptVolCorr += massTransferPhi;
         }
 
