@@ -84,6 +84,27 @@ Foam::regionInterfaces::massTransferInterface::massTransferInterface
     (
         dict_.lookup("TSat")
     ),
+    mDots0_
+    (
+        dict_.lookup("mDots")
+    ),
+    mDotInterface
+    (
+        areaScalarField
+        (
+            IOobject
+            (
+                "mDotInterface",
+                runTime.timeName(),
+                aMesh().thisDb(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            aMesh(),
+            mDots0_,
+            zeroGradientFaPatchScalarField::typeName
+        )
+    ),
     mDotsPtr_()
 {}
 
@@ -170,26 +191,26 @@ void Foam::regionInterfaces::massTransferInterface::updateMDotS()
 {
    
     scalarField sF = saturatedFlux();
-
-    mDotS().internalField() = sF;
+    mDotS().internalField() = sF/hlv_;
+    mDotInterface = mDotS();
 }
 
 void Foam::regionInterfaces::massTransferInterface::correct()
 {
     // Update transport properties
-    Info << "CORRECT MASS TRANSFER" << endl;
     updateMDotS();
 
     // Update interface physics
-    // TODO: call function to calculate new sigma_ with
-    // interface equation of state for contaminated surfaces
+
 }
 
 Foam::scalarField Foam::regionInterfaces::massTransferInterface::saturatedFlux()
 {
+    // Define temperature fields
     volScalarField TA = meshA().lookupObject<volScalarField>("T");
     volScalarField TB = meshB().lookupObject<volScalarField>("T");
 
+    // recall Thermal Conductivities
     dimensionedScalar kA
     (
         meshA().lookupObject<IOdictionary>("transportProperties")
@@ -201,30 +222,34 @@ Foam::scalarField Foam::regionInterfaces::massTransferInterface::saturatedFlux()
         meshB().lookupObject<IOdictionary>("transportProperties")
         .lookup("k")
     );
-    
+
+    // Set new BCs (Maybe unecessary)
     TA.boundaryField().set
     (
         patchA().index() , fvPatchField<scalar>::New("fixedValue", meshA().boundary()[patchA().index() ],TA)
     );
 
+    TB.boundaryField().set
+    (
+        patchB().index() , fvPatchField<scalar>::New("fixedValue", meshB().boundary()[patchA().index() ],TB)
+    );
+
+    // Change BC values to saturation temperature
     forAll (meshA().boundaryMesh()[patchA().index()],facei) 
     {
          TA.boundaryField()[patchA().index()][facei] = TSat0_.value();
     }
 
-    TB.boundaryField().set
-    (
-        patchB().index() , fvPatchField<scalar>::New("fixedValue", meshA().boundary()[patchA().index() ],TB)
-    );
-
-    forAll (meshB().boundaryMesh()[patchA().index()],facei) 
+    forAll (meshB().boundaryMesh()[patchB().index()],facei) 
     {
-         TA.boundaryField()[patchB().index()][facei] = TSat0_.value();
+         TB.boundaryField()[patchB().index()][facei] = TSat0_.value();
     }
 
+    // Compute gradients
     surfaceScalarField snGradTA = fvc::snGrad(TA);
     surfaceScalarField snGradTB = fvc::snGrad(TB);
-    
+   
+    // Compute Saturated Heat Flux
     scalarField saturateFlux = kA.value()*snGradTA.boundaryField()[patchA().index()] + kB.value()*snGradTB.boundaryField()[patchB().index()]; 
     return saturateFlux;
 }

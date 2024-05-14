@@ -59,6 +59,7 @@ SourceFiles
 
 #include "genericRegionCoupledJumpFvPatchField.H"
 #include "capillaryInterface.H"
+#include "massTransferInterface.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -147,6 +148,8 @@ public:
         virtual tmp<vectorField> valueJump() const;
 
         const regionInterfaces::capillaryInterface& capInterface() const;
+        const regionInterfaces::massTransferInterface& massTrInterface() const;
+
 };
 
 

@@ -1140,30 +1140,6 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
         scalarField sweptVolCorr =
             phi.boundaryField()[patchID()];
 
-            Pout << "MESH" << endl;
-
-        // MP - Mesh Motion due to mass Transfer
-        if (mesh().lookupObject<IOdictionary>("transportProperties").found("mDot"))
-        {
-            scalarField massTransferPhi = sweptVolCorr*0.0;
-            scalarField Af = mesh().boundary()[patchID()].magSf();              
-            dimensionedScalar massTransferRate
-            (
-                mesh().lookupObject<IOdictionary>("transportProperties")
-                .lookup("mDot")
-            );
-
-            dimensionedScalar rhoFluid
-            (
-                mesh().lookupObject<IOdictionary>("transportProperties")
-                .lookup("rho")
-            );
-
-            massTransferPhi = massTransferRate.value()/rhoFluid.value()*Af;
-
-            sweptVolCorr += massTransferPhi;
-        }
-
         Info<< "phi boundary field BEFORE mesh motion :"
             << " sum local = " << gSum(mag(sweptVolCorr))
             << ", global = " << gSum(sweptVolCorr)
@@ -1187,7 +1163,36 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
         }
         
         sweptVolCorr -= meshPhi;
-        
+            
+         // MP - Mesh Motion due to mass Transfer
+        if (aMesh().mesh().objectRegistry::found("mDotInterface"))
+        {
+            const areaScalarField& mDot =
+                aMesh().mesh().objectRegistry::lookupObject<areaScalarField>("mDotInterface");
+            scalarField massTransferPhi = sweptVolCorr*0.0;
+            const scalarField& Sf = aMesh().S();    
+            if (mesh().objectRegistry::foundObject<volScalarField>("rho"))
+            {
+                const volScalarField& rho =
+                    mesh().objectRegistry::lookupObject<volScalarField>("rho");
+
+                const scalarField rhoS = rho.boundaryField()[patchID()];
+
+                massTransferPhi = mDot.internalField()/rhoS*Sf;
+            }
+            else
+            {
+                dimensionedScalar rhoFluid
+                (
+                    mesh().lookupObject<IOdictionary>("transportProperties")
+                    .lookup("rho")
+                );
+
+                massTransferPhi = mDot.internalField()/rhoFluid.value()*Sf;
+            }
+            sweptVolCorr += massTransferPhi;
+            
+        }
         Info<< "mesh.phi boundary field BEFORE mesh motion :"
             << " sum local = " << gSum(mag(mesh().phi().boundaryField()[patchID()]))
             << ", global = " << gSum(mesh().phi().boundaryField()[patchID()])

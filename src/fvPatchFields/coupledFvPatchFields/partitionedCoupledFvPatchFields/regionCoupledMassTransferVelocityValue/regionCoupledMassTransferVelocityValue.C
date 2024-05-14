@@ -134,11 +134,7 @@ tmp<vectorField> Foam::regionCoupledMassTransferVelocityValue::valueJump() const
         .lookup("rho")
     );
 
-    dimensionedScalar massTransferRate
-    (
-        refMesh().lookupObject<IOdictionary>("transportProperties")
-        .lookup("mDot")
-    );
+    const areaScalarField& mDots = massTrInterface().mDotS();
 
     // MP-End
     return
@@ -146,30 +142,30 @@ tmp<vectorField> Foam::regionCoupledMassTransferVelocityValue::valueJump() const
         nf*(-(nf & UsNbrToOwn)
          + meshPhi/
            refMesh().boundary()[refPatchID()].magSf()
-         + massTransferRate.value()/rhoFluid.value())//*UCoeff.value()
+         + mDots.internalField()/rhoFluid.value())//*UCoeff.value()
     );
 }
 
 const regionInterfaces::capillaryInterface&
 regionCoupledMassTransferVelocityValue::capInterface() const
 {
-    if(   rgInterface().type()
-       != regionInterfaces::capillaryInterface::typeName )
-    {
-        FatalErrorInFunction
-            << this->typeName << " BC can only "
-            << "be used in combination with a "
-            << regionInterfaces::capillaryInterface::typeName
-            << endl
-            << exit(FatalError);
-    }
 
     return refCast<const regionInterfaces::capillaryInterface>
         (
-            rgInterface()
+            rgInterface(regionInterfaces::capillaryInterface::typeName)
         );
 }
 
+const regionInterfaces::massTransferInterface&
+regionCoupledMassTransferVelocityValue::massTrInterface() const
+{
+
+
+    return refCast<const regionInterfaces::massTransferInterface>
+        (
+            rgInterface(regionInterfaces::massTransferInterface::typeName)
+        );
+}
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam

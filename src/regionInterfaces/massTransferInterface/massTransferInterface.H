@@ -66,6 +66,12 @@ class massTransferInterface
 
         // Surface tension
         dimensionedScalar TSat0_;
+        // Surface tension
+        dimensionedScalar mDots0_;
+
+        areaScalarField mDotInterface;
+
+
 protected:
 
     // Private data
@@ -144,6 +150,12 @@ public:
 
             return mDotsPtr_();
         }
+
+        const areaScalarField& hlv() const
+        {
+            return hlv_;
+        }
+
         // Log interface specific information
         void info() const
         {};

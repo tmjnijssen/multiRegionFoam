@@ -123,7 +123,7 @@ class interfaceToInterfaceCoupleManager
 protected:
 
         //- Region interface type name
-        word typeName_;
+        wordList typeNames_;
 
         //- Name of neighbour region
         word neighbourRegionName_;
@@ -135,7 +135,11 @@ protected:
         word neighbourFieldName_;
 
         //- Reference to meshInterface
-        const regionInterfaceType& rgInterface() const;
+        const regionInterfaceType& rgInterface(word type) const;
+        const regionInterfaceType& rgInterface() const
+        {
+            return rgInterface(typeNames_[0]);
+        };
 
         //- Reference to neighbour mesh
         const fvMesh& nbrMesh() const;
@@ -154,7 +158,7 @@ public:
         interfaceToInterfaceCoupleManager
         (
             const fvPatch& patch,
-            const word type=word("default")
+            const wordList types=wordList(0, "default")
         );
 
         //- Construct from fvPatch and dictionary
@@ -162,7 +166,7 @@ public:
         (
             const fvPatch& patch,
             const dictionary& dict,
-            const word type=word("default")
+            const wordList type=wordList(0, "default")
         );
 
         //- Copy constructor
