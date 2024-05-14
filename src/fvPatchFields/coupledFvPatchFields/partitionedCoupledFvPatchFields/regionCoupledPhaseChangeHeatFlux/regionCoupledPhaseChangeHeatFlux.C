@@ -28,6 +28,7 @@ License
 #include "regionCoupledScalarJump.H"
 #include "addToRunTimeSelectionTable.H"
 #include "heatTransferInterface.H"
+#include "massTransferInterface.H"
 #include "primitiveFieldsFwd.H"
 #include "scalar.H"
 
@@ -85,8 +86,6 @@ regionCoupledPhaseChangeHeatFlux
 tmp<scalarField> regionCoupledPhaseChangeHeatFlux::fluxJump() const
 {
 
-    const fvMesh& mesh = patch().boundaryMesh().mesh();
-
     // Lookup neighbouring patch field
     volScalarField nbrTField =
         nbrMesh().lookupObject<volScalarField>
@@ -111,87 +110,31 @@ tmp<scalarField> regionCoupledPhaseChangeHeatFlux::fluxJump() const
     // Enforce flux matching
     TfluxNbrToOwn *= -1.0;
 
-    dimensionedScalar TSat
-    (
-        nbrMesh().lookupObject<IOdictionary>("transportProperties")
-        .lookup("TSat")
-    );
+    const areaScalarField& mDots = massTransInterface().mDotS();
+    const areaScalarField& hlv = massTransInterface().hlv();
 
-    dimensionedScalar k
-    (
-        mesh.lookupObject<IOdictionary>("transportProperties")
-        .lookup("k")
-    );
-
-    dimensionedScalar nbrk
-    (
-        nbrMesh().lookupObject<IOdictionary>("transportProperties")
-        .lookup("k")
-    );
-
-    // Lookup patch field
-    volScalarField TSatField =
-        mesh.lookupObject<volScalarField>
-        (
-            // same field name as on this side
-            this->dimensionedInternalField().name()
-        );
-
-    
-    
-    TSatField.boundaryField().set(patch().index() , fvPatchField<scalar>::New("fixedValue", mesh.boundary()[patch().index() ],TSatField));
-
-    forAll (mesh.boundaryMesh()[patch().index()],facei) 
-    {
-         TSatField.boundaryField()[patch().index()][facei] = TSat.value();
-    }
-    
-    // Lookup neighbouring patch field
-    volScalarField nbrTSatField =
-        nbrMesh().lookupObject<volScalarField>
-        (
-            // same field name as on this side
-            this->dimensionedInternalField().name()
-        );
-
-    forAll (nbrMesh().boundaryMesh()[nbrPatch().index()],facei) 
-    {
-         nbrTSatField.boundaryField()[nbrPatch().index()][facei] = TSat.value();
-    }
-
-    Info << patch().name() << endl;
-    surfaceScalarField snGradT = fvc::snGrad(TSatField);
-    surfaceScalarField nbrSnGradT = fvc::snGrad(nbrTSatField);
-    scalarField nbrSnGradTInterpolated = interpolateFromNbrField<scalar>(nbrSnGradT.boundaryField()[nbrPatch().index()]);
-
-    scalarField saturateFlux = k.value()*snGradT.boundaryField()[patch().index()] + nbrk.value()*nbrSnGradTInterpolated; //nbrSnGradT.boundaryField()[nbrPatch().index()];
-
-    Info << k.value() << endl;
-    return ( -TfluxNbrToOwn + saturateFlux);
-
-
+    return ( mDots.internalField()*hlv.internalField() );
 }
 
-const regionInterfaces::heatTransferInterface&
-regionCoupledPhaseChangeHeatFlux::heatTransInterface() const
+const regionInterfaces::massTransferInterface&
+regionCoupledPhaseChangeHeatFlux::massTransInterface() const
 {
     if(   rgInterface().type()
-       != regionInterfaces::heatTransferInterface::typeName )
+       != regionInterfaces::massTransferInterface::typeName )
     {
         FatalErrorInFunction
             << this->typeName << " BC can only "
             << "be used in combination with a "
-            << regionInterfaces::heatTransferInterface::typeName
+            << regionInterfaces::massTransferInterface::typeName
             << endl
             << exit(FatalError);
     }
 
-    return refCast<const regionInterfaces::heatTransferInterface>
+    return refCast<const regionInterfaces::massTransferInterface>
         (
             rgInterface()
         );
 }
-
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam

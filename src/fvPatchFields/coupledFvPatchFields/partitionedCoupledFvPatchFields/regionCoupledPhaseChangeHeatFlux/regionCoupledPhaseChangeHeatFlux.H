@@ -68,6 +68,7 @@ Description
 
 #include "genericRegionCoupledFluxFvPatchField.H"
 #include "heatTransferInterface.H"
+#include "massTransferInterface.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -148,7 +149,8 @@ public:
         //- Calculate species flux jump
         virtual tmp<scalarField> fluxJump() const;
 
-        const regionInterfaces::heatTransferInterface& heatTransInterface() const;
+        const regionInterfaces::massTransferInterface& massTransInterface() const;
+
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
