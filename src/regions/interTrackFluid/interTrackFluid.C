@@ -27,7 +27,8 @@ License
 #include "interTrackFluid.H"
 #include "zeroGradientFvPatchFields.H"
 #include "addToRunTimeSelectionTable.H"
-
+#include "correctClosedVolumePhi.H"
+#include "correctSpaceVolumePhi.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -334,19 +335,27 @@ void Foam::regionTypes::interTrackFluid::pressureCorrector()
     // --- PISO loop
     while (pimple_.correct())
     {
-        volScalarField AU = UEqn.A();
+        volScalarField rAU = 1.00/UEqn.A();
 
-        U_() = UEqn.H()/AU;
+        U_() = UEqn.H()*rAU;
 
         phi_() = (fvc::interpolate(U_()) & mesh().Sf());
 
-#       include "correctPatchPhi.H"
+        if (closedVolume_ && p_().needReference())
+        {
+            correctClosedVolumePhi(phi_(), U_(), p_(),rAU);
+        }
+
+        if (!closedVolume_ && hasSpacePatch_)
+        {
+            correctSpaceVolumePhi(phi_());
+        }
 
         while (pimple_.correctNonOrthogonal())
         {
             fvScalarMatrix pEqn
             (
-                fvm::laplacian(1.0/AU, p_())
+                fvm::laplacian(rAU, p_())
              == fvc::div(phi_())
             );
 
@@ -367,7 +376,7 @@ void Foam::regionTypes::interTrackFluid::pressureCorrector()
 #               include "continuityErrs.H"
 
         // Momentum corrector
-        U_() -= fvc::grad(p_())/AU;
+        U_() -= fvc::grad(p_())*rAU;
         U_().correctBoundaryConditions();
         p_().correctBoundaryConditions();
     }

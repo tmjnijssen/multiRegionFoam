@@ -131,6 +131,10 @@ class pimpleFluid
         //- Reziprocal diagonal elements of convection-diffusion matrix
         autoPtr<volScalarField> rAU_;
 
+        word patchToAdjust_;
+
+        Switch closedVolume_;
+        Switch hasSpacePatch_;
         //- Reference pressure cell
         label pRefCell_;
 
@@ -232,6 +236,8 @@ public:
         virtual void meshMotionCorrector();
 
         virtual void postSolve();
+
+
 };
 
 

@@ -24,7 +24,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "icoFluid.H"
-
+#include "correctClosedVolumePhi.H"
+#include "correctSpaceVolumePhi.H"
 #include "fvCFD.H"
 #include "zeroGradientFvPatchFields.H"
 #include "addToRunTimeSelectionTable.H"
@@ -380,24 +381,34 @@ void Foam::regionTypes::icoFluid::pressureCorrector()
     {
         p_().storePrevIter();
 
-        volScalarField AU = UEqn.A();
+        volScalarField rAU = 1.0/UEqn.A();
         volVectorField HU = UEqn.H();
 
-        U_() = HU/AU;
+        U_() = HU*rAU;
 
         phi_() =
         (
-            (fvc::interpolate(HU)/fvc::interpolate(AU))
+            (fvc::interpolate(HU)*fvc::interpolate(rAU))
           & mesh().Sf()
         );
 
 #       include "correctPatchPhi.H"
 
+        if (closedVolume_ )
+        {
+            correctClosedVolumePhi(phi_(), U_(), p_(),rAU);
+        }
+
+        if (!closedVolume_ && hasSpacePatch_)
+        {
+            correctSpaceVolumePhi(phi_());
+        }
+
         while (pimple_.correctNonOrthogonal())
         {
             fvScalarMatrix pEqn
             (
-                fvm::laplacian(1.0/fvc::interpolate(AU), p_())
+                fvm::laplacian(fvc::interpolate(rAU), p_())
              == fvc::div(phi_())
             );
 
@@ -427,7 +438,7 @@ void Foam::regionTypes::icoFluid::pressureCorrector()
         }
 
         // Momentum corrector
-        U_() -= fvc::grad(p_())/AU;
+        U_() -= fvc::grad(p_())*rAU;
 
         U_().correctBoundaryConditions();
         p_().correctBoundaryConditions();

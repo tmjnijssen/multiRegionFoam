@@ -25,8 +25,9 @@ License
 
 #include "label.H"
 #include "pimpleFluid.H"
-
 #include "fvCFD.H"
+#include "correctClosedVolumePhi.H"
+#include "correctSpaceVolumePhi.H"
 #include "zeroGradientFvPatchFields.H"
 #include "addToRunTimeSelectionTable.H"
 
@@ -76,6 +77,17 @@ Foam::regionTypes::pimpleFluid::pimpleFluid
 
     rAU_(nullptr),
 
+    patchToAdjust_(),
+    closedVolume_
+    (
+        mesh().solutionDict()
+        .lookup("closedVolume")
+    ),
+    hasSpacePatch_
+    (
+        mesh().solutionDict()
+        .lookupOrDefault<Switch>("hasSpacePatch",false)
+    ),
     pRefCell_
     (
         pimple_.dict().lookupOrDefault<label>("pRefCell", 0)
@@ -205,6 +217,20 @@ Foam::regionTypes::pimpleFluid::pimpleFluid
         rAUPatchFieldTypes,
         true
     );
+    if (closedVolume_)
+    {
+        for (label i = 0; i<U_().boundaryField().size(); i++)
+        {
+            if (U_().boundaryField()[i].type() == zeroGradientFvPatchScalarField::typeName)
+            {
+                FatalError << "Region" << mesh().name() 
+                << " is set as closedVolume" << nl
+                << " but " << mesh().boundaryMesh()[i].name() << nl
+                << " is a zeroGradient velocity BC is found" 
+                << endl;
+            }
+        };
+    }
 
     setRefCell(pKin_(), pimple_.dict(), pRefCell_, pRefValue_);
     mesh().schemesDict().setFluxRequired(pKin_().name());
@@ -317,9 +343,20 @@ void Foam::regionTypes::pimpleFluid::pressureCorrector()
 
         // Consistently calculate flux
         pimple_.calcTransientConsistentFlux(phi_(), U_(), rAU_(), ddtUEqn);
-
         // Global flux balance
-        adjustPhi(phi_(), U_(), pKin_());
+
+        if (closedVolume_)
+        {
+            correctClosedVolumePhi(phi_(), U_(), pKin_(),rAU_());
+        }
+        else if (hasSpacePatch_)
+        {
+            correctSpaceVolumePhi(phi_());
+        }
+        else
+        {
+            adjustPhi(phi_(), U_(), pKin_());
+        }
 
         while (pimple_.correctNonOrthogonal())
         {

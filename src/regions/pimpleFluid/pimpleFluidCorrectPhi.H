@@ -1,10 +1,35 @@
 {
     pcorr_() *= 0;
+    // [MP] Phi formulation taken from interTrackFluid
+    if (mesh().changing())
+    {
+        forAll(U_().boundaryField(), patchi)
+        {
+            if (U_().boundaryField()[patchi].fixesValue())
+            {
+                U_().boundaryField()[patchi].initEvaluate();
+            }
+        }
 
+        forAll(U_().boundaryField(), patchi)
+        {
+            if (U_().boundaryField()[patchi].fixesValue())
+            {
+                U_().correctBoundaryConditions();
+                U_().boundaryField()[patchi].evaluate();
+
+                phi_().boundaryField()[patchi] =
+                    U_().boundaryField()[patchi] 
+                    & mesh().Sf().boundaryField()[patchi];
+            }
+        }
+    }
     // Initialise flux with interpolated velocity
-    phi_() = fvc::interpolate(U_()) & mesh().Sf();
+    // [MP] Old Phi formulation taken 
 
-    adjustPhi(phi_(), U_(), pcorr_());
+    //phi_() = fvc::interpolate(U_()) & mesh().Sf();
+
+    //adjustPhi(phi_(), U_(), pcorr_());
 
     mesh().schemesDict().setFluxRequired(pcorr_().name());
 

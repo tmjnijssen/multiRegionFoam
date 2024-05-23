@@ -40,6 +40,8 @@ $(regionInterfaces)/fsiInterface/fsiInterface.C
 
 
 
+
+
 fvPatchFields = ./../fvPatchFields
 
 partitionedCoupled = $(fvPatchFields)/coupledFvPatchFields/partitionedCoupledFvPatchFields
@@ -91,6 +93,9 @@ $(regions)/interTrackFluid/interTrackFluid.C
 $(regions)/solidStVK/momentumStabilisation/momentumStabilisation.C
 $(regions)/solidStVK/solidStVK.C
 
+general = ./../finiteVolume/cfdTools/general
+$(general)/correctClosedVolumePhi/correctClosedVolumePhi.C
+$(general)/correctSpaceVolumePhi/correctSpaceVolumePhi.C
 
 
 
