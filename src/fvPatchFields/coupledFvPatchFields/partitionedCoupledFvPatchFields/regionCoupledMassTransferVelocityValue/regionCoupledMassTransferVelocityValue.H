@@ -147,6 +147,13 @@ public:
         //- Calculate velocity jump
         virtual tmp<vectorField> valueJump() const;
 
+        virtual word kName() const
+        {
+            word name = "mu";
+            return (name);
+            
+        };
+
         const regionInterfaces::capillaryInterface& capInterface() const;
         const regionInterfaces::massTransferInterface& massTrInterface() const;
 

@@ -148,6 +148,13 @@ public:
         //- Calculate species flux jump
         virtual tmp<scalarField> fluxJump() const;
 
+        virtual word kName() const
+        {
+            word name = "k";
+            return (name);
+            
+        };
+
         const regionInterfaces::heatTransferInterface& heatTransInterface() const;
 };
 

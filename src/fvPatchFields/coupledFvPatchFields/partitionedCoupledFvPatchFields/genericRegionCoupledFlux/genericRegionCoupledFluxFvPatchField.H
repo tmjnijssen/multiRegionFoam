@@ -94,9 +94,6 @@ protected:
 
     // Protected data
 
-        //- Diffusion coefficient
-        word kName_;
-
         //- Acceleration model for BC update
         autoPtr<accelerationModel<Type>> accModel_;
 
@@ -202,6 +199,12 @@ public:
             return (*this * 0);
         };
 
+        //- Read name of the diffusion coefficient
+        virtual word kName() const
+        {
+            return ("Null");
+        }
+
         //- Update the patch field coefficients
         virtual void updateCoeffs();
 
@@ -213,6 +216,9 @@ public:
 
         //- Return the raw coupled patch residual
         scalarField rawResidual() const;
+
+        //- Return the raw coupled patch residual
+        scalarField diffCoeff() const;
 
         //- Return the normalized coupled patch residual
         scalar normResidual() const;

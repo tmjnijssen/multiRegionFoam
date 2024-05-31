@@ -179,12 +179,6 @@ tmp<scalarField> regionCoupledPressureFlux::fluxJump() const
     // Enforce flux matching
     pfluxNbrToOwn *= -1.0;
 
-    dimensionedScalar rhoFluid
-    (
-        refMesh().lookupObject<IOdictionary>("transportProperties")
-        .lookup("rho")
-    );
-
     vectorField nB = refMesh().boundary()[refPatchID()].nf();
 
     const volVectorField& U =
@@ -192,10 +186,7 @@ tmp<scalarField> regionCoupledPressureFlux::fluxJump() const
 
     return
     (
-      - pfluxNbrToOwn
-      - (
-            nB&fvc::ddt(U)().boundaryField()[refPatchID()]
-        )
+      - pfluxNbrToOwn - (nB&fvc::ddt(U)().boundaryField()[refPatchID()])     
     );
 }
 
