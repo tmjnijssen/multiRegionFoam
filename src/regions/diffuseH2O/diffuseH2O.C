@@ -24,7 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "fvCFD.H"
-#include "transportSpecie.H"
+#include "diffuseH2O.H"
 #include "zeroGradientFvPatchFields.H"
 #include "addToRunTimeSelectionTable.H"
 
@@ -35,12 +35,12 @@ namespace Foam
 {
 namespace regionTypes
 {
-    defineTypeNameAndDebug(transportSpecie, 0);
+    defineTypeNameAndDebug(diffuseH2O, 0);
 
     addToRunTimeSelectionTable
     (
         regionType,
-        transportSpecie,
+        diffuseH2O,
         dictionary
     );
 }
@@ -48,7 +48,7 @@ namespace regionTypes
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::regionTypes::transportSpecie::transportSpecie
+Foam::regionTypes::diffuseH2O::diffuseH2O
 (
     const Time& runTime,
     const word& regionName
@@ -58,7 +58,7 @@ Foam::regionTypes::transportSpecie::transportSpecie
 
     regionName_(regionName),
 
-    transportProperties_
+    sorbentProperties_
     (
         IOobject
         (
@@ -69,118 +69,132 @@ Foam::regionTypes::transportSpecie::transportSpecie
             IOobject::NO_WRITE
         )
     ),
-    D_(transportProperties_.lookup("D")),
-    s_(transportProperties_.lookup("s")),
-    eps_(transportProperties_.lookup("eps")),
-    U_(nullptr),
-    rho_(nullptr),
-    phi_(nullptr),
-    De_(nullptr),
-    CO2_(nullptr)
+    t_
+    (
+        IOobject
+        (
+            "t",
+            mesh().time().timeName(),
+            mesh(),
+            IOobject::READ_IF_PRESENT,
+            IOobject::NO_WRITE
+        ),
+        mesh(),
+        dimensionedScalar(transportProperties_.lookup("t"))
+    ),
+    eps_
+    (
+        IOobject
+        (
+            "eps",
+            mesh().time().timeName(),
+            mesh(),
+            IOobject::READ_IF_PRESENT,
+            IOobject::NO_WRITE
+        ),
+        mesh(),
+        dimensionedScalar(transportProperties_.lookup("eps"))
+    ),
+
+    Dpore_
+    (
+        IOobject
+        (
+            "Dpore",
+            mesh().time().timeName(),
+            mesh(),
+            IOobject::READ_IF_PRESENT,
+            IOobject::NO_WRITE
+        ),
+        mesh(),
+        dimensionedScalar(transportProperties_.lookup("Dpore"))
+    ),
+
+    Dp_(nullptr),
+    H2O_(nullptr),
+    q_(nullptr)
 {
-    // set velocity field
-    // Postponing field creation since U is probably provided by
-    // another regionType, e.g. icoFluid, and thus to be re-used.
-    U_ = lookupOrRead<volVectorField>(mesh(), "U");
-    rho_ = lookupOrRead<volVectorField>(mesh(), "rho");
-    // set flux field
-    phi_ = lookupOrRead<surfaceScalarField>
+    // set thermal diffusivity field
+    Dp_ = lookupOrRead<volScalarField>
     (
         mesh(),
-        "phi",
-        false,
-        true,
-        linearInterpolate(rho_()*U_()) & mesh().Sf()
+        "Dp",
+        dimensionedScalar(transportProperties_.lookup("Dp")),
+        true
     );
 
-    // set thermal conductivity field
-    De_ = lookupOrRead<volScalarField>
-    (
-        mesh(),
-        "De", 
-        D_,
-        false,
-        true,
-        D_() * eps_()  / s_() 
-    );
-
-    // set temperature field
-    CO2_ = lookupOrRead<volScalarField>(mesh(), "CO2");
+    // set H2O concentration field
+    H2O_ = lookupOrRead<volScalarField>(mesh(), "H2O");
+    q_ = lookupOrRead<volScalarField>(mesh(), "H2O");
 }
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::regionTypes::transportSpecie::~transportSpecie()
+Foam::regionTypes::diffuseH2O::~diffuseH2O()
 {}
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void Foam::regionTypes::transportSpecie::correct()
+void Foam::regionTypes::diffuseH2O::correct()
 {
-    De_().correctBoundaryConditions();
+    Dp_().correctBoundaryConditions();
 }
 
 
-Foam::scalar Foam::regionTypes::transportSpecie::getMinDeltaT()
+Foam::scalar Foam::regionTypes::diffuseH2O::getMinDeltaT()
 {
     return GREAT;
 }
 
 
-void Foam::regionTypes::transportSpecie::setCoupledEqns()
+void Foam::regionTypes::diffuseH2O::setCoupledEqns()
 {
-    DEqn =
+    H2OEqn =
     (
-        De_
-       *(
-            fvm::ddt(CO2())
-          + fvm::div(phi_(), CO2())
-        )
+        fvm::ddt(H2O())
      ==
-        fvm::laplacian(De_(), CO2())
+        fvm::laplacian(Dp_(), H2O(), "laplacian(Dp,H2O)") - (1-eps/eps)*(fvm::ddt(q))
     );
 
     fvScalarMatrices.set
     (
-        CO2_().name()
+        H2O_().name()
       + mesh().name() + "Mesh"
-      + transportSpecie::typeName + "Type"
+      + diffuseH2O::typeName + "Type"
       + "Eqn",
-        &DEqn()
+        &H2OEqn()
     );
 }
 
-void Foam::regionTypes::transportSpecie::postSolve()
+void Foam::regionTypes::diffuseH2O::postSolve()
 {
     // do nothing, add as required
 }
 
-void Foam::regionTypes::transportSpecie::solveRegion()
+void Foam::regionTypes::diffuseH2O::solveRegion()
 {
     // do nothing, add as required
 }
 
-void Foam::regionTypes::transportSpecie::prePredictor()
+void Foam::regionTypes::diffuseH2O::prePredictor()
 {
     // do nothing, add as required
 }
 
-void Foam::regionTypes::transportSpecie::momentumPredictor()
+void Foam::regionTypes::diffuseH2O::momentumPredictor()
 {
     // do nothing, add as required
 }
 
-void Foam::regionTypes::transportSpecie::pressureCorrector()
+void Foam::regionTypes::diffuseH2O::pressureCorrector()
 {
     // do nothing, add as required
 }
 
-void Foam::regionTypes::transportSpecie::meshMotionCorrector()
+void Foam::regionTypes::diffuseH2O::meshMotionCorrector()
 {
     // do nothing, add as required
 }
 
 // ************************************************************************* //
-
-

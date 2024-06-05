@@ -23,15 +23,16 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Class
-    Foam::transportSpecie.C
+    Foam::diffuseH2O.C
 
 SourceFiles
-    transportSpecie.C
+    diffuseH2O.C
 
 Author
     Holger Marschall (holger.marschall@tu-darmstadt.de, Affiliation A)
     Constantin Habes (constantin.habes@tu-darmstadt.de, Affiliation A)
     Heba Alkafri (heba.alkafri@tu-darmstadt.de, Affiliation A)
+    Steffen Hess (s.hess@fz-juelich.de, Affiliation B)
 
 Contact
     Holger Marschall (holger.marschall@tu-darmstadt.de)
@@ -43,6 +44,10 @@ Affiliations
     Computational Multiphase Flow
     Department of Mathematics
     Technical University of Darmstadt, Germany
+
+    Affiliation B) 
+    Institute of Energy and Climate Research, 
+    Forschungszentrum Jülich GmbH, Germany
 
 Acknowledgement
     Funded by
@@ -63,14 +68,13 @@ Description
 \*---------------------------------------------------------------------------*/
 
 
-#ifndef transportSpecie_H
-#define transportSpecie_H
+#ifndef diffuseH2O_H
+#define diffuseH2O_H
 
 #include "regionType.H"
 #include "dimensionedScalar.H"
 #include "multiRegionSystem.H"
 #include "volFields.H"
-#include "surfaceFields.H"
 #include "IOReferencer.H"
 #include "HashPtrTable.H"
 
@@ -82,84 +86,69 @@ namespace regionTypes
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class transportSpecie Declaration
+                           Class diffuseH2O Declaration
 \*---------------------------------------------------------------------------*/
 
-class transportSpecie
+class diffuseH2O
 :
     public regionType
 {
         //- name
         word regionName_;
 
-        //- transport
-        //volVectorField U_;
-
-        //surfaceScalarField phi_;
-
         //- transport properties dictionary
         IOdictionary transportProperties_;
 
-        //- thermal conductivity
-        dimensionedScalar D_;
+        //- specific heat
+        // dimensionedScalar cv_;
+        volScalarField t_;
 
-        //- tortuosity
-        dimensionedScalar s_;
-
-        //- tortuosity
-        dimensionedScalar eps_;
-
-        //- transport
-        autoPtr<volVectorField> U_;
-
-        //- transport density
-        autoPtr<volVectorField> rho_;
+        //- density
+        // dimensionedScalar rho_;
+        volScalarField eps_;
 
         //- thermal conductivity field
-        autoPtr<volScalarField> De_;
-
-        //- flux
-        autoPtr<surfaceScalarField> phi_;
+        autoPtr<volScalarField> D_p_;
 
         //- Cached temperature matrix
-        tmp<fvScalarMatrix> DEqn;
+        tmp<fvScalarMatrix> TEqn;
 
 protected:
 
-        //- CO2 field
-        autoPtr<volScalarField> CO2_;
+        //- temperature
+        autoPtr<volScalarField> H2O_;
 
 public:
 
-    TypeName("transportSpecie");
+    TypeName("diffuseH2O");
 
     // Constructors
 
-        transportSpecie
+        diffuseH2O
         (
             const Time& runTime,
             const word& regionName
         );
 
     //- Destructor
-    virtual ~transportSpecie();
+    virtual ~diffuseH2O();
 
     // Member Functions
 
         // Access
-        const volScalarField& T() const
+        const volScalarField& H2O() const
         {
-            return CO2_();
+            return H2O_();
         }
 
-        volScalarField& T()
+        volScalarField& H2O()
         {
-            return CO2_();
+            return H2O_();
         }
 
         virtual word regionTypeName() const
         {
-            return transportSpecie::typeName;
+            return diffuseH2O::typeName;
         }
 
         virtual bool usesPIMPLE() const
