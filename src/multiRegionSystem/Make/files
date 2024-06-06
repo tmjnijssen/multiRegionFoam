@@ -86,6 +86,7 @@ $(regions)/icoFluid/icoFluid.C
 $(regions)/pUCoupledIcoFluid/pUCoupledIcoFluid.C
 $(regions)/interTrackFluid/interTrackFluid.C
 $(regions)/rhoPimpleFluid/rhoPimpleFluid.C
+$(regions)/reactingFluid/reactingFluid.C
 
 $(regions)/solidStVK/momentumStabilisation/momentumStabilisation.C
 $(regions)/solidStVK/solidStVK.C

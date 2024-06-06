@@ -1,0 +1,32 @@
+#!/bin/sh
+
+find -type l -delete
+
+rm -rf 0.* [1-9]* log* proc* VTK
+
+rm constant/fluid/polyMesh/blockMeshDict 2>/dev/null
+rm constant/solid/polyMesh/blockMeshDict 2>/dev/null
+
+rm 0/cellToRegion 2>/dev/null
+rm 0/fluid/cellToRegion 2>/dev/null
+rm 0/solid/cellToRegion 2>/dev/null
+
+rm constant/cellLevel 2>/dev/null
+rm constant/cellToRegion 2>/dev/null
+rm constant/pointLevel 2>/dev/null
+
+rm -r constant/polyMesh 2>/dev/null
+rm -r constant/fluid/polyMesh 2>/dev/null
+rm -r constant/solid/polyMesh 2>/dev/null
+
+rm -r system/snappyHexMeshDict 2>/dev/null
+
+rm constant/fluid/faMesh/faBoundary 2>/dev/null
+rm constant/fluid/faMesh/faceLabels 2>/dev/null
+
+rm constant/solid/faMesh/faBoundary 2>/dev/null
+rm constant/solid/faMesh/faceLabels 2>/dev/null
+
+rm -r postProcessing 2>/dev/null
+
+rm result.foam 2>/dev/null
