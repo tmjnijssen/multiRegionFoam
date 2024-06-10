@@ -96,20 +96,6 @@ Foam::regionTypes::diffuseCO2::diffuseCO2
         dimensionedScalar(transportProperties_.lookup("eps"))
     ),
 
-    Dpore_
-    (
-        IOobject
-        (
-            "Dpore",
-            mesh().time().timeName(),
-            mesh(),
-            IOobject::READ_IF_PRESENT,
-            IOobject::NO_WRITE
-        ),
-        mesh(),
-        dimensionedScalar(transportProperties_.lookup("Dpore"))
-    ),
-
     Dp_(nullptr),
     CO2_(nullptr),
     q_(nullptr)
@@ -123,9 +109,9 @@ Foam::regionTypes::diffuseCO2::diffuseCO2
         true
     );
 
-    // set CO2 concentration field
+    // set CO2 concentration field and rection rate
     CO2_ = lookupOrRead<volScalarField>(mesh(), "CO2");
-    q_ = lookupOrRead<volScalarField>(mesh(), "CO2");
+    q_ = lookupOrRead<volScalarField>(mesh(), "q");
 }
 
 
@@ -154,7 +140,7 @@ void Foam::regionTypes::diffuseCO2::setCoupledEqns()
     (
         fvm::ddt(CO2())
      ==
-        fvm::laplacian(Dp_(), CO2(), "laplacian(Dp,CO2)") - (1-eps/eps)*(fvm::ddt(q))
+        fvm::laplacian(Dp_(), CO2(), "laplacian(Dp,CO2)") - (1-eps_/eps_)*(fvm::ddt(q_()))
     );
 
     fvScalarMatrices.set

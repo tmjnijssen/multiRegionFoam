@@ -110,7 +110,7 @@ Foam::regionTypes::transportH2O::~transportH2O()
 
 void Foam::regionTypes::transportH2O::correct()
 {
-    kappa_().correctBoundaryConditions();
+    De_().correctBoundaryConditions();
 }
 
 

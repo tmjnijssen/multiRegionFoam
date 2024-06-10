@@ -110,7 +110,7 @@ Foam::regionTypes::transportCO2::~transportCO2()
 
 void Foam::regionTypes::transportCO2::correct()
 {
-    kappa_().correctBoundaryConditions();
+    De_().correctBoundaryConditions();
 }
 
 
@@ -130,7 +130,7 @@ void Foam::regionTypes::transportCO2::setCoupledEqns()
           + fvm::div(phi_(), CO2())
         )
      ==
-        fvm::laplacian(kappa_(), CO2())
+        fvm::laplacian(De_(), CO2())
     );
 
     fvScalarMatrices.set

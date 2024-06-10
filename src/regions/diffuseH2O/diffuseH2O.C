@@ -96,20 +96,6 @@ Foam::regionTypes::diffuseH2O::diffuseH2O
         dimensionedScalar(transportProperties_.lookup("eps"))
     ),
 
-    Dpore_
-    (
-        IOobject
-        (
-            "Dpore",
-            mesh().time().timeName(),
-            mesh(),
-            IOobject::READ_IF_PRESENT,
-            IOobject::NO_WRITE
-        ),
-        mesh(),
-        dimensionedScalar(transportProperties_.lookup("Dpore"))
-    ),
-
     Dp_(nullptr),
     H2O_(nullptr),
     q_(nullptr)
@@ -123,9 +109,9 @@ Foam::regionTypes::diffuseH2O::diffuseH2O
         true
     );
 
-    // set H2O concentration field
+    // set H2O concentration field and rection rate
     H2O_ = lookupOrRead<volScalarField>(mesh(), "H2O");
-    q_ = lookupOrRead<volScalarField>(mesh(), "H2O");
+    q_ = lookupOrRead<volScalarField>(mesh(), "q");
 }
 
 
@@ -154,7 +140,7 @@ void Foam::regionTypes::diffuseH2O::setCoupledEqns()
     (
         fvm::ddt(H2O())
      ==
-        fvm::laplacian(Dp_(), H2O(), "laplacian(Dp,H2O)") - (1-eps/eps)*(fvm::ddt(q))
+        fvm::laplacian(Dp_(), H2O(), "laplacian(Dp,H2O)") - (1-eps_/eps_)*(fvm::ddt(q_()))
     );
 
     fvScalarMatrices.set

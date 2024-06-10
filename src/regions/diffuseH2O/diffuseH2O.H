@@ -100,18 +100,18 @@ class diffuseH2O
         IOdictionary transportProperties_;
 
         //- specific heat
-        // dimensionedScalar cv_;
+        // dimensionedScalar t_;
         volScalarField t_;
 
         //- density
-        // dimensionedScalar rho_;
+        // dimensionedScalar eps_;
         volScalarField eps_;
 
-        //- thermal conductivity field
-        autoPtr<volScalarField> D_p_;
+        //- Pore diffusion field
+        autoPtr<volScalarField> Dp_;
 
         //- Cached temperature matrix
-        tmp<fvScalarMatrix> TEqn;
+        tmp<fvScalarMatrix> H2OEqn;
 
 protected:
 
