@@ -26,7 +26,6 @@ License
 #include "label.H"
 #include "reactingFluid.H"
 #include "fvCFD.H"
-#include "basicPsiThermo.H"
 #include "zeroGradientFvPatchFields.H"
 #include "addToRunTimeSelectionTable.H"
 
@@ -61,24 +60,59 @@ Foam::regionTypes::reactingFluid::reactingFluid
 
     pimple_(mesh()),
 
-    pThermo_(basicPsiThermo::New(mesh())),
+    pChemistry_(psiChemistryModel::New(mesh())),
 
-    p_(nullptr),
-    h_(nullptr),
-    psi_(nullptr),
+    inertSpecie_(pChemistry_().thermo().lookup("inertSpecie")),
     rho_(nullptr),
     U_(nullptr),
-    phi_(nullptr),
-    turbulence_(nullptr),
+    p_(nullptr),
+    psi_(nullptr),
+    hs_(nullptr),
     T_(nullptr),
+    phi_(nullptr),
+    chemistryKappa_
+    (
+        IOobject
+        (
+            "chemistryKappa",
+            mesh().time().timeName(),
+            mesh(),
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh(),
+        dimensionedScalar("zero", dimless, 0.0)
+    ),
+    turbulence_(nullptr),
     sigma_(nullptr),
-    kappa_(nullptr),
-    kappaEff_(nullptr),
-    Cp_(nullptr),
-
     DpDt_(nullptr),
-
-    pMin_(pimple_.dict().lookup("pMin")),
+    fields_(),
+    turbulentReaction_(false),
+    Cmix_(0),
+    chemistrySh_
+    (
+        IOobject
+        (
+            "chemistry::Sh",
+            mesh().time().timeName(),
+            mesh(),
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh(),
+        dimensionedScalar("chemistrySh", dimEnergy/dimTime/dimVolume, 0.0)
+    ),
+    g_
+    (
+        IOobject
+        (
+            "g",
+            mesh().time().constant(),
+            mesh(),
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE
+        )
+    ),
 
     mrfZones_(mesh()),
     myTimeIndex_(mesh().time().timeIndex()),
@@ -105,136 +139,8 @@ Foam::regionTypes::reactingFluid::reactingFluid
     globalContErr_(0),
     cumulativeContErr_(0)
 {
-    p_ = lookupOrRead<volScalarField>
-    (
-        mesh(),
-        "p",
-        true,
-        true
-    );
-
-    h_ = lookupOrRead<volScalarField>
-    (
-        mesh(),
-        "h",
-        true,
-        true
-    );
-
-    psi_ = lookupOrRead<volScalarField>
-    (
-        mesh(),
-        "psi",
-        true,
-        true
-    );
-
-    rho_ = lookupOrRead<volScalarField>
-    (
-        mesh(),
-        "rho",
-        false,
-        true,
-        pThermo_().rho()
-    );
-    
-
-    U_ = lookupOrRead<volVectorField>
-    (
-        mesh(),
-        "U",
-        true,
-        true
-    );
-
-    phi_ = lookupOrRead<surfaceScalarField>
-    (
-        mesh(),
-        "phi",
-        false,
-        true,
-        linearInterpolate(rho_()*U_()) & mesh().Sf()
-    );
-
-    turbulence_ = compressible::turbulenceModel::New
-    (
-        rho_(),
-        U_(),
-        phi_(),
-        pThermo_()
-    );
-
-    T_ = lookupOrRead<volScalarField>
-    (
-        mesh(),
-        "T",
-        true,
-        true
-    );
-
-    sigma_ = lookupOrRead<volSymmTensorField>
-    (
-        mesh(),
-        "sigma",
-        false,
-        true,
-        -p_()*symmTensor(1,0,0,1,0,1) - turbulence_().devRhoReff()
-    );   
-
-    kappa_ = lookupOrRead<volScalarField>
-    (
-        mesh(),
-        "kappa",
-        false,
-        true,
-        pThermo_().alpha() * pThermo_().Cp()
-    );   
-
-    kappaEff_ = lookupOrRead<volScalarField>
-    (
-        mesh(),
-        "kappaEff",
-        false,
-        true,
-        turbulence_().alphaEff() * pThermo_().Cp()
-    );
-
-    Cp_ = lookupOrRead<volScalarField>
-    (
-        mesh(),
-        "Cp",
-        false,
-        true,
-        kappa_() / pThermo_().alpha()
-    );
-
-    DpDt_ = lookupOrRead<volScalarField>
-    (
-        mesh(),
-        "DpDt",
-        false,
-        true,
-        fvc::DDt
-        (
-            surfaceScalarField("phiU", phi_()/fvc::interpolate(rho_())),
-            p_()
-        )
-    );
-
-    // phid_ = lookupOrRead<surfaceScalarField>
-    // (
-    //     mesh(),
-    //     "phid",
-    //     false,
-    //     true,
-    //     fvc::interpolate(psi)
-    //    *(
-    //         (fvc::interpolate(U_()) & mesh.Sf())
-    //       + fvc::ddtPhiCorr(rAU, rho, U, phi)
-    //     )
-    // );
-
-    mesh().schemesDict().setFluxRequired(p_().name());
+#   include "readChemistryProperties.H"
+#   include "createFields.H"
 }
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -246,7 +152,7 @@ Foam::regionTypes::reactingFluid::~reactingFluid()
 
 void Foam::regionTypes::reactingFluid::correct()
 {
-#       include "reactingFluidCourantNo.H"
+#   include "reactingFluidCourantNo.H"
 }
 
 
@@ -265,21 +171,26 @@ void Foam::regionTypes::reactingFluid::setCoupledEqns()
 
 void Foam::regionTypes::reactingFluid::postSolve()
 {
-    if (myTimeIndex_ < mesh().time().timeIndex())
+    /*if (myTimeIndex_ < mesh().time().timeIndex())
     {
         mrfZones_.translationalMRFs().correctMRF();
 
         mrfZones_.translationalMRFs().correctBoundaryVelocity(U_(), phi_());
 
         myTimeIndex_ = mesh().time().timeIndex();
+    }*/
+    
+    if (mesh().time().write())
+    {
+        pChemistry_().dQ()().write();
     }
 }
 
 
 void Foam::regionTypes::reactingFluid::solveRegion()
 {
-    // Solve the continuity for density.
-    solve(fvm::ddt(rho_()) + fvc::div(phi_()));
+#   include "chemistry.H"
+#   include "rhoEqn.H"
 }
 
 void Foam::regionTypes::reactingFluid::prePredictor()
@@ -305,63 +216,9 @@ void Foam::regionTypes::reactingFluid::momentumPredictor()
         << " in region " << mesh().name()
         << endl;
 
-    // Convection-diffusion matrix
-    tUEqn =
-        (
-            fvm::ddt(rho_(), U_())
-          + fvm::div(phi_(), U_())
-          + turbulence_().divDevRhoReff()
-        );
-    fvVectorMatrix& UEqn = tUEqn();
-
-    mrfZones_.translationalMRFs().addFrameAcceleration(UEqn, rho_());
-
-    UEqn.relax
-    (
-        mesh().solutionDict().equationRelaxationFactor
-        (
-            U_().select(pimple_.finalIter())
-        )
-    );
-
-    volScalarField rAU = 1.0/UEqn.A();
-
-    if (pimple_.momentumPredictor())
-    {
-        solve
-        (
-            UEqn == -fvc::grad(p_()),
-            mesh().solutionDict().solver((U_().select(pimple_.finalIter())))
-        );
-    }
-    else
-    {
-        U_() = rAU*(UEqn.H() - fvc::grad(p_()));
-        U_().correctBoundaryConditions();
-    }
-
-    fvScalarMatrix hEqn
-    (
-        fvm::ddt(rho_(), h_())
-      + fvm::div(phi_(), h_())
-      - fvm::laplacian(turbulence_().alphaEff(), h_())
-     ==
-        DpDt_()
-    );
-
-    hEqn.relax
-    (
-        mesh().solutionDict().equationRelaxationFactor
-        (
-            h_().select(pimple_.finalIter())
-        )
-    );
-    hEqn.solve
-    (
-        mesh().solutionDict().solver((h_().select(pimple_.finalIter())))
-    );
-
-    pThermo_().correct();
+#   include "UEqn.H"
+#   include "YEqn.H"
+#   include "hsEqn.H"
 }
 
 void Foam::regionTypes::reactingFluid::pressureCorrector()
@@ -376,117 +233,13 @@ void Foam::regionTypes::reactingFluid::pressureCorrector()
     // --- PISO loop
     while (pimple_.correct())
     {
-        rho_() = pThermo_().rho();
-        volScalarField rAU = 1.0/UEqn.A();
-
-        // Calculate U from convection-diffusion matrix
-        U_() = rAU*UEqn.H();
-
-        if (pimple_.transonic())
-        {
-            surfaceScalarField phid
-            (
-                "phid",
-                fvc::interpolate(psi_())
-               *(
-                    (fvc::interpolate(U_()) & mesh().Sf())
-                  + fvc::ddtPhiCorr(rAU, rho_(), U_(), phi_())
-                )
-            );
-
-            while (pimple_.correctNonOrthogonal())
-            {
-                fvScalarMatrix pEqn
-                (
-                    fvm::ddt(psi_(), p_())
-                  + fvm::div(phid, p_())
-                  - fvm::laplacian(rho_()*rAU, p_())
-                );
-
-                pEqn.solve
-                (
-                    mesh().solutionDict().solver
-                    (
-                        p_().select(pimple_.finalInnerIter())
-                    )
-                );
-
-                if (pimple_.finalNonOrthogonalIter())
-                {
-                    phi_() == pEqn.flux();
-                }
-            }
-        }
-        else
-        {
-            phi_() =
-                fvc::interpolate(rho_())*
-                (
-                    (fvc::interpolate(U_()) & mesh().Sf())
-                );
-
-            while (pimple_.correctNonOrthogonal())
-            {
-                // Pressure corrector
-                fvScalarMatrix pEqn
-                (
-                    fvm::ddt(psi_(), p_())
-                  + fvc::div(phi_())
-                  - fvm::laplacian(rho_()*rAU, p_())
-                );
-
-                pEqn.solve
-                (
-                    mesh().solutionDict().solver
-                    (
-                        p_().select(pimple_.finalInnerIter())
-                    )
-                );
-
-                if (pimple_.finalNonOrthogonalIter())
-                {
-                    phi_() += pEqn.flux();
-                }
-            }
-        }
-
-        // Solve continuity for density
-        solve(fvm::ddt(rho_()) + fvc::div(phi_()));
-        #include "reactingFluidContinuityErrs.H"
-
-        {
-            // Explicitly relax pressure for momentum corrector
-            p_().relax();
-
-            rho_() = pThermo_().rho();
-            rho_().relax();
-            Info<< "  " << mesh().name() << ": rho min/mean/max: " 
-                << gMin(rho_()) << "/"
-                << gAverage(rho_()) << "/"
-                << gMax(rho_()) << endl;
-        }
-
-        U_() -= rAU*fvc::grad(p_());
-        U_().correctBoundaryConditions();
-
-        DpDt_() = fvc::DDt
-            (
-                surfaceScalarField("phiU", phi_()/fvc::interpolate(rho_())),
-                p_()
-            );
-
-        bound(p_(), pMin_);
+#       include "pEqn.H"
 
         // Update sigma field
         sigma_() = -p_()*symmTensor(1,0,0,1,0,1) - turbulence_().devRhoReff();
     }
 
     turbulence_().correct();
-
-    // output fields
-    kappa_() = pThermo_().alpha() * pThermo_().Cp();
-    kappaEff_() = turbulence_().alphaEff() * pThermo_().Cp();
-    Cp_() = pThermo_().Cp();
 
     Info<< "  " << mesh().name() << ": pressure min/mean/max: "
         << gMin(p_()) << "/"

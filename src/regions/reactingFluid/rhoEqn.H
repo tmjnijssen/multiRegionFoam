@@ -22,32 +22,15 @@ License
     along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Global
-    continuityErrs
+    rhoEqn
 
 Description
-    Calculates and prints the continuity errors.
+    Solve the continuity for density.
 
 \*---------------------------------------------------------------------------*/
 
 {
-    // TODO: rho_() and thermo.rho() are currently the same
-    dimensionedScalar totalMass = fvc::domainIntegrate(rho_());
-
-    sumLocalContErr_ =
-        (fvc::domainIntegrate(mag(rho_() - pChemistry_().thermo().rho()))/totalMass).value();
-
-    globalContErr_ =
-        (fvc::domainIntegrate(rho_() - pChemistry_().thermo().rho())/totalMass).value();
-
-    cumulativeContErr_ += globalContErr_;
-
-    Info<< "time step continuity errors : sum local = " << sumLocalContErr_
-        << ", global = " << globalContErr_
-        << ", cumulative = " << cumulativeContErr_
-        << endl;
+    solve(fvm::ddt(rho_()) + fvc::div(phi_()));
 }
 
-
-
 // ************************************************************************* //
-

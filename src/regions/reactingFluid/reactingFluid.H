@@ -78,8 +78,11 @@ Description
 #include "bound.H"
 //TODO currently name conflict of incompressible and compressible 
 //     turbulenceModel header files
+#include "hCombustionThermo.H"
 #include "turbulenceModel.H"
-#include "basicPsiThermo.H"
+#include "psiChemistryModel.H"
+#include "chemistrySolver.H"
+#include "multivariateScheme.H"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -104,17 +107,11 @@ class reactingFluid
         //- PIMPLE control
         pimpleControl pimple_;
 
-        //- Compressible thremo model
-        autoPtr<basicPsiThermo> pThermo_;
+        //- Chemistry model
+        autoPtr<psiChemistryModel> pChemistry_;
 
-        //- Pressure
-        autoPtr<volScalarField> p_;
-
-        //- Enthalpy
-        autoPtr<volScalarField> h_;
-
-        //- Compressibility
-        autoPtr<volScalarField> psi_;
+        //- inert specie
+        word inertSpecie_;
 
         //- Density
         autoPtr<volScalarField> rho_;
@@ -122,32 +119,47 @@ class reactingFluid
         //- Velocity
         autoPtr<volVectorField> U_;
 
-        //- Face flux
-        autoPtr<surfaceScalarField> phi_;
+        //- Pressure
+        autoPtr<volScalarField> p_;
 
-        //- Turbulence model
-        autoPtr<compressible::turbulenceModel> turbulence_;
+        //- Compressibility
+        autoPtr<volScalarField> psi_;
+
+        //- Sensible enthalpy
+        autoPtr<volScalarField> hs_;
 
         //- Temperature
         autoPtr<volScalarField> T_;
 
+        //- Face flux
+        autoPtr<surfaceScalarField> phi_;
+
+        //- Reacting rate multiplier
+        volScalarField chemistryKappa_;
+
+        //- Turbulence model
+        autoPtr<compressible::turbulenceModel> turbulence_;
+
         //- forces
         autoPtr<volSymmTensorField> sigma_;
-
-        //- Laminar thermal conductivity
-        autoPtr<volScalarField> kappa_;
-
-        //- Effective thermal conductivity (laminar + turbulent)
-        autoPtr<volScalarField> kappaEff_;
-
-        //- Constant-pressure heat capacity
-        autoPtr<volScalarField> Cp_;
 
         //- Temporal derivative of pressure field
         autoPtr<volScalarField> DpDt_;
 
-        //- Reference minimum pressure value
-        dimensionedScalar pMin_;
+        //- field list
+        multivariateSurfaceInterpolationScheme<scalar>::fieldTable fields_;
+
+        //- Model turbulent reaction?
+        Switch turbulentReaction_;
+
+        //- Mixing coefficient
+        dimensionedScalar Cmix_;
+
+        //- Chemical source term
+        DimensionedField<scalar, volMesh> chemistrySh_;
+
+        //- Gravitational accelleration
+        uniformDimensionedVectorField g_;
 
         //- Moving reference frames
         MovingReferenceFrameZones mrfZones_;
@@ -193,9 +205,9 @@ public:
     // Member Functions
 
         // Access
-        const basicPsiThermo& pThermo() const
+        const psiChemistryModel& pChemistry() const
         {
-            return pThermo_();
+            return pChemistry_();
         }
 
         volScalarField& p()
@@ -203,9 +215,9 @@ public:
             return p_();
         }
 
-        volScalarField& h()
+        volScalarField& hs()
         {
-            return h_();
+            return hs_();
         }
 
         volScalarField& psi()
@@ -220,7 +232,7 @@ public:
 
         const volScalarField& thermoRho() const
         {
-            return pThermo_().rho();
+            return pChemistry_().thermo().rho();
         }
 
         volVectorField& U()
@@ -241,21 +253,6 @@ public:
         volSymmTensorField& sigma()
         {
             return sigma_();
-        }
-
-        volScalarField& kappa()
-        {
-            return kappa_();
-        }
-
-        volScalarField& kappaEff()
-        {
-            return kappaEff_();
-        }
-
-        volScalarField& Cp()
-        {
-            return Cp_();
         }
 
         virtual word regionTypeName() const
