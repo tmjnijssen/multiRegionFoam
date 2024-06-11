@@ -26,7 +26,7 @@ License
 #include "label.H"
 #include "pimpleFluid.H"
 #include "fvCFD.H"
-#include "correctClosedVolumePhi.H"
+#include "correctClosedVolumePhiPimple.H"
 #include "correctSpaceVolumePhi.H"
 #include "zeroGradientFvPatchFields.H"
 #include "addToRunTimeSelectionTable.H"
@@ -333,7 +333,7 @@ void Foam::regionTypes::pimpleFluid::pressureCorrector()
     {
         // Update pressure BCs
         pKin_().boundaryField().updateCoeffs();
-
+        
         // Prepare clean 1/a_p without time derivative and under-relaxation
         // contribution
         rAU_() = 1.0/HUEqn.A();
@@ -345,11 +345,11 @@ void Foam::regionTypes::pimpleFluid::pressureCorrector()
         pimple_.calcTransientConsistentFlux(phi_(), U_(), rAU_(), ddtUEqn);
         // Global flux balance
 
-        if (closedVolume_)
+        if (closedVolume_ && pKin_().needReference())
         {
-            correctClosedVolumePhi(phi_(), U_(), pKin_(),rAU_());
+            correctClosedVolumePhiPimple(phi_(), U_(), pKin_());
         }
-        else if (hasSpacePatch_)
+        else if (hasSpacePatch_ && pKin_().needReference())
         {
             correctSpaceVolumePhi(phi_());
         }
