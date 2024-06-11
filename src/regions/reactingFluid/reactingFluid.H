@@ -31,6 +31,7 @@ SourceFiles
 Author
     Constantin Habes (constantin.habes@tu-darmstadt.de, Affiliation A)
     Holger Marschall (holger.marschall@tu-darmstadt.de, Affiliation A)
+    Tim MJ Nijssen (t.m.j.nijssen@tudelft.nl, Affiliation B)
 
 Contact
     Holger Marschall (holger.marschall@tu-darmstadt.de)
@@ -42,6 +43,12 @@ Affiliations
     Computational Multiphase Flow
     Department of Mathematics
     Technical University of Darmstadt, Germany
+
+    Affiliation B)
+    Engineering Thermodynamics
+    Department of Process & Energy
+    Faculty of Mechanical Engineering
+    Delft University of Technology, The Netherlands
 
 Acknowledgement
     Funded by
