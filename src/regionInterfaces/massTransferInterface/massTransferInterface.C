@@ -193,6 +193,7 @@ void Foam::regionInterfaces::massTransferInterface::updateMDotS()
     scalarField sF = saturatedFlux();
     mDotS().internalField() = sF/hlv_;
     mDotInterface = mDotS();
+    Info << "mDot Inteface: " << sum(mDotInterface) << endl;
 }
 
 void Foam::regionInterfaces::massTransferInterface::correct()
@@ -231,7 +232,7 @@ Foam::scalarField Foam::regionInterfaces::massTransferInterface::saturatedFlux()
 
     TB.boundaryField().set
     (
-        patchB().index() , fvPatchField<scalar>::New("fixedValue", meshB().boundary()[patchA().index() ],TB)
+        patchB().index() , fvPatchField<scalar>::New("fixedValue", meshB().boundary()[patchB().index() ],TB)
     );
 
     // Change BC values to saturation temperature

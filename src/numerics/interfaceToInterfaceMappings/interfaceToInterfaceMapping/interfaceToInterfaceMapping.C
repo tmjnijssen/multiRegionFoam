@@ -78,7 +78,6 @@ Foam::interfaceToInterfaceMapping::New
 
     dictionaryConstructorTable::iterator cstrIter =
         dictionaryConstructorTablePtr_->find(type);
-
     if (cstrIter == dictionaryConstructorTablePtr_->end())
     {
         FatalErrorIn
@@ -90,7 +89,6 @@ Foam::interfaceToInterfaceMapping::New
             << dictionaryConstructorTablePtr_->toc()
             << exit(FatalError);
     }
-
     return autoPtr<interfaceToInterfaceMapping>
     (
         cstrIter()(type, dict, patchA, patchB, zoneA, zoneB)
