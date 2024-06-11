@@ -82,6 +82,9 @@ $(regions)/region/regionTypeList.C
 $(regions)/conductTemperature/conductTemperature.C
 $(regions)/transportTemperature/transportTemperature.C
 
+$(regions)/transportCO2/transportCO2.C
+$(regions)/transportH2O/transportH2O.C
+
 $(regions)/icoFluid/icoFluid.C
 $(regions)/pUCoupledIcoFluid/pUCoupledIcoFluid.C
 $(regions)/interTrackFluid/interTrackFluid.C

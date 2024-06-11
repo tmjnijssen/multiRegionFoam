@@ -97,17 +97,15 @@ class transportH2O
 
         //surfaceScalarField phi_;
 
-        //- transport properties dictionary
-        IOdictionary transportProperties_;
-
         //- transport
         autoPtr<volVectorField> U_;
 
         //- Effective diffusivity field
         autoPtr<volScalarField> De_;
+        
+        //- Effective diffusivity field
+        autoPtr<volScalarField> rho_;
 
-        //- H2O concentration field
-        autoPtr<volScalarField> H2O_;
 
         //- flux
         autoPtr<surfaceScalarField> phi_;

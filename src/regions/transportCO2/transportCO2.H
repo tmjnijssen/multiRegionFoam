@@ -97,17 +97,14 @@ class transportCO2
 
         //surfaceScalarField phi_;
 
-        //- transport properties dictionary
-        IOdictionary transportProperties_;
-
         //- transport
         autoPtr<volVectorField> U_;
 
         //- Effective diffusivity field
         autoPtr<volScalarField> De_;
-
-        //- CO2 concentration field
-        autoPtr<volScalarField> CO2_;
+        
+        //- Density
+        autoPtr<volScalarField> rho_;
 
         //- flux
         autoPtr<surfaceScalarField> phi_;
