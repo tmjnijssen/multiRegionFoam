@@ -1171,14 +1171,19 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
                 aMesh().mesh().objectRegistry::lookupObject<areaScalarField>("mDotInterface");
             scalarField massTransferPhi = sweptVolCorr*0.0;
             const scalarField& Sf = aMesh().S();    
+
+            scalar rho1 = 0.0;
+
             if (mesh().objectRegistry::foundObject<volScalarField>("rho"))
             {
                 const volScalarField& rho =
                     mesh().objectRegistry::lookupObject<volScalarField>("rho");
 
-                const scalarField rhoS = rho.boundaryField()[patchID()];
+                const scalarField& rhoS = rho.boundaryField()[patchID()];
 
                 massTransferPhi = mDot.internalField()/rhoS*Sf;
+
+                rho1 = average(rhoS);
             }
             else
             {
@@ -1189,8 +1194,39 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
                 );
 
                 massTransferPhi = mDot.internalField()/rhoFluid.value()*Sf;
+
+                rho1 = rhoFluid.value();
             }
-            sweptVolCorr += massTransferPhi;
+
+            scalar rho2 = 0.0;
+
+            if (nbrMesh().objectRegistry::foundObject<volScalarField>("rho"))
+            {  
+                const volScalarField& rhoNbr =
+                    nbrMesh().objectRegistry::lookupObject<volScalarField>("rho");
+
+                const scalarField& rhoNbrS = rhoNbr.boundaryField()[nbrPatchID()];
+
+                rho2 = average(rhoNbrS);
+            }
+            else
+            {
+                dimensionedScalar rhoFluidNbr
+                (
+                    nbrMesh().lookupObject<IOdictionary>("transportProperties")
+                    .lookup("rho")
+                );
+                rho2 = rhoFluidNbr.value();
+            }
+
+            if(rho1 < rho2)
+            {
+                sweptVolCorr -= massTransferPhi;
+            }
+            else
+            {
+                sweptVolCorr += massTransferPhi;
+            }
             
         }
         Info<< "mesh.phi boundary field BEFORE mesh motion :"

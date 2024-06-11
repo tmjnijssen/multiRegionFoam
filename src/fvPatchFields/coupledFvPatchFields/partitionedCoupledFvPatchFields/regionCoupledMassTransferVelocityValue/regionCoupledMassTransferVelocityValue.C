@@ -133,17 +133,90 @@ tmp<vectorField> Foam::regionCoupledMassTransferVelocityValue::valueJump() const
         refMesh().lookupObject<IOdictionary>("transportProperties")
         .lookup("rho")
     );
-
+    dimensionedScalar rhoFluidNbr
+    (
+        nbrMesh().lookupObject<IOdictionary>("transportProperties")
+        .lookup("rho")
+    ); 
     const areaScalarField& mDots = massTrInterface().mDotS();
 
-    // MP-End
-    return
+    // [MP] Not smartest way to do the if. Only way to walk around bugs deriving by not defin durectly a tmp.
+    if (rhoFluid < rhoFluidNbr)
+    {
+        return
+        (
+            nf*(-(nf & UsNbrToOwn)
+            + meshPhi/
+            refMesh().boundary()[refPatchID()].magSf()
+            + mDots.internalField()/rhoFluid.value())//*UCoeff.value()
+        );
+    }
+    else
+    {
+        return
+        (
+            nf*(-(nf & UsNbrToOwn)
+            + meshPhi/
+            refMesh().boundary()[refPatchID()].magSf()
+            - mDots.internalField()/rhoFluid.value())//*UCoeff.value()
+        );
+    }
+}
+
+//- Zero velocity jump
+void Foam::regionCoupledMassTransferVelocityValue::correctClosedVolumePhi
+(
+    surfaceScalarField& phi,
+    const volVectorField& U,
+    const volScalarField& p,
+    const volScalarField& rAU
+) const
+{
+    const areaScalarField& mDots = massTrInterface().mDotS();
+
+    dimensionedScalar rhoFluid
     (
-        nf*(-(nf & UsNbrToOwn)
-         + meshPhi/
-           refMesh().boundary()[refPatchID()].magSf()
-         + mDots.internalField()/rhoFluid.value())//*UCoeff.value()
+        refMesh().lookupObject<IOdictionary>("transportProperties")
+        .lookup("rho")
     );
+
+    scalarField netVolumeFlux = -(mDots.internalField()/rhoFluid.value() * refPatch().magSf());
+
+    phi.boundaryField()[refPatchID()] =
+    (
+        U.boundaryField()[refPatchID()]
+        & phi.mesh().Sf().boundaryField()[refPatchID()]
+    );
+
+    scalarField weights =
+        mag(phi.boundaryField()[refPatchID()] - netVolumeFlux);
+
+    if(mag(gSum(weights)) > VSMALL)
+    {
+        weights /= gSum(weights);
+    }
+
+    scalar uncorrectPhi = gSum(phi.boundaryField()[refPatchID()]);
+    
+    phi.boundaryField()[refPatchID()] -=
+        weights*gSum(phi.boundaryField()[refPatchID()] - netVolumeFlux);
+
+    phi.boundaryField()[refPatchID()] +=
+        p.boundaryField()[refPatchID()].snGrad()
+       *refPatch().magSf()
+       *rAU.boundaryField()[refPatchID()];
+
+
+    phi.boundaryField()[refPatchID()] -= netVolumeFlux;
+       
+    scalar correctPhi = gSum(phi.boundaryField()[refPatchID()]);
+    
+    if (fvMesh::debug)
+    {
+    Info<< "bool Foam::correctClosedVolumePhi(...) integral uncorrectPhi: " << uncorrectPhi
+        << " integral correctPhi: " << correctPhi
+        << endl;
+    }
 }
 
 const regionInterfaces::capillaryInterface&

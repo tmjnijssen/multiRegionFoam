@@ -154,6 +154,14 @@ public:
             
         };
 
+        void correctClosedVolumePhi
+        (
+            surfaceScalarField& phi,
+            const volVectorField& U,
+            const volScalarField& p,
+            const volScalarField& rAU
+        ) const;
+
         const regionInterfaces::capillaryInterface& capInterface() const;
         const regionInterfaces::massTransferInterface& massTrInterface() const;
 
