@@ -97,7 +97,7 @@ class diffuseCO2
         word regionName_;
 
         //- transport properties dictionary
-        IOdictionary transportProperties_;
+        IOdictionary sorbentProperties_;
 
         //- specific heat
         // dimensionedScalar t_;
@@ -107,8 +107,14 @@ class diffuseCO2
         // dimensionedScalar eps_;
         volScalarField eps_;
 
-        //- Pore diffusion field
+        // dimensionedScalar Dpore_;
+
+        volScalarField Dpore_;
+
+        //- Pore diffusion field and adsorption rate
         autoPtr<volScalarField> Dp_;
+
+         autoPtr<volScalarField> q_;
 
         //- Cached temperature matrix
         tmp<fvScalarMatrix> CO2Eqn;

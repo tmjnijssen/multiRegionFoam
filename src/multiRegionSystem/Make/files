@@ -84,6 +84,8 @@ $(regions)/transportTemperature/transportTemperature.C
 
 $(regions)/transportCO2/transportCO2.C
 $(regions)/transportH2O/transportH2O.C
+$(regions)/diffuseCO2/diffuseCO2.C
+$(regions)/diffuseH2O/diffuseH2O.C
 
 $(regions)/icoFluid/icoFluid.C
 $(regions)/pUCoupledIcoFluid/pUCoupledIcoFluid.C

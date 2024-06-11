@@ -62,7 +62,7 @@ Foam::regionTypes::diffuseCO2::diffuseCO2
     (
         IOobject
         (
-            "transportProperties",
+            "sorbentProperties",
             mesh().time().constant(),
             mesh(),
             IOobject::MUST_READ,
@@ -80,7 +80,7 @@ Foam::regionTypes::diffuseCO2::diffuseCO2
             IOobject::NO_WRITE
         ),
         mesh(),
-        dimensionedScalar(transportProperties_.lookup("t"))
+        dimensionedScalar(sorbentProperties_.lookup("t"))
     ),
     eps_
     (
@@ -93,7 +93,20 @@ Foam::regionTypes::diffuseCO2::diffuseCO2
             IOobject::NO_WRITE
         ),
         mesh(),
-        dimensionedScalar(transportProperties_.lookup("eps"))
+        dimensionedScalar(sorbentProperties_.lookup("eps"))
+    ),
+    Dpore_
+    (
+        IOobject
+        (
+            "Dpore",
+            mesh().time().timeName(),
+            mesh(),
+            IOobject::READ_IF_PRESENT,
+            IOobject::NO_WRITE
+        ),
+        mesh(),
+        dimensionedScalar(sorbentProperties_.lookup("Dpore"))
     ),
 
     Dp_(nullptr),
@@ -104,10 +117,12 @@ Foam::regionTypes::diffuseCO2::diffuseCO2
     Dp_ = lookupOrRead<volScalarField>
     (
         mesh(),
-        "Dp",
-        dimensionedScalar(transportProperties_.lookup("Dp")),
+        "Dpore",
+        dimensionedScalar(sorbentProperties_.lookup("Dpore")),
         true
     );
+
+    
 
     // set CO2 concentration field and rection rate
     CO2_ = lookupOrRead<volScalarField>(mesh(), "CO2");
