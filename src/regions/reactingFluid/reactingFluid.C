@@ -62,7 +62,35 @@ Foam::regionTypes::reactingFluid::reactingFluid
 
     pChemistry_(psiChemistryModel::New(mesh())),
 
+    chemistryProperties_
+    (
+        IOobject
+        (
+            "chemistryProperties",
+            mesh().time().constant(),
+            mesh(),
+            IOobject::MUST_READ_IF_MODIFIED,
+            IOobject::NO_WRITE,
+            false
+        )
+    ),
+
+    turbulentReaction_
+    (
+        chemistryProperties_.lookup("turbulentReaction")
+    ),
+
+    Cmix_
+    (
+        chemistryProperties_.lookupOrDefault<dimensionedScalar>
+        (
+            "Cmix",
+            dimensionedScalar("Cmix", dimless, 1.0)
+        )
+    ),
+
     inertSpecie_(pChemistry_().thermo().lookup("inertSpecie")),
+
     rho_(nullptr),
     U_(nullptr),
     p_(nullptr),
@@ -87,8 +115,6 @@ Foam::regionTypes::reactingFluid::reactingFluid
     sigma_(nullptr),
     DpDt_(nullptr),
     fields_(),
-    turbulentReaction_(false),
-    Cmix_(0),
     chemistrySh_
     (
         IOobject
@@ -139,7 +165,6 @@ Foam::regionTypes::reactingFluid::reactingFluid
     globalContErr_(0),
     cumulativeContErr_(0)
 {
-#   include "readChemistryProperties.H"
 #   include "createFields.H"
 }
 

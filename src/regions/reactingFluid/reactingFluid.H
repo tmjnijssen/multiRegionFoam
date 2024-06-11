@@ -110,7 +110,16 @@ class reactingFluid
         //- Chemistry model
         autoPtr<psiChemistryModel> pChemistry_;
 
-        //- inert specie
+        //- Chemistry properties
+        IOdictionary chemistryProperties_;
+
+        //- Model turbulent reaction?
+        Switch turbulentReaction_;
+
+        //- Mixing coefficient
+        dimensionedScalar Cmix_;
+
+        //- inert specie name
         word inertSpecie_;
 
         //- Density
@@ -148,12 +157,6 @@ class reactingFluid
 
         //- field list
         multivariateSurfaceInterpolationScheme<scalar>::fieldTable fields_;
-
-        //- Model turbulent reaction?
-        Switch turbulentReaction_;
-
-        //- Mixing coefficient
-        dimensionedScalar Cmix_;
 
         //- Chemical source term
         DimensionedField<scalar, volMesh> chemistrySh_;

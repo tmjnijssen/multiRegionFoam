@@ -42,7 +42,7 @@ psi_ = lookupOrRead<volScalarField>
 hs_ = lookupOrRead<volScalarField>
 (
     mesh(),
-    "h",
+    "hs",
     true,
     true,
     thermo.hs()
