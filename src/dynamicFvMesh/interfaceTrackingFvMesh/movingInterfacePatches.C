@@ -1147,30 +1147,30 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
 
         const volVectorField& U =
             mesh().objectRegistry::lookupObject<volVectorField>("U");
-            
+
         scalarField meshPhi = sweptVolCorr;
-        
+
         if (mesh().objectRegistry::foundObject<volScalarField>("rho"))
         {
             const volScalarField& rho =
                 mesh().objectRegistry::lookupObject<volScalarField>("rho");
-                
+
             meshPhi = fvc::meshPhi(rho, U)().boundaryField()[patchID()];
         }
         else
         {
-            meshPhi = fvc::meshPhi(U)().boundaryField()[patchID()];      
+            meshPhi = fvc::meshPhi(U)().boundaryField()[patchID()];
         }
-        
+
         sweptVolCorr -= meshPhi;
-            
+
          // MP - Mesh Motion due to mass Transfer
         if (aMesh().mesh().objectRegistry::found("mDotInterface"))
         {
             const areaScalarField& mDot =
                 aMesh().mesh().objectRegistry::lookupObject<areaScalarField>("mDotInterface");
             scalarField massTransferPhi = sweptVolCorr*0.0;
-            const scalarField& Sf = aMesh().S();    
+            const scalarField& Sf = aMesh().S();
 
             scalar rho1 = 0.0;
 
@@ -1181,6 +1181,8 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
 
                 const scalarField& rhoS = rho.boundaryField()[patchID()];
 
+                // Volume flux that leads to interface tracking
+                // should be computed based on the fact which region is confined
                 massTransferPhi = mDot.internalField()/rhoS*Sf;
 
                 rho1 = average(rhoS);
@@ -1201,7 +1203,7 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
             scalar rho2 = 0.0;
 
             if (nbrMesh().objectRegistry::foundObject<volScalarField>("rho"))
-            {  
+            {
                 const volScalarField& rhoNbr =
                     nbrMesh().objectRegistry::lookupObject<volScalarField>("rho");
 
@@ -1227,7 +1229,7 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
             {
                 sweptVolCorr += massTransferPhi;
             }
-            
+
         }
         Info<< "mesh.phi boundary field BEFORE mesh motion :"
             << " sum local = " << gSum(mag(mesh().phi().boundaryField()[patchID()]))

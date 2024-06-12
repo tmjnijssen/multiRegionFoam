@@ -23,7 +23,7 @@ boundaryField
 {
     bottom
     {
-        type            fixedValue;
+        type            zeroGradient;
         value           uniform (0 0 0);
     }
     walls

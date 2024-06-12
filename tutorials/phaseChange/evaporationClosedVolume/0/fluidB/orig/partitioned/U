@@ -33,7 +33,7 @@ boundaryField
         nonOrthCorr             false;
         value                   uniform (0 0 0);
     }
-    
+
     frontAndBackPlanes
     {
         type            empty;
@@ -47,11 +47,10 @@ boundaryField
         type            fixedValue;
         value           uniform (0 0 0);
     }
-    
+
     top
     {
-        type            zeroGradient;
-        inletValue      uniform (0 0 0);
+        type            fixedValue;
         value           uniform (0 0 0);
     }
 }
