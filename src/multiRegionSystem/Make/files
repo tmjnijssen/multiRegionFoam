@@ -57,7 +57,6 @@ $(partitionedCoupled)/regionCoupledVelocityFlux/regionCoupledVelocityFlux.C
 $(partitionedCoupled)/regionCoupledPressureValue/regionCoupledPressureValue.C
 $(partitionedCoupled)/regionCoupledPressureFlux/regionCoupledPressureFlux.C
 $(partitionedCoupled)/regionCoupledTraction/regionCoupledTraction.C
-$(partitionedCoupled)/regionCoupledKineticPressureValue/regionCoupledKineticPressureValue.C
 $(partitionedCoupled)/regionCoupledMassTransferVelocityValue/regionCoupledMassTransferVelocityValue.C
 $(partitionedCoupled)/regionCoupledPhaseChangeHeatFlux/regionCoupledPhaseChangeHeatFlux.C
 
@@ -96,6 +95,7 @@ $(regions)/solidStVK/solidStVK.C
 general = ./../finiteVolume/cfdTools/general
 $(general)/correctClosedVolumePhi/correctClosedVolumePhi.C
 $(general)/correctSpaceVolumePhi/correctSpaceVolumePhi.C
+$(general)/correctClosedVolumePhiPimple/correctClosedVolumePhiPimple.C
 
 
 
