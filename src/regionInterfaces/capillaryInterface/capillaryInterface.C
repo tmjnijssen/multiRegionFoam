@@ -199,43 +199,36 @@ void Foam::regionInterfaces::capillaryInterface::correctUsBoundaryConditions()
 
     forAll(Us().boundaryField(), patchI)
     {
-        if
-        (
-            UsPtr_().boundaryField()[patchI].type()
-         == calculatedFaPatchVectorField::typeName
-        )
+        vectorField& pUs = Us().boundaryField()[patchI];
+
+        pUs = Us().boundaryField()[patchI].patchInternalField();
+
+        label ngbPolyPatchID =
+            aMesh().boundary()[patchI].ngbPolyPatchIndex();
+
+        if (ngbPolyPatchID != -1)
         {
-            vectorField& pUs = Us().boundaryField()[patchI];
-
-            pUs = Us().boundaryField()[patchI].patchInternalField();
-
-            label ngbPolyPatchID =
-                aMesh().boundary()[patchI].ngbPolyPatchIndex();
-
-            if (ngbPolyPatchID != -1)
-            {
-                if
+            if
+            (
                 (
-                    (
-                        U.boundaryField()[ngbPolyPatchID].type()
-                     == slipFvPatchVectorField::typeName
-                    )
-                 ||
-                    (
-                        U.boundaryField()[ngbPolyPatchID].type()
-                     == symmetryFvPatchVectorField::typeName
-                    )
+                    U.boundaryField()[ngbPolyPatchID].type()
+                    == slipFvPatchVectorField::typeName
                 )
-                {
-                    vectorField N
-                    (
-                        aMesh().boundary()[patchI].ngbPolyPatchFaceNormals()
-                    );
-
-                    pUs -= N*(N&pUs);
-                }
+                ||
+                (
+                    U.boundaryField()[ngbPolyPatchID].type()
+                    == symmetryFvPatchVectorField::typeName
+                )
+            )
+            {
+                vectorField N
+                (
+                    aMesh().boundary()[patchI].ngbPolyPatchFaceNormals()
+                );
+                pUs -= N*(N&pUs);
             }
         }
+        
     }
 
     Us().correctBoundaryConditions();
@@ -257,6 +250,7 @@ void Foam::regionInterfaces::capillaryInterface::updateUs()
     Us().internalField() = p.lookupPatchField<volVectorField, vector>(U.name());
 
     correctUsBoundaryConditions();
+
 }
 
 void Foam::regionInterfaces::capillaryInterface::updatePhis()
