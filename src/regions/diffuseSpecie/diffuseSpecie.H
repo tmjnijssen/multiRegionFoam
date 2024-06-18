@@ -111,6 +111,12 @@ class diffuseSpecie
 
         volScalarField Dpore_;
 
+        volScalarField k1_;
+        volScalarField K1_;
+        volScalarField k2_;
+        volScalarField K2_;
+
+
         //- Pore diffusion field and adsorption rate
         autoPtr<volScalarField> Dp_;
         autoPtr<volScalarField> dqdtCO2_;
@@ -124,6 +130,10 @@ class diffuseSpecie
 protected:
 
         //- Species and specie loadings
+         autoPtr<volScalarField> R2NCO2_;
+         autoPtr<volScalarField> HCO3_;
+         autoPtr<volScalarField> R2NH_;
+         autoPtr<volScalarField> R2NH2p_;
          autoPtr<volScalarField> qR2NCO2_;
          autoPtr<volScalarField> qHCO3_;
          autoPtr<volScalarField> CO2_;
@@ -160,12 +170,52 @@ public:
 
         const volScalarField& H2O() const
         {
-            return H2O();
+            return H2O_();
         }
 
         volScalarField& H2O()
         {
             return H2O_();
+        }
+
+        const volScalarField& HCO3() const
+        {
+            return HCO3_();
+        }
+
+        volScalarField& HCO3()
+        {
+            return HCO3_();
+        }
+
+        const volScalarField& R2NCO2() const
+        {
+            return R2NCO2_();
+        }
+
+        volScalarField& R2NCO2()
+        {
+            return R2NCO2_();
+        }
+
+        const volScalarField& R2NH() const
+        {
+            return R2NH_();
+        }
+
+        volScalarField& R2NH()
+        {
+            return R2NH_();
+        }
+
+        const volScalarField& R2NH2p() const
+        {
+            return R2NH2p_();
+        }
+
+        volScalarField& R2NH2p()
+        {
+            return R2NH2p_();
         }
 
         const volScalarField& qHCO3() const
