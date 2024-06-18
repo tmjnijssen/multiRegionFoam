@@ -82,6 +82,9 @@ $(regions)/region/regionTypeList.C
 $(regions)/conductTemperature/conductTemperature.C
 $(regions)/transportTemperature/transportTemperature.C
 
+$(regions)/transportSpecie/transportSpecie.C
+$(regions)/diffuseSpecie/diffuseSpecie.C
+
 $(regions)/transportCO2/transportCO2.C
 $(regions)/transportH2O/transportH2O.C
 $(regions)/diffuseCO2/diffuseCO2.C
