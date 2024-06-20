@@ -160,6 +160,32 @@ Foam::regionTypes::diffuseSpecie::diffuseSpecie
         mesh(),
         dimensionedScalar(sorbentProperties_.lookup("Dpore"))
     ),
+    HrCO2_
+    (
+        IOobject
+        (
+            "HrCO2",
+            mesh().time().timeName(),
+            mesh(),
+            IOobject::READ_IF_PRESENT,
+            IOobject::NO_WRITE
+        ),
+        mesh(),
+        dimensionedScalar(sorbentProperties_.lookup("HrCO2"))
+    ),
+    HrH2O_
+    (
+        IOobject
+        (
+            "HrH2O",
+            mesh().time().timeName(),
+            mesh(),
+            IOobject::READ_IF_PRESENT,
+            IOobject::NO_WRITE
+        ),
+        mesh(),
+        dimensionedScalar(sorbentProperties_.lookup("HrH2O"))
+    ),
 
     Dp_(nullptr),
     CO2_(nullptr),
@@ -189,6 +215,7 @@ Foam::regionTypes::diffuseSpecie::diffuseSpecie
     H2O_ = lookupOrRead<volScalarField>(mesh(), "H2O");
     R2NCO2_ = lookupOrRead<volScalarField>(mesh(), "R2NCO2");
     HCO3_ = lookupOrRead<volScalarField>(mesh(), "HCO3");
+     R2NH_ = lookupOrRead<volScalarField>(mesh(), "R2NH");
     R2NH2p_ = lookupOrRead<volScalarField>(mesh(), "R2NH2p");
     dqdtH2O_ = lookupOrRead<volScalarField>(mesh(), "dqdtH2O");
     dqdtCO2_ = lookupOrRead<volScalarField>(mesh(), "dqdtCO2");
@@ -218,19 +245,21 @@ Foam::scalar Foam::regionTypes::diffuseSpecie::getMinDeltaT()
 
 void Foam::regionTypes::diffuseSpecie::setCoupledEqns()
 {
+    HCO2_() = HrCO2_*CO2_();
+    HH2O_() = HrH2O_*H2O_();
     
     CO2Eqn =
     (
         fvm::ddt(CO2_())
      ==
-        fvm::laplacian(Dp_(), CO2_(), "laplacian(Dp,CO2)") - (1-eps_/eps_)*(k1_*(CO2_()*R2NCO2_()*R2NCO2_())-(1/K1_)*R2NH2p_()*R2NCO2_())
+        fvm::laplacian(Dp_(), CO2_(), "laplacian(Dp,CO2)") - (1-eps_/eps_*eps_)*dqdtCO2_()
     );
 
     H2OEqn =
     (
         fvm::ddt(H2O_())
      ==
-        fvm::laplacian(Dp_(), H2O_(), "laplacian(Dp,H2O)") - (1-eps_/eps_)*(k2_*(CO2_()*H2O_()*R2NH_())-(1/K2_)*R2NH2p_()*HCO3_())
+        fvm::laplacian(Dp_(), H2O_(), "laplacian(Dp,H2O)") - (1-eps_/eps_)*dqdtCO2_()
     );
 
     fvScalarMatrices.set
@@ -250,7 +279,30 @@ void Foam::regionTypes::diffuseSpecie::postSolve()
 
 void Foam::regionTypes::diffuseSpecie::solveRegion()
 {
-    // do nothing, add as required
+    R2NCO2Eqn =
+    (
+        fvm::ddt(R2NCO2_())
+     ==
+        fvm::laplacian(Dp_(), HCO2_(), "laplacian(Dp,HCO2)") - ((1-eps_)/(eps_*eps_))*(k1_*(HCO2_()*R2NCO2_()*R2NCO2_())-(1/K1_)*R2NH2p_()*R2NCO2_())
+    );
+
+    
+    HCO3Eqn =
+    (
+        fvm::ddt(HCO3_())
+     ==
+        fvm::laplacian(Dp_(), HH2O_(), "laplacian(Dp,HH2O)") - (1-eps_/eps_)*(k2_*(HCO2_()*HH2O_()*R2NH_())-(1/K2_)*R2NH2p_()*HCO3_())
+    );
+
+    fvScalarMatrices.set
+    (
+        (R2NCO2_().name(), HCO3_().name(), HCO2_().name(), HH2O_().name(), R2NH_().name(), R2NH2p_().name())
+      + mesh().name() + "Mesh"
+      + diffuseSpecie::typeName + "Type"
+      + "Eqn",
+        (&R2NCO2Eqn(), &HCO3Eqn())
+    );
+    
 }
 
 void Foam::regionTypes::diffuseSpecie::prePredictor()

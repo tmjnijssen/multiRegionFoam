@@ -115,6 +115,9 @@ class diffuseSpecie
         volScalarField K1_;
         volScalarField k2_;
         volScalarField K2_;
+        volScalarField HrCO2_;
+        volScalarField HrH2O_;
+
 
 
         //- Pore diffusion field and adsorption rate
@@ -126,6 +129,8 @@ class diffuseSpecie
         //- Cached temperature matrix
         tmp<fvScalarMatrix> CO2Eqn;
         tmp<fvScalarMatrix> H2OEqn;
+        tmp<fvScalarMatrix> R2NCO2Eqn;
+        tmp<fvScalarMatrix> HCO3Eqn;
 
 protected:
 
@@ -138,6 +143,8 @@ protected:
          autoPtr<volScalarField> qHCO3_;
          autoPtr<volScalarField> CO2_;
          autoPtr<volScalarField> H2O_;
+         autoPtr<volScalarField> HCO2_;
+         autoPtr<volScalarField> HH2O_;
 
 
 public:
