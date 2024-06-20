@@ -259,7 +259,7 @@ void Foam::regionTypes::diffuseSpecie::setCoupledEqns()
     (
         fvm::ddt(H2O_())
      ==
-        fvm::laplacian(Dp_(), H2O_(), "laplacian(Dp,H2O)") - (1-eps_/eps_)*dqdtCO2_()
+        fvm::laplacian(Dp_(), H2O_(), "laplacian(Dp,H2O)") - (1-eps_/eps_*eps_)*dqdtCO2_()
     );
 
     fvScalarMatrices.set
@@ -291,7 +291,7 @@ void Foam::regionTypes::diffuseSpecie::solveRegion()
     (
         fvm::ddt(HCO3_())
      ==
-        fvm::laplacian(Dp_(), HH2O_(), "laplacian(Dp,HH2O)") - (1-eps_/eps_)*(k2_*(HCO2_()*HH2O_()*R2NH_())-(1/K2_)*R2NH2p_()*HCO3_())
+        fvm::laplacian(Dp_(), HH2O_(), "laplacian(Dp,HH2O)") - (1-eps_/eps_*eps_)*(k2_*(HCO2_()*HH2O_()*R2NH_())-(1/K2_)*R2NH2p_()*HCO3_())
     );
 
     fvScalarMatrices.set
