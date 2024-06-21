@@ -89,7 +89,7 @@ PIMPLE
 relaxationFactors
 {}
 
-//hasSpacePatch no;
+closedVolume no;
 
 
 // ************************************************************************* //

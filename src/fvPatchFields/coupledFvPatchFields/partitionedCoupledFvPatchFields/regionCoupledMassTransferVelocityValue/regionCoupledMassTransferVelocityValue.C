@@ -139,7 +139,6 @@ tmp<vectorField> Foam::regionCoupledMassTransferVelocityValue::valueJump() const
         .lookup("rho")
     ); 
     const scalarField mDots = interpolateFromNbrField<scalar>(massTrInterface().mDotS());
-    Info << mDots << endl;
     // [MP] Not smartest way to do the if. Only way to walk around bugs deriving by not defin durectly a tmp.
     if (rhoFluid < rhoFluidNbr)
     {

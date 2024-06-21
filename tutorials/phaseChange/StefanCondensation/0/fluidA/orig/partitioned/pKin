@@ -33,7 +33,7 @@ boundaryField
     }
     interface
     {
-        type                    regionCoupledKineticPressureValue;
+        type                    regionCoupledPressureValue;
         k                       "v";
         neighbourRegionName     fluidB;
         neighbourPatchName      interfaceShadow;

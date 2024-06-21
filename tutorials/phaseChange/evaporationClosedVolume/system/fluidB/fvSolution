@@ -91,7 +91,7 @@ PIMPLE
 relaxationFactors
 {}
 
-closedVolume yes;
+closedVolume no;
 
 
 // ************************************************************************* //
