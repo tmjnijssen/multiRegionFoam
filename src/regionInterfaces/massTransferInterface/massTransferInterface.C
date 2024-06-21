@@ -193,7 +193,7 @@ void Foam::regionInterfaces::massTransferInterface::updateMDotS()
     scalarField sF = saturatedFlux();
     mDotS().internalField() = sF/hlv_;
     mDotInterface = mDotS();
-    Info << "mDot Inteface: " << sum(mDotInterface) << endl;
+    Info << meshA().time().value() << " mDot Inteface: " << sum(mDotInterface*aMesh().S()*meshA().time().deltaT().value()).value() << " " << sum(mDotInterface*aMesh().S()).value() << " " << gSum(meshA().V()) << " " << gSum(meshB().V()) << endl;
 }
 
 void Foam::regionInterfaces::massTransferInterface::correct()

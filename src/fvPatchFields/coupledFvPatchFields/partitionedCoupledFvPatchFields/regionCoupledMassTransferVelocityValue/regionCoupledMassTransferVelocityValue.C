@@ -91,11 +91,23 @@ void Foam::regionCoupledMassTransferVelocityValue::updatePhi()
     surfaceScalarField nbrPhi =
         nbrMesh().lookupObject<surfaceScalarField>("phi");
 
+    dimensionedScalar rhoFluid
+    (
+        refMesh().lookupObject<IOdictionary>("transportProperties")
+        .lookup("rho")
+    );
+    dimensionedScalar rhoFluidNbr
+    (
+        nbrMesh().lookupObject<IOdictionary>("transportProperties")
+        .lookup("rho")
+    ); 
+    const scalarField mDots = interpolateFromNbrField<scalar>(massTrInterface().mDotS());
+
     //- Impose interpolated flux field
     patchPhiField = interpolateFromNbrField<scalar>
         (
             nbrPatch().patchField<surfaceScalarField, scalar>(nbrPhi)
-        )*(-1.); // consider outer normals pointing in opposite directions
+        )*(-1.) + (-1.0/rhoFluidNbr.value() + 1.0/rhoFluid.value())*mDots*refMesh().boundary()[refPatchID()].magSf(); // consider outer normals pointing in opposite directions
 }
 
 
@@ -139,28 +151,15 @@ tmp<vectorField> Foam::regionCoupledMassTransferVelocityValue::valueJump() const
         .lookup("rho")
     ); 
     const scalarField mDots = interpolateFromNbrField<scalar>(massTrInterface().mDotS());
-    // [MP] Not smartest way to do the if. Only way to walk around bugs deriving by not defin durectly a tmp.
-    if (rhoFluid < rhoFluidNbr)
-    {
-        return
-        (
-            nf*(-(nf & UsNbrToOwn)
-            + meshPhi/
-            refMesh().boundary()[refPatchID()].magSf()
-            + mDots/rhoFluid.value())//*UCoeff.value()
-        );
-    }
-    else
-    {
-        return
-        (
-            
-            nf*(-(nf & UsNbrToOwn)
-            + meshPhi/
-            refMesh().boundary()[refPatchID()].magSf()
-            - mDots/rhoFluid.value())//*UCoeff.value()
-        );
-    }
+
+    return
+    (
+        nf*(-(nf & UsNbrToOwn)
+        + meshPhi/
+        refMesh().boundary()[refPatchID()].magSf()
+        + mDots/rhoFluid.value())
+    );
+
 }
 
 //- Zero velocity jump

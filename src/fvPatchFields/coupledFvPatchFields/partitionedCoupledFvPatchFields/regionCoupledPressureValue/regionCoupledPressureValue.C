@@ -104,6 +104,25 @@ tmp<scalarField> regionCoupledPressureValue::valueJump() const
 
     dimensionedVector g (capInterface().gravitationalProperties().lookup("g"));
 
+    const volVectorField& U =
+    refMesh().objectRegistry::lookupObject<volVectorField>("U");
+
+    scalarField meshPhi = 0.0*fvc::meshPhi(U)().boundaryField()[refPatchID()];
+    
+    if (refMesh().objectRegistry::foundObject<volScalarField>("rho"))
+    {
+        const volScalarField& rho =
+            refMesh().objectRegistry::lookupObject<volScalarField>("rho");
+            
+        meshPhi = fvc::meshPhi(rho, U)().boundaryField()[refPatchID()];
+    }
+    else
+    {
+        meshPhi = fvc::meshPhi(U)().boundaryField()[refPatchID()];      
+    }
+
+    vectorField nB = refMesh().boundary()[refPatchID()].nf();
+
     dimensionedScalar muFluidNbr
     (
         nbrMesh().lookupObject<IOdictionary>("transportProperties")
@@ -128,6 +147,8 @@ tmp<scalarField> regionCoupledPressureValue::valueJump() const
         .lookup("rho")
     );
 
+    // Normal component of the relative velocity at interface
+    const scalarField UsNRel = (nB & U.boundaryField()[refPatchID()]) - meshPhi/refMesh().boundary()[refPatchID()].magSf();
 
     if (this->dimensionedInternalField().name() == "pKin")
     {
@@ -146,7 +167,6 @@ tmp<scalarField> regionCoupledPressureValue::valueJump() const
             .patchField<volScalarField, scalar>(nbrKinPressure)
         );
 
-
         tmp<scalarField> pressureJump =  
         (
                 (
@@ -160,6 +180,7 @@ tmp<scalarField> regionCoupledPressureValue::valueJump() const
                     - pRefPoint
                     ) & g.value()
                 )
+            - (1.0/rhoFluid.value() - 1.0/rhoFluidNbr.value())*rhoFluid.value()*Foam::pow((nB & U.boundaryField()[refPatchID()]) - meshPhi/refMesh().boundary()[refPatchID()].magSf(),2)
             )/rhoFluid.value()
             - kinPressureNbrToOwn
         );

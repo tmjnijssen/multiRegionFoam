@@ -1169,10 +1169,11 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
         {
             const areaScalarField& mDot =
                 aMesh().mesh().objectRegistry::lookupObject<areaScalarField>("mDotInterface");
-            scalarField massTransferPhi = sweptVolCorr*0.0;
-            const scalarField& Sf = aMesh().S();
 
-            scalar rho1 = 0.0;
+            scalarField volTransfer = sweptVolCorr*0.0;
+
+            const scalarField& Sf = aMesh().S();    
+            volTransfer = mDot.internalField()*Sf;
 
             if (mesh().objectRegistry::foundObject<volScalarField>("rho"))
             {
@@ -1181,11 +1182,7 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
 
                 const scalarField& rhoS = rho.boundaryField()[patchID()];
 
-                // Volume flux that leads to interface tracking
-                // should be computed based on the fact which region is confined
-                massTransferPhi = mDot.internalField()/rhoS*Sf;
-
-                rho1 = average(rhoS);
+                volTransfer /= rhoS;
             }
             else
             {
@@ -1195,41 +1192,10 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
                     .lookup("rho")
                 );
 
-                massTransferPhi = mDot.internalField()/rhoFluid.value()*Sf;
-
-                rho1 = rhoFluid.value();
+                volTransfer /=rhoFluid.value();
             }
 
-            scalar rho2 = 0.0;
-
-            if (nbrMesh().objectRegistry::foundObject<volScalarField>("rho"))
-            {
-                const volScalarField& rhoNbr =
-                    nbrMesh().objectRegistry::lookupObject<volScalarField>("rho");
-
-                const scalarField& rhoNbrS = rhoNbr.boundaryField()[nbrPatchID()];
-
-                rho2 = average(rhoNbrS);
-            }
-            else
-            {
-                dimensionedScalar rhoFluidNbr
-                (
-                    nbrMesh().lookupObject<IOdictionary>("transportProperties")
-                    .lookup("rho")
-                );
-                rho2 = rhoFluidNbr.value();
-            }
-
-            if(rho1 < rho2)
-            {
-                sweptVolCorr -= massTransferPhi;
-            }
-            else
-            {
-                sweptVolCorr += massTransferPhi;
-            }
-
+            sweptVolCorr += volTransfer;           
         }
         Info<< "mesh.phi boundary field BEFORE mesh motion :"
             << " sum local = " << gSum(mag(mesh().phi().boundaryField()[patchID()]))

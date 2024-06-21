@@ -85,31 +85,6 @@ regionCoupledPhaseChangeHeatFlux
 
 tmp<scalarField> regionCoupledPhaseChangeHeatFlux::fluxJump() const
 {
-
-    // Lookup neighbouring patch field
-    volScalarField nbrTField =
-        nbrMesh().lookupObject<volScalarField>
-        (
-            // same field name as on this side
-            this->dimensionedInternalField().name()
-        );
-
-    // Interpolate flux face values from neighbour patch
-    tmp<scalarField> tnbrTFlux =
-        refCast<const genericRegionCoupledJumpFvPatchField<scalar>>
-        (
-            nbrPatch()
-            .patchField<volScalarField, scalar>(nbrTField)
-        ).flux();
-
-    const scalarField& nbrTFlux = tnbrTFlux();
-
-    // Calculate interpolated patch field
-    scalarField TfluxNbrToOwn = interpolateFromNbrField<scalar>(nbrTFlux);
-
-    // Enforce flux matching
-    TfluxNbrToOwn *= -1.0;
-
     const areaScalarField& mDots = massTransInterface().mDotS();
     const areaScalarField& hlv = massTransInterface().hlv();
 

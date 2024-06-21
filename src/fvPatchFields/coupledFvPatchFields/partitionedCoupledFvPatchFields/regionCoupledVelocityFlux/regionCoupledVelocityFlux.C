@@ -115,7 +115,9 @@ tmp<vectorField> regionCoupledVelocityFlux::fluxJump() const
     const areaVectorField& Us = capInterface().Us();
 
     areaScalarField divSU = fac::div(Us);
-    divSU.correctBoundaryConditions();
+
+    // [MP] Already done in fac::div
+    //divSU.correctBoundaryConditions();
 
     areaTensorField gradSU = fac::grad(Us);
 
@@ -196,6 +198,7 @@ tmp<vectorField> regionCoupledVelocityFlux::fluxJump() const
                 << exit(FatalError);        
         } 
     } 
+
     return
     (
       - nf*(nf & UfluxNbrToOwn)
