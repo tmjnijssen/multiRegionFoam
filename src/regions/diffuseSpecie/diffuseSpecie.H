@@ -101,7 +101,7 @@ class diffuseSpecie
 
         //- specific heat
         // dimensionedScalar t_;
-        volScalarField t_;
+        volScalarField tau_;
 
         //- density
         // dimensionedScalar eps_;
@@ -115,6 +115,10 @@ class diffuseSpecie
         volScalarField K1_;
         volScalarField k2_;
         volScalarField K2_;
+        volScalarField k3_;
+        volScalarField K3_;
+        volScalarField k4_;
+        volScalarField K4_;
         volScalarField HrCO2_;
         volScalarField HrH2O_;
 
@@ -129,7 +133,11 @@ class diffuseSpecie
         //- Cached temperature matrix
         tmp<fvScalarMatrix> CO2Eqn;
         tmp<fvScalarMatrix> H2OEqn;
+        tmp<fvScalarMatrix> dqdtCO2Eqn;
+        tmp<fvScalarMatrix> dqdtH2OEqn;
         tmp<fvScalarMatrix> R2NCO2Eqn;
+        tmp<fvScalarMatrix> R2NH2pEqn;
+        tmp<fvScalarMatrix> R2NHEqn;
         tmp<fvScalarMatrix> HCO3Eqn;
 
 protected:
