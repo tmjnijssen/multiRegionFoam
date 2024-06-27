@@ -287,7 +287,7 @@ void Foam::regionTypes::diffuseSpecie::solveRegion()
     (
         fvm::ddt(R2NCO2_())
      ==
-        fvm::laplacian(Dp_(), HCO2_(), "laplacian(Dp,HCO2)") - ((1-eps_)/(eps_*eps_))*(k1_*(HCO2_()*R2NCO2_()*R2NCO2_())-(1/K1_)*R2NH2p_()*R2NCO2_())
+        - ((1-eps_)/(eps_*eps_))*(k1_*(HCO2_()*R2NCO2_()*R2NCO2_())-(1/K1_)*R2NH2p_()*R2NCO2_())
     );
 
     R2NCO2Eqn().solve();
@@ -296,7 +296,7 @@ void Foam::regionTypes::diffuseSpecie::solveRegion()
     (
         fvm::ddt(HCO3_())
      ==
-        fvm::laplacian(Dp_(), HH2O_(), "laplacian(Dp,HH2O)") - ((1-eps_)/(eps_*eps_))*(k2_*(HCO2_()*HH2O_()*R2NH_())-(1/K2_)*R2NH2p_()*HCO3_())
+        - ((1-eps_)/(eps_*eps_))*(k2_*(HCO2_()*HH2O_()*R2NH_())-(1/K2_)*R2NH2p_()*HCO3_())
     );
 
     HCO3Eqn().solve();
