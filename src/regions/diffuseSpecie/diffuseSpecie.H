@@ -115,10 +115,6 @@ class diffuseSpecie
         volScalarField K1_;
         volScalarField k2_;
         volScalarField K2_;
-        volScalarField k3_;
-        volScalarField K3_;
-        volScalarField k4_;
-        volScalarField K4_;
         volScalarField HrCO2_;
         volScalarField HrH2O_;
 
