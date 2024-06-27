@@ -136,7 +136,7 @@ void Foam::regionTypes::transportSpecie::setCoupledEqns()
         
        (
             fvm::ddt(CO2_())
-          + fvm::div(phi_(), CO2_())
+          + (1/rho_())*fvm::div(phi_(), CO2_())
         )
      ==
         fvm::laplacian(De_(), CO2_())
@@ -147,7 +147,7 @@ void Foam::regionTypes::transportSpecie::setCoupledEqns()
         
        (
             fvm::ddt(H2O_())
-          + fvm::div(phi_(), H2O_())
+          + (1/rho_())*fvm::div(phi_(), H2O_())
         )
      ==
         fvm::laplacian(De_(), H2O_())
