@@ -99,56 +99,48 @@ class diffuseSpecie
         //- transport properties dictionary
         IOdictionary sorbentProperties_;
 
-        //- specific heat
-        // dimensionedScalar t_;
-        volScalarField tau_;
-
-        //- density
-        // dimensionedScalar eps_;
+        //- porosity
         volScalarField eps_;
 
-        // dimensionedScalar Dpore_;
-
-        volScalarField Dpore_;
-
+        //- carbamate reaction rate
         volScalarField k1_;
+
+        //- carbamate equilibrium constant
         volScalarField K1_;
+
+        //- bicarbonate reaction rate
         volScalarField k2_;
+
+        //- bicarbonate equilibrium constant
         volScalarField K2_;
+
+        //- pore diffusion coefficients
+        volScalarField DporeCO2_;
+        volScalarField DporeH2O_;
+
+        //- Henry coefficients
         volScalarField HrCO2_;
         volScalarField HrH2O_;
 
+        //- Adsorption rates
+        volScalarField dqdtCO2_;
+        volScalarField dqdtH2O_;
 
-
-        //- Pore diffusion field and adsorption rate
-        autoPtr<volScalarField> Dp_;
-        autoPtr<volScalarField> dqdtCO2_;
-        autoPtr<volScalarField> dqdtH2O_;
+        //- Concentrations
+        volScalarField R2NH_;
+        volScalarField R2NH2p_;
+        volScalarField R2NCO2m_;
+        volScalarField HCO3m_;
          
-
-        //- Cached temperature matrix
+        //- Cached concentration matrices
         tmp<fvScalarMatrix> CO2Eqn;
         tmp<fvScalarMatrix> H2OEqn;
-        tmp<fvScalarMatrix> dqdtCO2Eqn;
-        tmp<fvScalarMatrix> dqdtH2OEqn;
-        tmp<fvScalarMatrix> R2NCO2Eqn;
-        tmp<fvScalarMatrix> R2NH2pEqn;
-        tmp<fvScalarMatrix> R2NHEqn;
-        tmp<fvScalarMatrix> HCO3Eqn;
 
 protected:
 
-        //- Species and specie loadings
-         autoPtr<volScalarField> R2NCO2_;
-         autoPtr<volScalarField> HCO3_;
-         autoPtr<volScalarField> R2NH_;
-         autoPtr<volScalarField> R2NH2p_;
-         autoPtr<volScalarField> qR2NCO2_;
-         autoPtr<volScalarField> qHCO3_;
+        //- Gas phase concentrations
          autoPtr<volScalarField> CO2_;
          autoPtr<volScalarField> H2O_;
-         autoPtr<volScalarField> HCO2_;
-         autoPtr<volScalarField> HH2O_;
 
 
 public:
@@ -187,76 +179,6 @@ public:
         volScalarField& H2O()
         {
             return H2O_();
-        }
-
-        const volScalarField& HCO3() const
-        {
-            return HCO3_();
-        }
-
-        volScalarField& HCO3()
-        {
-            return HCO3_();
-        }
-
-        const volScalarField& R2NCO2() const
-        {
-            return R2NCO2_();
-        }
-
-        volScalarField& R2NCO2()
-        {
-            return R2NCO2_();
-        }
-
-        const volScalarField& R2NH() const
-        {
-            return R2NH_();
-        }
-
-        volScalarField& R2NH()
-        {
-            return R2NH_();
-        }
-
-        const volScalarField& R2NH2p() const
-        {
-            return R2NH2p_();
-        }
-
-        volScalarField& R2NH2p()
-        {
-            return R2NH2p_();
-        }
-
-        const volScalarField& qHCO3() const
-        {
-            return qHCO3_();
-        }
-
-        volScalarField& qHCO3()
-        {
-            return qHCO3_();
-        }
-
-        const volScalarField& qR2NCO2() const
-        {
-            return qR2NCO2_();
-        }
-
-        volScalarField& qR2NCO2()
-        {
-            return qR2NCO2_();
-        }
-
-        volScalarField& dqdtCO2()
-        {
-            return dqdtCO2_();
-        }
-
-        volScalarField& dqdtH2O()
-        {
-            return dqdtH2O_();
         }
 
         virtual word regionTypeName() const
