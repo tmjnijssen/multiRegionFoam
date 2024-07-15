@@ -26,15 +26,16 @@ License
 
 #include "Ostream.H"
 #include "error.H"
-#include "regionCoupledPressureValue.H"
+#include "regionCoupledMassTransferPressureValue.H"
 #include "addToRunTimeSelectionTable.H"
 #include "regionInterfaceType.H"
 #include "capillaryInterface.H"
+#include "massTransferInterface.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::regionCoupledPressureValue::
-regionCoupledPressureValue
+Foam::regionCoupledMassTransferPressureValue::
+regionCoupledMassTransferPressureValue
 (
     const fvPatch& p,
     const DimensionedField<scalar, volMesh>& iF
@@ -44,10 +45,10 @@ regionCoupledPressureValue
 {}
 
 
-Foam::regionCoupledPressureValue::
-regionCoupledPressureValue
+Foam::regionCoupledMassTransferPressureValue::
+regionCoupledMassTransferPressureValue
 (
-    const regionCoupledPressureValue& icpv,
+    const regionCoupledMassTransferPressureValue& icpv,
     const fvPatch& p,
     const DimensionedField<scalar, volMesh>& iF,
     const fvPatchFieldMapper& mapper
@@ -57,8 +58,8 @@ regionCoupledPressureValue
 {}
 
 
-Foam::regionCoupledPressureValue::
-regionCoupledPressureValue
+Foam::regionCoupledMassTransferPressureValue::
+regionCoupledMassTransferPressureValue
 (
     const fvPatch& p,
     const DimensionedField<scalar, volMesh>& iF,
@@ -69,10 +70,10 @@ regionCoupledPressureValue
 {}
 
 
-Foam::regionCoupledPressureValue::
-regionCoupledPressureValue
+Foam::regionCoupledMassTransferPressureValue::
+regionCoupledMassTransferPressureValue
 (
-    const regionCoupledPressureValue& icpv,
+    const regionCoupledMassTransferPressureValue& icpv,
     const DimensionedField<scalar, volMesh>& iF
 )
 :
@@ -82,7 +83,7 @@ regionCoupledPressureValue
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 
-tmp<scalarField> regionCoupledPressureValue::valueJump() const
+tmp<scalarField> regionCoupledMassTransferPressureValue::valueJump() const
 {
     const fvMesh& mesh = patch().boundaryMesh().mesh();
 
@@ -147,6 +148,8 @@ tmp<scalarField> regionCoupledPressureValue::valueJump() const
         .lookup("rho")
     );
 
+    const scalarField mDots = interpolateFromNbrField<scalar>(massTrInterface().mDotS());
+
     if (this->dimensionedInternalField().name() == "pKin")
     {
         // Lookup neighbouring patch field
@@ -177,6 +180,8 @@ tmp<scalarField> regionCoupledPressureValue::valueJump() const
                     - pRefPoint
                     ) & g.value()
                 )
+            - (1.0/rhoFluid.value() - 1.0/rhoFluidNbr.value())
+                *Foam::pow(mDots,2)
             )/rhoFluid.value()
             - kinPressureNbrToOwn
         );
@@ -200,6 +205,8 @@ tmp<scalarField> regionCoupledPressureValue::valueJump() const
                     - pRefPoint
                     ) & g.value()
                 )
+            - (1.0/rhoFluid.value() - 1.0/rhoFluidNbr.value())
+                *Foam::pow(mDots,2)
         );
         
         return
@@ -213,7 +220,7 @@ tmp<scalarField> regionCoupledPressureValue::valueJump() const
 
 
 const regionInterfaces::capillaryInterface&
-regionCoupledPressureValue::capInterface() const
+regionCoupledMassTransferPressureValue::capInterface() const
 {
     if(   rgInterface().type()
        != regionInterfaces::capillaryInterface::typeName )
@@ -232,6 +239,14 @@ regionCoupledPressureValue::capInterface() const
         );
 }
 
+const regionInterfaces::massTransferInterface&
+regionCoupledMassTransferPressureValue::massTrInterface() const
+{
+    return refCast<const regionInterfaces::massTransferInterface>
+        (
+            rgInterface(regionInterfaces::massTransferInterface::typeName)
+        );
+}
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
@@ -240,7 +255,7 @@ namespace Foam
 makePatchTypeField
 (
     fvPatchScalarField,
-    regionCoupledPressureValue
+    regionCoupledMassTransferPressureValue
 );
 
 } // End namespace Foam

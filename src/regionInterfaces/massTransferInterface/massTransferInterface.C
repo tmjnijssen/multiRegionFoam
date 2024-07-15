@@ -84,10 +84,7 @@ Foam::regionInterfaces::massTransferInterface::massTransferInterface
     (
         dict_.lookup("TSat")
     ),
-    mDots0_
-    (
-        dict_.lookup("mDots")
-    ),
+    mDots0_("mDot", dimMass/dimTime, 0.0),
     mDotInterface
     (
         areaScalarField
@@ -105,7 +102,8 @@ Foam::regionInterfaces::massTransferInterface::massTransferInterface
             zeroGradientFaPatchScalarField::typeName
         )
     ),
-    mDotsPtr_()
+    mDotsPtr_(),
+    fluxMTJumpPtr_()
 {}
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
@@ -113,6 +111,7 @@ Foam::regionInterfaces::massTransferInterface::massTransferInterface
 void Foam::regionInterfaces::massTransferInterface::clearOut() const
 {
     mDotsPtr_.clear();
+    fluxMTJumpPtr_.clear();
 
     regionInterfaceType::clearOut();
 }
@@ -121,52 +120,16 @@ void Foam::regionInterfaces::massTransferInterface::makeMDotS() const
 {
     if (!mDotsPtr_.empty())
     {
-        FatalErrorIn("regionInterfaceType::makemDotS()")
+        FatalErrorIn("regionInterfaceType::makePhis()")
             << "surface fluid flux already exists"
             << abort(FatalError);
     }
-    // Set patch field types for Us
+
     wordList patchFieldTypes
     (
         aMesh().boundary().size(),
         zeroGradientFaPatchVectorField::typeName
     );
-
-    forAll(aMesh().boundary(), patchI)
-    {
-        if
-        (
-            aMesh().boundary()[patchI].type()
-         == wedgeFaPatch::typeName
-        )
-        {
-            patchFieldTypes[patchI] =
-                wedgeFaPatchVectorField::typeName;
-        }
-        else
-        {
-            label ngbPolyPatchID =
-                aMesh().boundary()[patchI].ngbPolyPatchIndex();
-
-            if (ngbPolyPatchID != -1)
-            {
-                if
-                (
-                    meshA().boundary()[ngbPolyPatchID].type()
-                 == wallFvPatch::typeName
-                )
-                {
-                    WarningIn("regionInterfaceType::makeUs() const")
-                        << "Patch neighbouring to interface is wall" << nl
-                        << "Not appropriate for inlets/outlets" << nl
-                        << endl;
-
-                    patchFieldTypes[patchI] =
-                        slipFaPatchVectorField::typeName;
-                }
-            }
-        }
-    }
 
     mDotsPtr_.reset
     (
@@ -174,7 +137,7 @@ void Foam::regionInterfaces::massTransferInterface::makeMDotS() const
         (
             IOobject
             (
-                patchA().name() + "MDotS",
+                patchA().name() + "mDotS",
                 runTime().timeName(),
                 meshA(),
                 IOobject::NO_READ,
@@ -187,11 +150,58 @@ void Foam::regionInterfaces::massTransferInterface::makeMDotS() const
     );
 }
 
+void Foam::regionInterfaces::massTransferInterface::makefluxMTJump() const
+{
+    if (!fluxMTJumpPtr_.empty())
+    {
+        FatalErrorIn("regionInterfaceType::makePhis()")
+            << "surface fluid flux already exists"
+            << abort(FatalError);
+    }
+
+    wordList patchFieldTypes
+    (
+        aMesh().boundary().size(),
+        zeroGradientFaPatchVectorField::typeName
+    );
+
+    fluxMTJumpPtr_.reset
+    (
+        new areaScalarField
+        (
+            IOobject
+            (
+                patchA().name() + "fluxMTJump",
+                runTime().timeName(),
+                meshA(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            aMesh(),
+            dimensioned<scalar>("fluxMTJump", dimMass/dimTime*hlv0_.dimensions(), 0.0),
+            patchFieldTypes
+        )
+    );
+}
+
 void Foam::regionInterfaces::massTransferInterface::updateMDotS()
 {
-   
+    label curTimeIndex = meshA().time().timeIndex();
+
     scalarField sF = saturatedFlux();
-    mDotS().internalField() = sF/hlv_;
+    
+    fluxMTJump().internalField() = sF;
+    
+    if(curTimeIndex == 1)
+    {
+        mDotS().internalField() = 0.0*sF/hlv_;
+    }
+    
+    else
+    {
+        mDotS().internalField() = sF/hlv_;
+    }
+    
     mDotInterface = mDotS();
     Info << meshA().time().value() << " mDot Inteface: " << sum(mDotInterface*aMesh().S()*meshA().time().deltaT().value()).value() << " " << sum(mDotInterface*aMesh().S()).value() << " " << gSum(meshA().V()) << " " << gSum(meshB().V()) << endl;
 }
@@ -210,6 +220,16 @@ Foam::scalarField Foam::regionInterfaces::massTransferInterface::saturatedFlux()
     // Define temperature fields
     volScalarField TA = meshA().lookupObject<volScalarField>("T");
     volScalarField TB = meshB().lookupObject<volScalarField>("T");
+
+    scalarField TInterface = TA.boundaryField()[patchA().index()];
+    scalarField checkSaturation = 0.0*TInterface;
+    forAll(TInterface,faceI)
+    {
+        if(abs(TInterface[faceI] - TSat0_.value())/TSat0_.value() < 1e-3)
+        {
+            checkSaturation[faceI] = 1;
+        }
+    }
 
     // recall Thermal Conductivities
     dimensionedScalar kA

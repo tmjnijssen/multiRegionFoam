@@ -58,6 +58,7 @@ $(partitionedCoupled)/regionCoupledPressureValue/regionCoupledPressureValue.C
 $(partitionedCoupled)/regionCoupledPressureFlux/regionCoupledPressureFlux.C
 $(partitionedCoupled)/regionCoupledTraction/regionCoupledTraction.C
 $(partitionedCoupled)/regionCoupledMassTransferVelocityValue/regionCoupledMassTransferVelocityValue.C
+$(partitionedCoupled)/regionCoupledMassTransferPressureValue/regionCoupledMassTransferPressureValue.C
 $(partitionedCoupled)/regionCoupledPhaseChangeHeatFlux/regionCoupledPhaseChangeHeatFlux.C
 
 monolithicCoupled = $(fvPatchFields)/coupledFvPatchFields/monolithicCoupledFvPatchFields
@@ -91,6 +92,7 @@ $(regions)/pUCoupledIcoFluid/pUCoupledIcoFluid.C
 $(regions)/interTrackFluid/interTrackFluid.C
 $(regions)/solidStVK/momentumStabilisation/momentumStabilisation.C
 $(regions)/solidStVK/solidStVK.C
+$(regions)/transportSpecie/transportSpecie.C
 
 general = ./../finiteVolume/cfdTools/general
 $(general)/correctClosedVolumePhi/correctClosedVolumePhi.C

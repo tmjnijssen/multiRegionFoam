@@ -79,6 +79,8 @@ protected:
         //- surface flux field
         mutable autoPtr<areaScalarField> mDotsPtr_;
 
+        //- surface flux field
+        mutable autoPtr<areaScalarField> fluxMTJumpPtr_;
 private:
 
     // Private Member Functions
@@ -86,6 +88,8 @@ private:
         //- Make surface flux
         void makeMDotS() const;
 
+        //- Make surface flux
+        void makefluxMTJump() const;
 protected:
 
     // Protected Member Functions
@@ -131,6 +135,27 @@ public:
         scalarField saturatedFlux();
 
         //-- return surface flux
+        areaScalarField& fluxMTJump()
+        {
+            if (fluxMTJumpPtr_.empty())
+            {
+                makefluxMTJump();
+            }
+
+            return fluxMTJumpPtr_();
+        }
+
+        const areaScalarField& fluxMTJump() const
+        {
+            if (fluxMTJumpPtr_.empty())
+            {
+               makefluxMTJump();
+            }
+
+            return fluxMTJumpPtr_();
+        }
+
+        //-- return surface mass Transfer Rate
         areaScalarField& mDotS()
         {
             if (mDotsPtr_.empty())
