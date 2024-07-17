@@ -97,7 +97,10 @@ class diffuseSpecie
         word regionName_;
 
         //- transport properties dictionary
-        IOdictionary sorbentProperties_;
+        IOdictionary transportProperties_;
+
+        //- sorbent properties dictionary
+        IOdictionary sorbentProperties_;        
 
         //- porosity
         volScalarField eps_;

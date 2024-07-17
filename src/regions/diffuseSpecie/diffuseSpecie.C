@@ -58,6 +58,17 @@ Foam::regionTypes::diffuseSpecie::diffuseSpecie
 
     regionName_(regionName),
 
+    transportProperties_
+    (
+        IOobject
+        (
+            "transportProperties",
+            mesh().time().constant(),
+            mesh(),
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE
+        )
+    ),
     sorbentProperties_
     (
         IOobject
@@ -80,7 +91,7 @@ Foam::regionTypes::diffuseSpecie::diffuseSpecie
             IOobject::NO_WRITE
         ),
         mesh(),
-        dimensionedScalar(sorbentProperties_.lookup("eps"))
+        dimensionedScalar(transportProperties_.lookup("eps"))
     ),
     k1_
     (
@@ -145,7 +156,7 @@ Foam::regionTypes::diffuseSpecie::diffuseSpecie
             IOobject::NO_WRITE
         ),
         mesh(),
-        dimensionedScalar(sorbentProperties_.lookup("DporeCO2"))
+        dimensionedScalar(transportProperties_.lookup("DporeCO2"))
     ),
     DporeH2O_
     (
@@ -158,7 +169,7 @@ Foam::regionTypes::diffuseSpecie::diffuseSpecie
             IOobject::NO_WRITE
         ),
         mesh(),
-        dimensionedScalar(sorbentProperties_.lookup("DporeH2O"))
+        dimensionedScalar(transportProperties_.lookup("DporeH2O"))
     ),   
     HrCO2_
     (
