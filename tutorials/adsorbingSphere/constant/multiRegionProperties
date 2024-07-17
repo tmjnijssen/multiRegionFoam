@@ -1,0 +1,69 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      coupledSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+regions
+(
+    (fluid (icoFluid transportTemperature transportSpecie) )
+    (solid (conductTemperature diffuseSpecie) )
+);
+
+
+partitionedCoupling
+{
+    maxCoupleIter 6;
+}
+
+DNA
+{
+    T
+    {
+        maxCoupleIter 20;
+
+        residualControl
+        {
+            maxJumpRes 1e-07;
+            outputJumpResField no;
+            maxFluxRes 1e-07;
+            outputFluxResField no;
+        }
+    }
+    CO2
+    {
+        maxCoupleIter 20;
+
+        residualControl
+        {
+            maxJumpRes 1e-07;
+            outputJumpResField no;
+            maxFluxRes 1e-07;
+            outputFluxResField no;
+        }
+    }
+    H2O
+    {
+        maxCoupleIter 20;
+
+        residualControl
+        {
+            maxJumpRes 1e-07;
+            outputJumpResField no;
+            maxFluxRes 1e-07;
+            outputFluxResField no;
+        }
+    }  
+}
+
+// ************************************************************************* //
