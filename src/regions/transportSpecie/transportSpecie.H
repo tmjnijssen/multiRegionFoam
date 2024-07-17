@@ -97,19 +97,24 @@ class transportSpecie
 
         //surfaceScalarField phi_;
 
+        //- transport properties dictionary
+        IOdictionary transportProperties_;
+
+        //- molecular diffusion coefficient
+        dimensionedScalar DCO2_;
+        dimensionedScalar DH2O_;
+
         //- transport
         autoPtr<volVectorField> U_;
 
         //- Effective diffusivity field
-        autoPtr<volScalarField> De_;
-        
-        //- Density
-        autoPtr<volScalarField> rho_;
+        autoPtr<volScalarField> DeCO2_;
+        autoPtr<volScalarField> DeH2O_;
 
         //- flux
         autoPtr<surfaceScalarField> phi_;
 
-        //- Cached temperature matrix
+        //- Cached concentraces matrices
         tmp<fvScalarMatrix> CO2Eqn;
 
         tmp<fvScalarMatrix> H2OEqn;

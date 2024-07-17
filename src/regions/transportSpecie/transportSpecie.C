@@ -58,18 +58,31 @@ Foam::regionTypes::transportSpecie::transportSpecie
 
     regionName_(regionName),
 
+    transportProperties_
+    (
+        IOobject
+        (
+            "transportProperties",
+            mesh().time().constant(),
+            mesh(),
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE
+        )
+    ),
+    DCO2_(transportProperties_.lookup("DCO2")),
+    DH2O_(transportProperties_.lookup("DH2O")),
+
     U_(nullptr),
-    CO2_(nullptr),
-    H2O_(nullptr),
-    De_(nullptr),
+    DeCO2_(nullptr),
+    DeH2O_(nullptr),
     phi_(nullptr),
-    rho_(nullptr)
+    CO2_(nullptr),
+    H2O_(nullptr)
 {
     // set velocity field
     // Postponing field creation since U is probably provided by
     // another regionType, e.g. icoFluid, and thus to be re-used.
     U_ = lookupOrRead<volVectorField>(mesh(), "U");
-    rho_ = lookupOrRead<volScalarField>(mesh(), "rho");
 
     // set flux field
     phi_ = lookupOrRead<surfaceScalarField>
@@ -78,18 +91,27 @@ Foam::regionTypes::transportSpecie::transportSpecie
         "phi",
         false,
         true,
-        linearInterpolate(rho_()*U_()) & mesh().Sf()
+        linearInterpolate(U_()) & mesh().Sf()
     );
 
-    // set diffusivity field
-    De_ = lookupOrRead<volScalarField>
+    // set diffusivity fields
+    DeCO2_ = lookupOrRead<volScalarField>
     (
         mesh(),
-        "De", 
-        true,
+        "DCO2", 
+        DCO2_,
         true
     );
 
+    DeH2O_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        "DH2O", 
+        DH2O_,
+        true
+    );
+
+    // set concentration fields
     CO2_ = lookupOrRead<volScalarField>
     (
         mesh(),
@@ -105,8 +127,6 @@ Foam::regionTypes::transportSpecie::transportSpecie
         true,
         true
     );
-
-    // set temperature field
 }
 
 
@@ -119,7 +139,8 @@ Foam::regionTypes::transportSpecie::~transportSpecie()
 
 void Foam::regionTypes::transportSpecie::correct()
 {
-    De_().correctBoundaryConditions();
+    DeCO2_().correctBoundaryConditions();
+    DeH2O_().correctBoundaryConditions();
 }
 
 
@@ -132,34 +153,41 @@ Foam::scalar Foam::regionTypes::transportSpecie::getMinDeltaT()
 void Foam::regionTypes::transportSpecie::setCoupledEqns()
 {
     CO2Eqn =
-    (
-        
+    (  
        (
             fvm::ddt(CO2_())
-          + (1/rho_())*fvm::div(phi_(), CO2_())
+          + fvm::div(phi_(), CO2_())
         )
      ==
-        fvm::laplacian(De_(), CO2_())
-    );
-
-    H2OEqn =
-    (
-        
-       (
-            fvm::ddt(H2O_())
-          + (1/rho_())*fvm::div(phi_(), H2O_())
-        )
-     ==
-        fvm::laplacian(De_(), H2O_())
+        fvm::laplacian(DeCO2_(), CO2_())
     );
 
     fvScalarMatrices.set
     (
-        (CO2_().name(), H2O_().name())
+        CO2_().name()
       + mesh().name() + "Mesh"
       + transportSpecie::typeName + "Type"
       + "Eqn",
-        (&CO2Eqn(), &H2OEqn())
+        &CO2Eqn()
+    );
+
+    H2OEqn =
+    (  
+       (
+            fvm::ddt(H2O_())
+          + fvm::div(phi_(), H2O_())
+        )
+     ==
+        fvm::laplacian(DeH2O_(), H2O_())
+    );
+
+    fvScalarMatrices.insert
+    (
+        H2O_().name()
+      + mesh().name() + "Mesh"
+      + transportSpecie::typeName + "Type"
+      + "Eqn",
+        &H2OEqn()
     );
 }
 
