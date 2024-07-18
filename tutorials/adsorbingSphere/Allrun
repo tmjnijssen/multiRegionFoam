@@ -38,15 +38,17 @@ do
         -p|--partitioned)
             no_args=0
 
-            cp 0/fluid/orig/partitioned/T 0/fluid/.
-            cp 0/solid/orig/partitioned/T 0/solid/.
+            cp 0/fluid/orig/* 0/fluid/. 2>/dev/null
+            cp 0/solid/orig/* 0/solid/. 2>/dev/null
+            cp 0/fluid/orig/partitioned/* 0/fluid/.
+            cp 0/solid/orig/partitioned/* 0/solid/.
 
             cp constant/regionInterfacePropertiesPartitioned constant/regionInterfaceProperties
-	    cp system/fluid/createPatchDictPartitioned system/fluid/createPatchDict
-	    cp system/solid/createPatchDictPartitioned system/solid/createPatchDict
+    	    cp system/fluid/createPatchDictPartitioned system/fluid/createPatchDict
+    	    cp system/solid/createPatchDictPartitioned system/solid/createPatchDict
 
-	    ./makeMesh
-	    
+	       ./makeMesh
+
             runApplication makeFaMesh -region fluid 2>/dev/null
             runApplication -l log.makeFaMesh.solid makeFaMesh -region solid 2>/dev/null
 
@@ -54,19 +56,18 @@ do
 
         -m|--monolithic)
             no_args=0
-            monolithic=1
 
-            cp 0/fluid/orig/monolithic/T 0/fluid/.
-            cp 0/fluid/orig/monolithic/k 0/fluid/.
-            cp 0/solid/orig/monolithic/T 0/solid/.
-            cp 0/solid/orig/monolithic/k 0/solid/.
+            cp 0/fluid/orig/* 0/fluid/. 2>/dev/null
+            cp 0/solid/orig/* 0/solid/. 2>/dev/null
+            cp 0/fluid/orig/monolithic/* 0/fluid/.
+            cp 0/solid/orig/monolithic/* 0/solid/.
 
             cp constant/regionInterfacePropertiesMonolithic constant/regionInterfaceProperties
-	    cp system/fluid/createPatchDictMonolithic system/fluid/createPatchDict
-	    cp system/solid/createPatchDictMonolithic system/solid/createPatchDict
+    	    cp system/fluid/createPatchDictMonolithic system/fluid/createPatchDict
+    	    cp system/solid/createPatchDictMonolithic system/solid/createPatchDict
 
-	    ./makeMesh
-	    
+	       ./makeMesh
+
             runApplication -l log.setSet.solid setSet -region solid -batch solid.setSet 2>/dev/null
             runApplication -l log.setsToZones.solid setsToZones -region solid -noFlipMap 2>/dev/null
 
@@ -87,11 +88,6 @@ do
 
         -P|--parallel)
             no_args=0
-
-            if [ "$monolithic" -eq 1 ]; then
-                echo "\nRunning the case with monolithic coupling in parallel is currently not supported!"
-                exit 1
-            fi
 
             runApplication -l log.decomposePar.fluid decomposePar -region fluid
             runApplication -l log.decomposePar.solid  decomposePar -region solid
