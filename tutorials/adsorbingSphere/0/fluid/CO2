@@ -10,7 +10,7 @@ FoamFile
     version     2.0;
     format      ascii;
     class       volScalarField;
-    location    "0";
+    location    "0/fluid";
     object      CO2;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -23,28 +23,16 @@ boundaryField
 {
     fluid_to_solid
     {
-        type                    regionCoupledScalarJump;
+        type                    regionCoupledScalarFlux;
         interfaceType           defaultInterface;
         k                       "DCO2";
-
-        accType                 fixed;
-        relax                   1.0;
-
-        // accType              aitken;
-        // relax                0.75;
-
-        // accType              IQN-ILS;
-        // relax                0.75;
-        // couplingReuse        0; //2;
-
-
         neighbourRegionName     solid;
         neighbourPatchName      solid_to_fluid;
         neighbourFieldName      CO2;
         secondOrder             false;
         nonOrthCorr             true;
-        value                   $internalField;      
-    }  
+        value                   $internalField;
+    }
     inlet
     {
         type            fixedValue;

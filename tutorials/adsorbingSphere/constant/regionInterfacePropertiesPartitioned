@@ -30,7 +30,7 @@ partitionedCoupledPatches
         (
 	    T
 	    CO2
-	    H2O
+	    //H2O
         );
     }
 );
