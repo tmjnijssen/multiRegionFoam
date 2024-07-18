@@ -103,11 +103,20 @@ void Foam::regionCoupledMassTransferVelocityValue::updatePhi()
     ); 
     const scalarField mDots = interpolateFromNbrField<scalar>(massTrInterface().mDotS());
 
-    //- Impose interpolated flux field
+    // //- Impose interpolated flux field
+    scalar nInterfaceDir = 1;
+
+    if (capInterface().meshA() != refMesh())
+    {
+        nInterfaceDir *= -1;
+    }
+
     patchPhiField = interpolateFromNbrField<scalar>
         (
             nbrPatch().patchField<surfaceScalarField, scalar>(nbrPhi)
-        )*(-1.) + (-1.0/rhoFluidNbr.value() + 1.0/rhoFluid.value())*mDots*refMesh().boundary()[refPatchID()].magSf(); // consider outer normals pointing in opposite directions
+        )*(-1.) 
+        +nInterfaceDir*(-1.0/rhoFluidNbr.value() + 1.0/rhoFluid.value())*mDots*refMesh().boundary()[refPatchID()].magSf(); // consider outer normals pointing in opposite directions
+    //patchPhiField = -1.0/rhoFluid.value()*mDots*refMesh().boundary()[refPatchID()].magSf();
 }
 
 
@@ -116,7 +125,33 @@ tmp<vectorField> Foam::regionCoupledMassTransferVelocityValue::valueJump() const
 {
     const vectorField nf = refMesh().boundary()[refPatchID()].nf();
 
-    vectorField UsNbrToOwn = interpolateFromNbrField<vector>(capInterface().Us());
+    vectorField nEps = nf;
+
+    if (capInterface().meshA() != refMesh())
+    {
+        nEps *= -1;
+    }
+
+    // Lookup neighbouring patch field
+    const volVectorField& nbrUField =
+        nbrMesh().lookupObject<volVectorField>
+        (
+            // same field name as on this side
+            this->dimensionedInternalField().name()
+        );
+
+    // Get velocity face values from neighbour patch
+    tmp<vectorField> tnbrU =
+        refCast<const genericRegionCoupledFluxFvPatchField<vector>>
+        (
+            nbrPatch()
+            .patchField<volVectorField, vector>(nbrUField)
+        );
+
+    const vectorField& nbrU = tnbrU();
+    
+
+    vectorField UsNbrToOwn = interpolateFromNbrField<vector>(nbrU);
 
     const volVectorField& U =
         refMesh().objectRegistry::lookupObject<volVectorField>("U");
@@ -152,12 +187,43 @@ tmp<vectorField> Foam::regionCoupledMassTransferVelocityValue::valueJump() const
     ); 
     const scalarField mDots = interpolateFromNbrField<scalar>(massTrInterface().mDotS());
 
+    Info << "U Dirichlet boundary contributions: "
+         << sum((UsNbrToOwn & refMesh().boundary()[refPatchID()].Sf()) * refMesh().time().deltaT().value()) 
+         << " "
+         << sum
+            (
+                (nEps & refMesh().boundary()[refPatchID()].Sf())
+              * ((1.0/rhoFluid.value() - 1.0/rhoFluidNbr.value())*mDots)
+              * refMesh().time().deltaT().value()
+            )
+         << " "
+         << sum
+            (
+                refMesh().boundary()[refPatchID()].Sf()
+                &
+                (
+                    nf*
+                    (
+                        meshPhi / refMesh().boundary()[refPatchID()].magSf()
+                    )
+                    + nEps*mDots/rhoFluid.value()
+                )
+            ) * refMesh().time().deltaT().value()
+         << endl;
+    
+    // return
+    // (
+    //     nf*
+    //     (
+    //         -(nf & UsNbrToOwn)
+    //         + meshPhi/
+    //         refMesh().boundary()[refPatchID()].magSf()
+    //     )
+    //     + nEps*mDots/rhoFluid.value()
+    // );
     return
     (
-        nf*(-(nf & UsNbrToOwn)
-        + meshPhi/
-        refMesh().boundary()[refPatchID()].magSf()
-        + mDots/rhoFluid.value())
+        nEps*((1.0/rhoFluid.value() - 1.0/rhoFluidNbr.value())*mDots)
     );
 
 }

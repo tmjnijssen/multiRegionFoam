@@ -24,7 +24,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "regionCoupledVelocityFlux.H"
+#include "regionCoupledMassTransferVelocityFlux.H"
 #include "regionCoupledVelocityValue.H"
 #include "addToRunTimeSelectionTable.H"
 #include "primitiveFieldsFwd.H"
@@ -32,8 +32,8 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::regionCoupledVelocityFlux::
-regionCoupledVelocityFlux
+Foam::regionCoupledMassTransferVelocityFlux::
+regionCoupledMassTransferVelocityFlux
 (
     const fvPatch& p,
     const DimensionedField<vector, volMesh>& iF
@@ -43,10 +43,10 @@ regionCoupledVelocityFlux
 {}
 
 
-Foam::regionCoupledVelocityFlux::
-regionCoupledVelocityFlux
+Foam::regionCoupledMassTransferVelocityFlux::
+regionCoupledMassTransferVelocityFlux
 (
-    const regionCoupledVelocityFlux& icvf,
+    const regionCoupledMassTransferVelocityFlux& icvf,
     const fvPatch& p,
     const DimensionedField<vector, volMesh>& iF,
     const fvPatchFieldMapper& mapper
@@ -56,8 +56,8 @@ regionCoupledVelocityFlux
 {}
 
 
-Foam::regionCoupledVelocityFlux::
-regionCoupledVelocityFlux
+Foam::regionCoupledMassTransferVelocityFlux::
+regionCoupledMassTransferVelocityFlux
 (
     const fvPatch& p,
     const DimensionedField<vector, volMesh>& iF,
@@ -68,10 +68,10 @@ regionCoupledVelocityFlux
 {}
 
 
-Foam::regionCoupledVelocityFlux::
-regionCoupledVelocityFlux
+Foam::regionCoupledMassTransferVelocityFlux::
+regionCoupledMassTransferVelocityFlux
 (
-    const regionCoupledVelocityFlux& icvf,
+    const regionCoupledMassTransferVelocityFlux& icvf,
     const DimensionedField<vector, volMesh>& iF
 )
 :
@@ -80,9 +80,16 @@ regionCoupledVelocityFlux
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-tmp<vectorField> regionCoupledVelocityFlux::fluxJump() const
+tmp<vectorField> regionCoupledMassTransferVelocityFlux::fluxJump() const
 {
     const vectorField& nf = capInterface().aMesh().faceAreaNormals();
+
+    vectorField nEps = nf;
+
+    if (capInterface().meshA() != refMesh())
+    {
+        nEps *= -1;
+    }
 
     // Lookup neighbouring patch field
     const volVectorField& nbrUField =
@@ -91,6 +98,27 @@ tmp<vectorField> regionCoupledVelocityFlux::fluxJump() const
             // same field name as on this side
             this->dimensionedInternalField().name()
         );
+
+    // Get velocity face values from neighbour patch
+    tmp<vectorField> tnbrU =
+        refCast<const genericRegionCoupledJumpFvPatchField<vector>>
+        (
+            nbrPatch()
+            .patchField<volVectorField, vector>(nbrUField)
+        );
+
+    const vectorField& nbrU = tnbrU();
+
+    // Lookup neighbouring patch field
+    const volVectorField& UField =
+        refMesh().lookupObject<volVectorField>
+        (
+            // same field name as on this side
+            this->dimensionedInternalField().name()
+        );
+
+    // Get velocity face values from this patch
+    const vectorField& refU = *this;
 
     // Get flux face values from neighbour patch
     tmp<vectorField> tnbrUFlux =
@@ -151,6 +179,20 @@ tmp<vectorField> regionCoupledVelocityFlux::fluxJump() const
         .lookup("mu")
     );
 
+    const scalarField mDots = interpolateFromNbrField<scalar>(massTrInterface().mDotS());
+
+    dimensionedScalar rhoFluidNbr
+    (
+        nbrMesh().lookupObject<IOdictionary>("transportProperties")
+        .lookup("rho")
+    );
+
+    dimensionedScalar rhoFluid
+    (
+        refMesh().lookupObject<IOdictionary>("transportProperties")
+        .lookup("rho")
+    );
+
     if (refMesh().foundObject<volScalarField>("pKin"))
     {
         dimensionedScalar nuFluid
@@ -209,13 +251,13 @@ tmp<vectorField> regionCoupledVelocityFlux::fluxJump() const
       - nf*(nf & UfluxNbrToOwn)
       + tangentialSurfaceTensionForce
       - muFluid.value()*nf*divSU.internalField()
-      + (muFluidNbr.value() - muFluid.value())
-       *(gradSU.internalField()&nf)
+      + (muFluidNbr.value() - muFluid.value())*(gradSU.internalField()&nf)
+      + ((mDots/rhoFluid.value()*nEps - refU) - (mDots/rhoFluidNbr.value()*nEps - nbrU))*mDots
     );
 }
 
 const regionInterfaces::capillaryInterface&
-regionCoupledVelocityFlux::capInterface() const
+regionCoupledMassTransferVelocityFlux::capInterface() const
 {
     if(   rgInterface().type()
        != regionInterfaces::capillaryInterface::typeName )
@@ -234,6 +276,15 @@ regionCoupledVelocityFlux::capInterface() const
         );
 }
 
+const regionInterfaces::massTransferInterface&
+regionCoupledMassTransferVelocityFlux::massTrInterface() const
+{
+    return refCast<const regionInterfaces::massTransferInterface>
+        (
+            rgInterface(regionInterfaces::massTransferInterface::typeName)
+        );
+}
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
@@ -242,7 +293,7 @@ namespace Foam
 makePatchTypeField
 (
     fvPatchVectorField,
-    regionCoupledVelocityFlux
+    regionCoupledMassTransferVelocityFlux
 );
 
 } // End namespace Foam

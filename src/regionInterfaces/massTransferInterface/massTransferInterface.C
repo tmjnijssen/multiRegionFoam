@@ -199,7 +199,7 @@ void Foam::regionInterfaces::massTransferInterface::updateMDotS()
     
     else
     {
-        mDotS().internalField() = sF/hlv_;
+        mDotS().internalField() = -sF/hlv_;
     }
     
     mDotInterface = mDotS();

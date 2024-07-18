@@ -23,41 +23,38 @@ License
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Class
-    regionCoupledMassTransferVelocityValue
+    regionCoupledMassTransferVelocityFlux
 
 Author
     Holger Marschall (marschall@csi.tu-darmstadt.de)
 
 Description
-    Dirichlet boundary condition for velocity within the ALE interface tracking.
-    The no-jump condition of the velocity at the interface is taken into
-    account by copying the value from the neighbour patch. Flux continuity is 
-    enforced likewise. The momentum flux is calculated as the normal gradient 
-    multiplied by mu.
+    Neumann boundary condition for velocity within the ALE interface tracking.
+    Jump in velocity normal flux is implemented using the normal velocity
+    gradient jump from tangential momentum jump condition.
 
     Example usage:
-        interfacePatch
+
+	    interfacePatchShadow
         {
-            type                regionCoupledMassTransferVelocityValue;
-            k                   "mu";
-            relax               1.0;
-            neighbourRegionName liquid;
-            neighbourPatchName  interfacePatchShadow;
-            nonOrthCorr         yes;
-            secondOrder         yes;
-            value               uniform (0 0 0);
+            type                    regionCoupledMassTransferVelocityFlux;
+            k                       "mu";
+            neighbourRegionName     gas;
+            neighbourPatchName      interfacePatch;
+            nonOrthCorr             yes;
+            secondOrder             yes;
+            value                   uniform (0 0 0);
         }
 
 
 SourceFiles
-    regionCoupledMassTransferVelocityValue.C
+    regionCoupledMassTransferVelocityFlux.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef regionCoupledMassTransferVelocityValue_H
-#define regionCoupledMassTransferVelocityValue_H
+#ifndef regionCoupledMassTransferVelocityFlux_H
+#define regionCoupledMassTransferVelocityFlux_H
 
-#include "genericRegionCoupledJumpFvPatchField.H"
 #include "genericRegionCoupledFluxFvPatchField.H"
 #include "capillaryInterface.H"
 #include "massTransferInterface.H"
@@ -68,47 +65,42 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-        Class regionCoupledMassTransferVelocityValue Declaration
+   Class regionCoupledMassTransferVelocityFlux Declaration
 \*---------------------------------------------------------------------------*/
 
-class regionCoupledMassTransferVelocityValue
+class regionCoupledMassTransferVelocityFlux
 :
-    public genericRegionCoupledJumpFvPatchField<vector>
+    public genericRegionCoupledFluxFvPatchField<vector> 
 {
-
-protected:
-
-    //- Update phi 
-    virtual void updatePhi();
 
 public:
 
     //- Runtime type information
-    TypeName("regionCoupledMassTransferVelocityValue");
+    TypeName("regionCoupledMassTransferVelocityFlux");
 
 
     // Constructors
 
         //- Construct from patch and internal field
-        regionCoupledMassTransferVelocityValue
+        regionCoupledMassTransferVelocityFlux
         (
             const fvPatch&,
             const DimensionedField<vector, volMesh>&
         );
 
         //- Construct from patch, internal field and dictionary
-        regionCoupledMassTransferVelocityValue
+        regionCoupledMassTransferVelocityFlux
         (
             const fvPatch&,
             const DimensionedField<vector, volMesh>&,
             const dictionary&
         );
 
-        //- Construct by mapping given regionCoupledMassTransferVelocityValue
+        //- Construct by mapping given regionCoupledMassTransferVelocityFlux
         //  onto a new patch
-        regionCoupledMassTransferVelocityValue
+        regionCoupledMassTransferVelocityFlux
         (
-            const regionCoupledMassTransferVelocityValue&,
+            const regionCoupledMassTransferVelocityFlux&,
             const fvPatch&,
             const DimensionedField<vector, volMesh>&,
             const fvPatchFieldMapper&
@@ -119,14 +111,14 @@ public:
         {
             return tmp<fvPatchVectorField>
             (
-                new regionCoupledMassTransferVelocityValue(*this)
+            	new regionCoupledMassTransferVelocityFlux(*this)
             );
         }
 
         //- Construct as copy setting internal field reference
-        regionCoupledMassTransferVelocityValue
+        regionCoupledMassTransferVelocityFlux
         (
-            const regionCoupledMassTransferVelocityValue&,
+            const regionCoupledMassTransferVelocityFlux&,
             const DimensionedField<vector, volMesh>&
         );
 
@@ -138,31 +130,19 @@ public:
         {
             return tmp<fvPatchVectorField>
             (
-                new regionCoupledMassTransferVelocityValue(*this, iF)
+                new regionCoupledMassTransferVelocityFlux(*this, iF)
             );
         }
 
-
     // Member functions
 
-        //- Calculate velocity jump
-        virtual tmp<vectorField> valueJump() const;
-
+        //- Calculate pressure flux jump
+        virtual tmp<vectorField> fluxJump() const;
         virtual word kName() const
         {
             word name = "mu";
-            return (name);
-            
+            return name;
         };
-
-        void correctClosedVolumePhi
-        (
-            surfaceScalarField& phi,
-            const volVectorField& U,
-            const volScalarField& p,
-            const volScalarField& rAU
-        ) const;
-
         const regionInterfaces::capillaryInterface& capInterface() const;
         const regionInterfaces::massTransferInterface& massTrInterface() const;
 
@@ -178,4 +158,3 @@ public:
 #endif
 
 // ************************************************************************* //
-

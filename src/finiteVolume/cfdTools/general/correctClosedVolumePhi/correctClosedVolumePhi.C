@@ -29,7 +29,8 @@ License
 #include "processorFvsPatchFields.H"
 #include "inletOutletFvPatchFields.H"
 #include "fvc.H"
-
+#include"regionCoupledMassTransferVelocityValue.H"
+#include"regionCoupledVelocityValue.H"
 // * * * * * * * * * * * * * * * Global Functions  * * * * * * * * * * * * * //
 
 void Foam::correctClosedVolumePhi
@@ -40,8 +41,21 @@ void Foam::correctClosedVolumePhi
     const volScalarField& rAU
 )
 {
-    label intPatchID_ =
-        phi.mesh().boundaryMesh().findPatchID("interfaceShadow");
+    label intPatchID_ = -1;
+
+    forAll (U.boundaryField(), patchi)
+    {
+        const fvPatchVectorField& phip = U.boundaryField()[patchi];
+        if
+        (
+            isA<regionCoupledMassTransferVelocityValue>(phip) ||
+            isA<regionCoupledVelocityValue>(phip)
+
+        )
+        {
+            intPatchID_ = patchi;
+        }
+    }
 
     phi.boundaryField()[intPatchID_] =
     (
@@ -62,10 +76,10 @@ void Foam::correctClosedVolumePhi
     phi.boundaryField()[intPatchID_] -=
         weights*gSum(phi.boundaryField()[intPatchID_]);
 
-    phi.boundaryField()[intPatchID_] +=
-        p.boundaryField()[intPatchID_].snGrad()
-       *phi.mesh().magSf().boundaryField()[intPatchID_]
-       *rAU.boundaryField()[intPatchID_];
+    // phi.boundaryField()[intPatchID_] +=
+    //     p.boundaryField()[intPatchID_].snGrad()
+    //    *phi.mesh().magSf().boundaryField()[intPatchID_]
+    //    *rAU.boundaryField()[intPatchID_];
        
     scalar correctPhi = gSum(phi.boundaryField()[intPatchID_]);
     

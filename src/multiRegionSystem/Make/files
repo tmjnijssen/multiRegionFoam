@@ -60,6 +60,7 @@ $(partitionedCoupled)/regionCoupledTraction/regionCoupledTraction.C
 $(partitionedCoupled)/regionCoupledMassTransferVelocityValue/regionCoupledMassTransferVelocityValue.C
 $(partitionedCoupled)/regionCoupledMassTransferPressureValue/regionCoupledMassTransferPressureValue.C
 $(partitionedCoupled)/regionCoupledPhaseChangeHeatFlux/regionCoupledPhaseChangeHeatFlux.C
+$(partitionedCoupled)/regionCoupledMassTransferVelocityFlux/regionCoupledMassTransferVelocityFlux.C
 
 monolithicCoupled = $(fvPatchFields)/coupledFvPatchFields/monolithicCoupledFvPatchFields
 $(monolithicCoupled)/monolithicCoupling/monolithicCouplingFvPatchFields.C

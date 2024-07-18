@@ -207,7 +207,7 @@ void genericRegionCoupledJumpFvPatchField<Type>::updateCoeffs()
     // Relax fixed value condition
     accModel_->relax(*this);
 
-    updatePhi();
+    //updatePhi();
 
     fixedValueFvPatchField<Type>::updateCoeffs();
 }
