@@ -15,21 +15,55 @@
         {
             if (U_().boundaryField()[patchi].fixesValue())
             {
-                U_().correctBoundaryConditions();
+                // Fluxes updated in the BC
                 U_().boundaryField()[patchi].evaluate();
-
                 phi_().boundaryField()[patchi] =
                     U_().boundaryField()[patchi] 
                     & mesh().Sf().boundaryField()[patchi];
             }
         }
     }
+
+    Info << "U BC Pimple PrePredictor ";
+    forAll(U_().boundaryField(), patchi)
+    {
+        Info << " " << mesh().boundaryMesh()[patchi].name() << " " 
+            << gSum(mesh().time().deltaT().value()*((U_().boundaryField()[patchi] & mesh().boundary()[patchi].Sf()))) << ", ";
+    }
+    Info << endl;
+
     // Initialise flux with interpolated velocity
     // [MP] Old Phi formulation taken 
 
     //phi_() = fvc::interpolate(U_()) & mesh().Sf();
 
-    //adjustPhi(phi_(), U_(), pcorr_());
+    if (closedVolume_ && pKin_().needReference())
+    {
+        if (mesh().moving() && mesh().time().timeIndex() > 10)
+        {
+            fvc::makeRelative(phi_(), U_());
+            forAll (phi_().boundaryField(), patchi)
+            {
+                const fvPatchVectorField& Up = U_().boundaryField()[patchi];
+                if
+                (
+                    isA<regionCoupledMassTransferVelocityValue>(Up)
+                )
+                {
+                    scalar dV = sum(fvc::meshPhi(U_())().boundaryField()[patchi]);
+
+                    scalar correction = -dV/sum(phi_().boundaryField()[patchi]);
+
+                    phi_().boundaryField()[patchi] *= correction;
+                }
+            }
+            fvc::makeAbsolute(phi_(), U_());
+        }
+    }
+    else
+    {
+        //adjustPhi(phi_(), U_(), pcorr_());
+    }
 
     mesh().schemesDict().setFluxRequired(pcorr_().name());
 

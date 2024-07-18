@@ -26,10 +26,12 @@ License
 #include "label.H"
 #include "pimpleFluid.H"
 #include "fvCFD.H"
-#include "correctClosedVolumePhiPimple.H"
+#include "correctClosedVolumePhi.H"
 #include "correctSpaceVolumePhi.H"
 #include "zeroGradientFvPatchFields.H"
 #include "addToRunTimeSelectionTable.H"
+#include"regionCoupledMassTransferVelocityValue.H"
+#include"regionCoupledVelocityValue.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -90,11 +92,11 @@ Foam::regionTypes::pimpleFluid::pimpleFluid
     ),
     pRefCell_
     (
-        pimple_.dict().lookupOrDefault<label>("pRefCell", 0)
+        pimple_.dict().lookupOrDefault<label>("pKinRefCell", 0)
     ),
     pRefValue_
     (
-        pimple_.dict().lookupOrDefault<scalar>("pRefValue", 0.0)
+        pimple_.dict().lookupOrDefault<scalar>("pKinRefValue", 0.0)
     ),
 
     mrfZones_(mesh()),
@@ -297,6 +299,15 @@ void Foam::regionTypes::pimpleFluid::momentumPredictor()
     Info<< nl << "Momentum predictor for " << this->typeName
         << " in region " << mesh().name()
         << nl << endl;
+    // [MP]
+    fvc::makeRelative(phi_(), U_());
+    Info << "U BC Pimple before momentum matrix ";
+    forAll(U_().boundaryField(), patchi)
+    {
+        Info << " " << mesh().boundaryMesh()[patchi].name() << " " 
+            << gSum(mesh().time().deltaT().value()*((U_().boundaryField()[patchi] & mesh().boundary()[patchi].Sf()))) << ", ";
+    }
+    Info << endl;
 
     // Time derivative matrix
     tddtUEqn = fvm::ddt(U_());
@@ -310,12 +321,22 @@ void Foam::regionTypes::pimpleFluid::momentumPredictor()
         );
     fvVectorMatrix& HUEqn = tHUEqn();
 
+    Info << "U BC Pimple after momentum matrix ";
+    forAll(U_().boundaryField(), patchi)
+    {
+        Info << " " << mesh().boundaryMesh()[patchi].name() << " " 
+            << gSum(mesh().time().deltaT().value()*((U_().boundaryField()[patchi] & mesh().boundary()[patchi].Sf()))) << ", ";
+    }
+    Info << endl;
+
     mrfZones_.translationalMRFs().addFrameAcceleration(ddtUEqn);
 
     if (pimple_.momentumPredictor())
     {
         solve(relax(ddtUEqn + HUEqn) == -fvc::grad(pKin_()));
     }
+
+    fvc::makeAbsolute(phi_(), U_());
 }
 
 void Foam::regionTypes::pimpleFluid::pressureCorrector()
@@ -342,12 +363,59 @@ void Foam::regionTypes::pimpleFluid::pressureCorrector()
         U_() = rAU_()*HUEqn.H();
 
         // Consistently calculate flux
+        // Fluxes made absolute inside
         pimple_.calcTransientConsistentFlux(phi_(), U_(), rAU_(), ddtUEqn);
+       
         // Global flux balance
 
         if (closedVolume_ && pKin_().needReference())
         {
-            correctClosedVolumePhiPimple(phi_(), U_(), pKin_());
+            Info <<  "AdjustPhiBefore " << mesh().time().value() << " " << mesh().name() << " Volume Transfer:";
+            forAll(U_().boundaryField(), patchi)
+            {
+                Info << " " << mesh().boundaryMesh()[patchi].name() << " " << gSum(phi_().boundaryField()[patchi]*mesh().time().deltaT().value()) << ", "
+                << gSum(mesh().time().deltaT().value()*(phi_().boundaryField()[patchi] - fvc::meshPhi(U_())().boundaryField()[patchi])) << ", " <<
+                gSum(mesh().time().deltaT().value()*(fvc::meshPhi(U_())().boundaryField()[patchi]));
+            }
+            Info << endl;
+
+            correctClosedVolumePhi(phi_(), U_(), pKin_(),rAU_());
+
+            // if (mesh().moving() && mesh().time().timeIndex() > 10)
+            // {
+            //     fvc::makeRelative(phi_(), U_());
+
+            //     forAll (phi_().boundaryField(), patchi)
+            //     {
+            //         const fvPatchVectorField& Up = U_().boundaryField()[patchi];
+            //         if
+            //         (
+            //             isA<regionCoupledMassTransferVelocityValue>(Up) ||
+            //             isA<regionCoupledVelocityValue>(Up)
+
+            //         )
+            //         {
+            //             scalar dV = sum(fvc::meshPhi(U_())().boundaryField()[patchi]);
+
+            //             scalar correction = -dV/sum(phi_().boundaryField()[patchi]);
+
+            //             phi_().boundaryField()[patchi] *= correction;
+            //         }
+            //     }
+
+            //     fvc::makeAbsolute(phi_(), U_());
+            // }
+
+            Info <<  "AdjustPhi " << mesh().time().value() << " " << mesh().name() << " Volume Transfer:";
+
+            forAll(U_().boundaryField(), patchi)
+            {
+                Info << " " << mesh().boundaryMesh()[patchi].name() << " " << gSum(phi_().boundaryField()[patchi]*mesh().time().deltaT().value()) << ", "
+                << gSum(mesh().time().deltaT().value()*(phi_().boundaryField()[patchi] - fvc::meshPhi(U_())().boundaryField()[patchi])) << ", " <<
+                gSum(mesh().time().deltaT().value()*(fvc::meshPhi(U_())().boundaryField()[patchi]));
+            }
+            Info << endl;
+
         }
         else if (hasSpacePatch_ && pKin_().needReference())
         {
@@ -355,9 +423,9 @@ void Foam::regionTypes::pimpleFluid::pressureCorrector()
         }
         else
         {
-            adjustPhi(phi_(), U_(), pKin_());
+            //adjustPhi(phi_(), U_(), pKin_());
         }
-
+       
         while (pimple_.correctNonOrthogonal())
         {
             fvScalarMatrix pEqn
@@ -397,6 +465,17 @@ void Foam::regionTypes::pimpleFluid::pressureCorrector()
         // made relative inside the function
         pimple_.reconstructTransientVelocity(U_(), phi_(), ddtUEqn, rAU_(), pKin_());
 
+        Info << "U BC Pimple after reconstructTransientVelocity ";
+        forAll(U_().boundaryField(), patchi)
+        {
+            Info << " " << mesh().boundaryMesh()[patchi].name() << " " 
+                << gSum(mesh().time().deltaT().value()*((U_().boundaryField()[patchi] & mesh().boundary()[patchi].Sf()))) << ", ";
+        }
+        Info << endl;
+
+        // Make the fluxes absolute
+        fvc::makeAbsolute(phi_(), U_());
+
         // Update pressure field
         p_() = rho_().value()*pKin_();
 
@@ -409,7 +488,17 @@ void Foam::regionTypes::pimpleFluid::pressureCorrector()
     }
 
     turbulence_().correct();
+    Info <<  "Time " << mesh().time().value() << " " << mesh().name() << " Volume Transfer:";
+    forAll(U_().boundaryField(), patchi)
+    {
+        Info << " " << mesh().boundaryMesh()[patchi].name() << " " 
+        << gSum(mesh().time().deltaT().value()*((U_().boundaryField()[patchi] & mesh().boundary()[patchi].Sf()))) << ", "
+        << gSum(phi_().boundaryField()[patchi]*mesh().time().deltaT().value()) << ", "
+        << gSum(mesh().time().deltaT().value()*((U_().boundaryField()[patchi] & mesh().boundary()[patchi].Sf()) - fvc::meshPhi(U_())().boundaryField()[patchi])) << ", " <<
+        gSum(mesh().time().deltaT().value()*(fvc::meshPhi(U_())().boundaryField()[patchi]));
+    }
 
+    Info << endl;
     Info<< nl
         << mesh().name() << " Pressure:" << nl
         << "  max: " << gMax(p_()) << nl
@@ -421,22 +510,21 @@ void Foam::regionTypes::pimpleFluid::pressureCorrector()
         << "  mean: " << gAverage(U_()) << nl
         << mesh().name() << " Volume: "
         << gSum(mesh().V()) << nl
+        << mesh().name() << " Delta Volume: "
+        << gSum(mesh().V()) - gSum(mesh().V0())  << nl
         << endl;
 }
 
 void Foam::regionTypes::pimpleFluid::meshMotionCorrector()
 {
-    // Make the fluxes absolute
-    fvc::makeAbsolute(phi_(), U_());
-
     mesh().update();
 
 #       include "pimpleFluidVolContinuity.H"
 
-    if (mesh().changing() && correctPhi_)
-    {
-#       include "pimpleFluidCorrectPhi.H"
-    }
+//     if (mesh().changing() && correctPhi_)
+//     {
+// #       include "pimpleFluidCorrectPhi.H"
+//     }
 
     // Make the fluxes relative to the mesh motion
     fvc::makeRelative(phi_(), U_());
@@ -450,6 +538,9 @@ void Foam::regionTypes::pimpleFluid::meshMotionCorrector()
     {
 #           include "pimpleFluidCourantNo.H"
     }
+
+    // Make the fluxes absolute
+    fvc::makeAbsolute(phi_(), U_());
 }
 
 // ************************************************************************* //

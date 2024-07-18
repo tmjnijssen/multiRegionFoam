@@ -1,0 +1,96 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.1                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    pKin
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-07;
+        relTol          0;
+    }
+
+    pKincorr
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-07;
+        relTol          0;
+    }
+
+    pcorr
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-07;
+        relTol          0;
+    }
+    
+    U
+    {
+        solver          BiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-08;
+        relTol          0;
+    }
+    T
+    {
+        solver          BiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-10;
+        relTol          0;
+    }
+}
+
+PISO
+{
+    pRefPoint (0 0 0);
+    pRefValue 0;
+}
+
+PIMPLE
+{
+    nCorrectors                 3;
+    nNonOrthogonalCorrectors    4;
+    correctPhi  true;
+    pKinRefPoint (0 0 0);
+    pKinRefValue 0;
+
+    // residualControl
+    // {
+    //     p
+    //     {
+    //         relTol         0;
+    //         tolerance      0;
+    //     }
+
+    //     U
+    //     {
+    //         relTol         0;
+    //         tolerance      0;
+    //     }
+    // }
+}
+
+relaxationFactors
+{}
+
+closedVolume no;
+
+
+// ************************************************************************* //
