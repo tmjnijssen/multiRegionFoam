@@ -132,7 +132,7 @@ Foam::scalar Foam::regionTypes::conductTemperature::getMinDeltaT()
 }
 
 
-void Foam::regionTypes::conductTemperature::setCoupledEqns()
+void Foam::regionTypes::conductTemperature::setCoupledEqns(word fieldName)
 {
     TEqn =
     (

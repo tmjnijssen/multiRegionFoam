@@ -59,10 +59,10 @@ Foam::regionTypes::transportH2O::transportH2O
     regionName_(regionName),
 
     U_(nullptr),
-    H2O_(nullptr),
     De_(nullptr),
+    rho_(nullptr),
     phi_(nullptr),
-    rho_(nullptr)
+    H2O_(nullptr)
 {
     // set velocity field
     // Postponing field creation since U is probably provided by
@@ -120,7 +120,7 @@ Foam::scalar Foam::regionTypes::transportH2O::getMinDeltaT()
 }
 
 
-void Foam::regionTypes::transportH2O::setCoupledEqns()
+void Foam::regionTypes::transportH2O::setCoupledEqns(word fieldName)
 {
     H2OEqn =
     (

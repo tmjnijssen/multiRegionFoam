@@ -59,10 +59,10 @@ Foam::regionTypes::transportCO2::transportCO2
     regionName_(regionName),
 
     U_(nullptr),
-    CO2_(nullptr),
     De_(nullptr),
+    rho_(nullptr),
     phi_(nullptr),
-    rho_(nullptr)
+    CO2_(nullptr)
 {
     // set velocity field
     // Postponing field creation since U is probably provided by
@@ -120,7 +120,7 @@ Foam::scalar Foam::regionTypes::transportCO2::getMinDeltaT()
 }
 
 
-void Foam::regionTypes::transportCO2::setCoupledEqns()
+void Foam::regionTypes::transportCO2::setCoupledEqns(word fieldName)
 {
     CO2Eqn =
     (

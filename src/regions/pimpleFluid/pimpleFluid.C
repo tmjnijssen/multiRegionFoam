@@ -203,7 +203,7 @@ Foam::scalar Foam::regionTypes::pimpleFluid::getMinDeltaT()
 }
 
 
-void Foam::regionTypes::pimpleFluid::setCoupledEqns()
+void Foam::regionTypes::pimpleFluid::setCoupledEqns(word fieldName)
 {
     // do nothing, add as required
 }

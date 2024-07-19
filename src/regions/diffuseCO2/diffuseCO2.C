@@ -110,8 +110,8 @@ Foam::regionTypes::diffuseCO2::diffuseCO2
     ),
 
     Dp_(nullptr),
-    CO2_(nullptr),
-    q_(nullptr)
+    q_(nullptr),
+    CO2_(nullptr)
 {
     // set thermal diffusivity field
     Dp_ = lookupOrRead<volScalarField>
@@ -149,7 +149,7 @@ Foam::scalar Foam::regionTypes::diffuseCO2::getMinDeltaT()
 }
 
 
-void Foam::regionTypes::diffuseCO2::setCoupledEqns()
+void Foam::regionTypes::diffuseCO2::setCoupledEqns(word fieldName)
 {
     CO2Eqn =
     (

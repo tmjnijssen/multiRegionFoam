@@ -150,7 +150,7 @@ Foam::scalar Foam::regionTypes::transportSpecie::getMinDeltaT()
 }
 
 
-void Foam::regionTypes::transportSpecie::setCoupledEqns()
+void Foam::regionTypes::transportSpecie::setCoupledEqns(word fieldName)
 {
     CO2Eqn =
     (  

@@ -265,7 +265,7 @@ Foam::scalar Foam::regionTypes::interTrackFluid::getMinDeltaT()
 }
 
 
-void Foam::regionTypes::interTrackFluid::setCoupledEqns()
+void Foam::regionTypes::interTrackFluid::setCoupledEqns(word fieldName)
 {
     // do nothing, add as required
 }

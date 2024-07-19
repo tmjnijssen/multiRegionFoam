@@ -170,7 +170,7 @@ Foam::regionTypes::diffuseSpecie::diffuseSpecie
         ),
         mesh(),
         dimensionedScalar(transportProperties_.lookup("DporeH2O"))
-    ),   
+    ),
     HrCO2_
     (
         IOobject
@@ -261,7 +261,7 @@ Foam::regionTypes::diffuseSpecie::diffuseSpecie
         ),
         mesh(),
         dimensionedScalar("R2NCO2m", dimMoles/dimVolume, 0.0)
-    ), 
+    ),
     HCO3m_
     (
         IOobject
@@ -303,41 +303,55 @@ Foam::scalar Foam::regionTypes::diffuseSpecie::getMinDeltaT()
 }
 
 
-void Foam::regionTypes::diffuseSpecie::setCoupledEqns()
+void Foam::regionTypes::diffuseSpecie::setCoupledEqns(word fieldName)
 {
-    CO2Eqn =
+    if
     (
-        eps_*fvm::ddt(CO2_())
-     ==
-        fvm::laplacian(DporeCO2_, CO2_())
-        - ((1-eps_)/(eps_))*dqdtCO2_
-    );
+            fieldName == CO2_().name()
+        ||  fieldName == word::null
+    )
+    {
+        CO2Eqn =
+        (
+            eps_*fvm::ddt(CO2_())
+         ==
+            fvm::laplacian(DporeCO2_, CO2_())
+            - ((1-eps_)/(eps_))*dqdtCO2_
+        );
 
-    fvScalarMatrices.set
-    (
-        CO2_().name()
-      + mesh().name() + "Mesh"
-      + diffuseSpecie::typeName + "Type"
-      + "Eqn",
-        &CO2Eqn()
-    );    
+        fvScalarMatrices.set
+        (
+            CO2_().name()
+          + mesh().name() + "Mesh"
+          + diffuseSpecie::typeName + "Type"
+          + "Eqn",
+            &CO2Eqn()
+        );
+    }
 
-    H2OEqn =
+    if
     (
-        eps_*fvm::ddt(H2O_())
-     ==
-        fvm::laplacian(DporeH2O_, H2O_())
-        - ((1-eps_)/(eps_))*dqdtH2O_
-    );
+            fieldName == H2O_().name()
+        ||  fieldName == word::null
+    )
+    {
+        H2OEqn =
+        (
+            eps_*fvm::ddt(H2O_())
+         ==
+            fvm::laplacian(DporeH2O_, H2O_())
+            - ((1-eps_)/(eps_))*dqdtH2O_
+        );
 
-    fvScalarMatrices.insert
-    (
-        H2O_().name()
-      + mesh().name() + "Mesh"
-      + diffuseSpecie::typeName + "Type"
-      + "Eqn",
-        &H2OEqn()
-    );
+        fvScalarMatrices.insert
+        (
+            H2O_().name()
+          + mesh().name() + "Mesh"
+          + diffuseSpecie::typeName + "Type"
+          + "Eqn",
+            &H2OEqn()
+        );
+    }
 }
 
 void Foam::regionTypes::diffuseSpecie::postSolve()

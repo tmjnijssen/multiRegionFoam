@@ -332,7 +332,7 @@ Foam::scalar Foam::regionTypes::solidStVK::getMinDeltaT()
 }
 
 
-void Foam::regionTypes::solidStVK::setCoupledEqns()
+void Foam::regionTypes::solidStVK::setCoupledEqns(word fieldName)
 {
     D_().storePrevIter();
 

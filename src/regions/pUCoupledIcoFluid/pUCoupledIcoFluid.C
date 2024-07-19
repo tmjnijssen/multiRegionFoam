@@ -581,7 +581,7 @@ Foam::scalar Foam::regionTypes::pUCoupledIcoFluid::getMinDeltaT()
 }
 
 
-void Foam::regionTypes::pUCoupledIcoFluid::setCoupledEqns()
+void Foam::regionTypes::pUCoupledIcoFluid::setCoupledEqns(word fieldName)
 {   
     // Store p field for outer correction loop
     p_().storePrevIter();

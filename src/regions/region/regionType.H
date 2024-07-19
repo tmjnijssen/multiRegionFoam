@@ -260,7 +260,7 @@ public:
 
         virtual void meshMotionCorrector() = 0;
 
-        virtual void setCoupledEqns() = 0;
+        virtual void setCoupledEqns(word fieldName = word::null) = 0;
 
         virtual void postSolve() = 0;
 

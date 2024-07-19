@@ -110,8 +110,8 @@ Foam::regionTypes::diffuseH2O::diffuseH2O
     ),
 
     Dp_(nullptr),
-    H2O_(nullptr),
-    q_(nullptr)
+    q_(nullptr),
+    H2O_(nullptr)
 {
     // set thermal diffusivity field
     Dp_ = lookupOrRead<volScalarField>
@@ -149,7 +149,7 @@ Foam::scalar Foam::regionTypes::diffuseH2O::getMinDeltaT()
 }
 
 
-void Foam::regionTypes::diffuseH2O::setCoupledEqns()
+void Foam::regionTypes::diffuseH2O::setCoupledEqns(word fieldName)
 {
     H2OEqn =
     (

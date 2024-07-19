@@ -226,7 +226,7 @@ public:
 
         virtual scalar getMinDeltaT();
 
-        virtual void setCoupledEqns();
+        virtual void setCoupledEqns(word fieldName = word::null);
 
         virtual void solveRegion();
 

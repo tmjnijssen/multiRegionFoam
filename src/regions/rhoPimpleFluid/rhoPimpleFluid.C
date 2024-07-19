@@ -257,7 +257,7 @@ Foam::scalar Foam::regionTypes::rhoPimpleFluid::getMinDeltaT()
 }
 
 
-void Foam::regionTypes::rhoPimpleFluid::setCoupledEqns()
+void Foam::regionTypes::rhoPimpleFluid::setCoupledEqns(word fieldName)
 {
 
 }

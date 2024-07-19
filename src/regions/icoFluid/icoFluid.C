@@ -278,7 +278,7 @@ Foam::scalar Foam::regionTypes::icoFluid::getMinDeltaT()
 }
 
 
-void Foam::regionTypes::icoFluid::setCoupledEqns()
+void Foam::regionTypes::icoFluid::setCoupledEqns(word fieldName)
 {
     // do nothing, add as required
 }

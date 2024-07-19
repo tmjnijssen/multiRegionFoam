@@ -112,7 +112,7 @@ void Foam::multiRegionSystem::assembleAndSolveCoupledMatrix
         )
         {
             // set coupled equation
-            rg.setCoupledEqns();
+            rg.setCoupledEqns(fldName);
 
             // Check if this region holds the equation
             if
@@ -221,7 +221,7 @@ void Foam::multiRegionSystem::assembleAndSolveEqns
         )
         {
             // set coupled equation
-            rg.setCoupledEqns();
+            rg.setCoupledEqns(fldName);
 
             // Check if this region holds the equation
             if
@@ -282,7 +282,7 @@ void Foam::multiRegionSystem::assembleAndSolveEqns
 
             if(corr != 0)
             {
-                rg.setCoupledEqns();
+                rg.setCoupledEqns(fldName);
             }
 
             M<T>& eqn =
