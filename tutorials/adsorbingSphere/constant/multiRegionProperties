@@ -52,18 +52,18 @@ DNA
             outputFluxResField no;
         }
     }
-    // H2O
-    // {
-    //     maxCoupleIter 20;
+     H2O
+     {
+         maxCoupleIter 20;
 
-    //     residualControl
-    //     {
-    //         maxJumpRes 1e-07;
-    //         outputJumpResField no;
-    //         maxFluxRes 1e-07;
-    //         outputFluxResField no;
-    //     }
-    // }
+         residualControl
+         {
+             maxJumpRes 1e-07;
+             outputJumpResField no;
+             maxFluxRes 1e-07;
+             outputFluxResField no;
+         }
+     }
 }
 
 // ************************************************************************* //
