@@ -181,7 +181,7 @@ void Foam::regionTypes::transportSpecie::setCoupledEqns(word fieldName)
         fvm::laplacian(DeH2O_(), H2O_())
     );
 
-    fvScalarMatrices.insert
+    fvScalarMatrices.set
     (
         H2O_().name()
       + mesh().name() + "Mesh"

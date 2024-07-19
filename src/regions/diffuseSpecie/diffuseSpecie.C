@@ -343,7 +343,7 @@ void Foam::regionTypes::diffuseSpecie::setCoupledEqns(word fieldName)
             - ((1-eps_)/(eps_))*dqdtH2O_
         );
 
-        fvScalarMatrices.insert
+        fvScalarMatrices.set
         (
             H2O_().name()
           + mesh().name() + "Mesh"
