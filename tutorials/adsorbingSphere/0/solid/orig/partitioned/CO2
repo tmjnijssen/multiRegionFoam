@@ -23,9 +23,11 @@ boundaryField
 {
     solid_to_fluid
     {
-        type                    regionCoupledScalarFlux;
+        type                    regionCoupledScalarJump; //regionCoupledScalarFlux;
         interfaceType           defaultInterface;
         k                       "DporeCO2";
+        accType                 fixed;
+        relax                   1.0;
         neighbourRegionName     fluid;
         neighbourPatchName      fluid_to_solid;
         neighbourFieldName      CO2;

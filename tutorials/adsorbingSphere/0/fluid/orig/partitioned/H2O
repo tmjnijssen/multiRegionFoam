@@ -23,28 +23,18 @@ boundaryField
 {
     fluid_to_solid
     {
-        type                    regionCoupledScalarJump;
+        type                    regionCoupledScalarFlux; //regionCoupledScalarJump;
         interfaceType           defaultInterface;
         k                       "DH2O";
-
         accType                 fixed;
         relax                   1.0;
-
-        // accType              aitken;
-        // relax                0.75;
-
-        // accType              IQN-ILS;
-        // relax                0.75;
-        // couplingReuse        0; //2;
-
-
         neighbourRegionName     solid;
         neighbourPatchName      solid_to_fluid;
         neighbourFieldName      H2O;
         secondOrder             false;
         nonOrthCorr             true;
-        value                   $internalField;      
-    }  
+        value                   $internalField;
+    }
     inlet
     {
         type            fixedValue;
