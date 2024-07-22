@@ -128,6 +128,7 @@ Foam::scalar Foam::regionTypes::transportTemperature::getMinDeltaT()
 
 void Foam::regionTypes::transportTemperature::setCoupledEqns(word fieldName)
 {
+    TEqn.clear();
     TEqn =
     (
         rho_*cp_

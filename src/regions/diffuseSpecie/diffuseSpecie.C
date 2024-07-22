@@ -311,6 +311,7 @@ void Foam::regionTypes::diffuseSpecie::setCoupledEqns(word fieldName)
         ||  fieldName == word::null
     )
     {
+        CO2Eqn.clear();
         CO2Eqn =
         (
             eps_*fvm::ddt(CO2_())
@@ -335,6 +336,7 @@ void Foam::regionTypes::diffuseSpecie::setCoupledEqns(word fieldName)
         ||  fieldName == word::null
     )
     {
+        H2OEqn.clear();
         H2OEqn =
         (
             eps_*fvm::ddt(H2O_())
