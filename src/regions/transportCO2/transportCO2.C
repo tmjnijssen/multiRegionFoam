@@ -122,9 +122,9 @@ Foam::scalar Foam::regionTypes::transportCO2::getMinDeltaT()
 
 void Foam::regionTypes::transportCO2::setCoupledEqns(word fieldName)
 {
-    CO2Eqn.clear();
     CO2Eqn =
     (
+        
        (
             fvm::ddt(CO2_())
           + fvm::div(phi_(), CO2())

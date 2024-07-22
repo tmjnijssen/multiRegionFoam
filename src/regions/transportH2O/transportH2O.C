@@ -122,9 +122,9 @@ Foam::scalar Foam::regionTypes::transportH2O::getMinDeltaT()
 
 void Foam::regionTypes::transportH2O::setCoupledEqns(word fieldName)
 {
-    H2OEqn.clear();
     H2OEqn =
     (
+        
        (
             fvm::ddt(H2O_())
           + fvm::div(phi_(), H2O())

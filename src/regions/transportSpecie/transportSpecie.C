@@ -98,7 +98,7 @@ Foam::regionTypes::transportSpecie::transportSpecie
     DeCO2_ = lookupOrRead<volScalarField>
     (
         mesh(),
-        "DCO2",
+        "DCO2", 
         DCO2_,
         true
     );
@@ -106,7 +106,7 @@ Foam::regionTypes::transportSpecie::transportSpecie
     DeH2O_ = lookupOrRead<volScalarField>
     (
         mesh(),
-        "DH2O",
+        "DH2O", 
         DH2O_,
         true
     );
@@ -115,7 +115,7 @@ Foam::regionTypes::transportSpecie::transportSpecie
     CO2_ = lookupOrRead<volScalarField>
     (
         mesh(),
-        "CO2",
+        "CO2", 
         true,
         true
     );
@@ -123,7 +123,7 @@ Foam::regionTypes::transportSpecie::transportSpecie
     H2O_ = lookupOrRead<volScalarField>
     (
         mesh(),
-        "H2O",
+        "H2O", 
         true,
         true
     );
@@ -152,9 +152,8 @@ Foam::scalar Foam::regionTypes::transportSpecie::getMinDeltaT()
 
 void Foam::regionTypes::transportSpecie::setCoupledEqns(word fieldName)
 {
-    CO2Eqn.clear();
     CO2Eqn =
-    (
+    (  
        (
             fvm::ddt(CO2_())
           + fvm::div(phi_(), CO2_())
@@ -173,7 +172,7 @@ void Foam::regionTypes::transportSpecie::setCoupledEqns(word fieldName)
     );
 
     H2OEqn =
-    (
+    (  
        (
             fvm::ddt(H2O_())
           + fvm::div(phi_(), H2O_())

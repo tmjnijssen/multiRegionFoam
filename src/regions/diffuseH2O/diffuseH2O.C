@@ -151,7 +151,6 @@ Foam::scalar Foam::regionTypes::diffuseH2O::getMinDeltaT()
 
 void Foam::regionTypes::diffuseH2O::setCoupledEqns(word fieldName)
 {
-    H2OEqn.clear();
     H2OEqn =
     (
         fvm::ddt(H2O())

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Fork:     foam-extend
-    \\  /    A nd           | Version:  4.1
+    \\  /    A nd           | Version:  4.1                                 
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -45,8 +45,8 @@ Affiliations
     Department of Mathematics
     Technical University of Darmstadt, Germany
 
-    Affiliation B)
-    Institute of Energy and Climate Research,
+    Affiliation B) 
+    Institute of Energy and Climate Research, 
     Forschungszentrum Jülich GmbH, Germany
 
 Acknowledgement
@@ -56,7 +56,7 @@ Acknowledgement
     Science (NHR4CES)
 
 Description
-
+    
     This file is part of the multiRegionFoam library.
 
     You may refer to this software as :
@@ -100,7 +100,7 @@ class diffuseSpecie
         IOdictionary transportProperties_;
 
         //- sorbent properties dictionary
-        IOdictionary sorbentProperties_;
+        IOdictionary sorbentProperties_;        
 
         //- porosity
         volScalarField eps_;
@@ -134,7 +134,7 @@ class diffuseSpecie
         volScalarField R2NH2p_;
         volScalarField R2NCO2m_;
         volScalarField HCO3m_;
-
+         
         //- Cached concentration matrices
         tmp<fvScalarMatrix> CO2Eqn;
         tmp<fvScalarMatrix> H2OEqn;

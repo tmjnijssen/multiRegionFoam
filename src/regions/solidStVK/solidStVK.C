@@ -336,7 +336,6 @@ void Foam::regionTypes::solidStVK::setCoupledEqns(word fieldName)
 {
     D_().storePrevIter();
 
-    DEqn.clear();
     DEqn =
     (
         rho_*fvm::d2dt2(D_())
