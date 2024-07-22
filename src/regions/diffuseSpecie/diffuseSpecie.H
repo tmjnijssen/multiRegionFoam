@@ -105,25 +105,32 @@ class diffuseSpecie
         //- porosity
         volScalarField eps_;
 
-        //- carbamate reaction rate
-        volScalarField k1_;
+        //- 1: carbamate reaction
+        //- 2: carbonate reaction
 
-        //- carbamate equilibrium constant
-        volScalarField K1_;
+        //- Arrhenius prefactor
+        dimensionedScalar A1_;
+        dimensionedScalar A2_;
 
-        //- bicarbonate reaction rate
-        volScalarField k2_;
+        // Activation energy
+        dimensionedScalar Ea1_;
+        dimensionedScalar Ea2_;
 
-        //- bicarbonate equilibrium constant
-        volScalarField K2_;
+        // Enthalpy of reaction
+        dimensionedScalar dH1_;
+        dimensionedScalar dH2_;
+
+        // Entropy of reaction
+        dimensionedScalar dS1_;
+        dimensionedScalar dS2_;
 
         //- pore diffusion coefficients
         volScalarField DporeCO2_;
         volScalarField DporeH2O_;
 
         //- Henry coefficients
-        volScalarField HrCO2_;
-        volScalarField HrH2O_;
+        dimensionedScalar HrCO2_;
+        dimensionedScalar HrH2O_;
 
         //- Adsorption rates
         volScalarField dqdtCO2_;
@@ -134,6 +141,9 @@ class diffuseSpecie
         volScalarField R2NH2p_;
         volScalarField R2NCO2m_;
         volScalarField HCO3m_;
+
+        //- Temperature
+        volScalarField T_;
          
         //- Cached concentration matrices
         tmp<fvScalarMatrix> CO2Eqn;
@@ -144,6 +154,9 @@ protected:
         //- Gas phase concentrations
          autoPtr<volScalarField> CO2_;
          autoPtr<volScalarField> H2O_;
+
+        //- Heat source
+        autoPtr<volScalarField> heatSource_;
 
 
 public:

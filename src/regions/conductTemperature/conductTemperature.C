@@ -110,6 +110,15 @@ Foam::regionTypes::conductTemperature::conductTemperature
 
     // set temperature field
     T_ = lookupOrRead<volScalarField>(mesh(), "T");
+
+    // read source field
+    source_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        transportProperties_.lookupOrDefault<word>("heatSourceName", "heatSource"),
+        dimensionedScalar("heatSource", dimEnergy/dimTime/dimVolume, 0.0),
+        true
+    );
 }
 
 
@@ -123,6 +132,10 @@ Foam::regionTypes::conductTemperature::~conductTemperature()
 void Foam::regionTypes::conductTemperature::correct()
 {
     kappa_().correctBoundaryConditions();
+
+    // reset heat source
+    Info << "Resetting heat source field " << source_().name() << " in region " << mesh().name() << endl;
+    source_() = dimensionedScalar("heatSource", dimEnergy/dimTime/dimVolume, 0.0);
 }
 
 
@@ -139,6 +152,7 @@ void Foam::regionTypes::conductTemperature::setCoupledEqns(word fieldName)
         fvm::ddt(rho_*cv_, T())
      ==
         fvm::laplacian(kappa_(), T(), "laplacian(k,T)")
+        + source_()
     );
 
     fvScalarMatrices.set

@@ -93,58 +93,14 @@ Foam::regionTypes::diffuseSpecie::diffuseSpecie
         mesh(),
         dimensionedScalar(transportProperties_.lookup("eps"))
     ),
-    k1_
-    (
-        IOobject
-        (
-            "k1",
-            mesh().time().timeName(),
-            mesh(),
-            IOobject::READ_IF_PRESENT,
-            IOobject::NO_WRITE
-        ),
-        mesh(),
-        dimensionedScalar(sorbentProperties_.lookup("k1"))
-    ),
-    K1_
-    (
-        IOobject
-        (
-            "K1",
-            mesh().time().timeName(),
-            mesh(),
-            IOobject::READ_IF_PRESENT,
-            IOobject::NO_WRITE
-        ),
-        mesh(),
-        dimensionedScalar(sorbentProperties_.lookup("K1"))
-    ),
-    k2_
-    (
-        IOobject
-        (
-            "k2",
-            mesh().time().timeName(),
-            mesh(),
-            IOobject::READ_IF_PRESENT,
-            IOobject::NO_WRITE
-        ),
-        mesh(),
-        dimensionedScalar(sorbentProperties_.lookup("k2"))
-    ),
-    K2_
-    (
-        IOobject
-        (
-            "K2",
-            mesh().time().timeName(),
-            mesh(),
-            IOobject::READ_IF_PRESENT,
-            IOobject::NO_WRITE
-        ),
-        mesh(),
-        dimensionedScalar(sorbentProperties_.lookup("K2"))
-    ),
+    A1_(sorbentProperties_.lookup("A1")),
+    A2_(sorbentProperties_.lookup("A2")),
+    Ea1_(sorbentProperties_.lookup("Ea1")),
+    Ea2_(sorbentProperties_.lookup("Ea2")),
+    dH1_(sorbentProperties_.lookup("dH1")),
+    dH2_(sorbentProperties_.lookup("dH2")),
+    dS1_(sorbentProperties_.lookup("dS1")),
+    dS2_(sorbentProperties_.lookup("dS2")),
     DporeCO2_
     (
         IOobject
@@ -171,32 +127,8 @@ Foam::regionTypes::diffuseSpecie::diffuseSpecie
         mesh(),
         dimensionedScalar(transportProperties_.lookup("DporeH2O"))
     ),
-    HrCO2_
-    (
-        IOobject
-        (
-            "HrCO2",
-            mesh().time().timeName(),
-            mesh(),
-            IOobject::READ_IF_PRESENT,
-            IOobject::NO_WRITE
-        ),
-        mesh(),
-        dimensionedScalar(sorbentProperties_.lookup("HrCO2"))
-    ),
-    HrH2O_
-    (
-        IOobject
-        (
-            "HrH2O",
-            mesh().time().timeName(),
-            mesh(),
-            IOobject::READ_IF_PRESENT,
-            IOobject::NO_WRITE
-        ),
-        mesh(),
-        dimensionedScalar(sorbentProperties_.lookup("HrH2O"))
-    ),
+    HrCO2_(sorbentProperties_.lookup("HrCO2")),
+    HrH2O_(sorbentProperties_.lookup("HrH2O")),
     dqdtCO2_
     (
         IOobject
@@ -275,12 +207,33 @@ Foam::regionTypes::diffuseSpecie::diffuseSpecie
         mesh(),
         dimensionedScalar("HCO3m", dimMoles/dimVolume, 0.0)
     ),
+    T_
+    (
+        IOobject
+        (
+            "T",
+            mesh().time().timeName(),
+            mesh(),
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh()
+    ),
     CO2_(nullptr),
     H2O_(nullptr)
 {
     // set specie concentration fields and loadings in sorbent
     CO2_ = lookupOrRead<volScalarField>(mesh(), "CO2");
     H2O_ = lookupOrRead<volScalarField>(mesh(), "H2O");
+
+    // heat source field
+    heatSource_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        transportProperties_.lookupOrDefault<word>("heatSourceName", "heatSource"),
+        dimensionedScalar("heatSource", dimEnergy/dimTime/dimVolume, 0.0),
+        true
+    );
 }
 
 
@@ -365,19 +318,39 @@ void Foam::regionTypes::diffuseSpecie::solveRegion()
     volScalarField HCO2 = HrCO2_*CO2_();
     volScalarField HH2O = HrH2O_*H2O_();
 
+    dimensionedScalar R = dimensionedScalar("R", dimEnergy/dimMoles/dimTemperature, 8.314);
+    volScalarField invRT = (1./(R*T_));
+
+    // reaction rates
+    volScalarField k1 = A1_ * exp(-Ea1_ * invRT);
+    volScalarField k2 = A2_ * exp(-Ea2_ * invRT);
+
+    // Gibbs free energy of reaction
+    volScalarField dG1 = dH1_ - T_ * dS1_;
+    volScalarField dG2 = dH2_ - T_ * dS2_;
+
+    // Equilibrium constants
+    volScalarField K1 = exp(-dG1 * invRT);
+    volScalarField K2 = exp(-dG2 * invRT);
+
     // carbamate reaction rate
-    volScalarField R1 = k1_ * (HCO2*R2NH_*R2NH_ - (1/K1_)*R2NH2p_*R2NCO2m_);
+    volScalarField R1 = k1 * (HCO2*R2NH_*R2NH_ - (1/K1)*R2NH2p_*R2NCO2m_*dimensionedScalar("one", dimMoles/dimVolume, 1.0));
 
     // bicarbonate reaction rate
-    volScalarField R2 = k2_ * (HCO2*HH2O*R2NH_ - (1/K2_)*R2NH2p_*HCO3m_);
+    volScalarField R2 = k2 * (HCO2*HH2O*R2NH_ - (1/K2)*R2NH2p_*HCO3m_*dimensionedScalar("one", dimMoles/dimVolume, 1.0));
 
+    // solve adsorbed species
     solve(fvm::ddt(R2NH_   ) == -2*R1 - R2);
     solve(fvm::ddt(R2NH2p_ ) ==    R1 + R2);
     solve(fvm::ddt(R2NCO2m_) ==    R1     );
     solve(fvm::ddt(HCO3m_  ) ==         R2);
 
+    // total adsorption rate
     dqdtCO2_ = R1 + R2;
     dqdtH2O_ = R2;
+
+    // heat source
+    heatSource_() -= (R1 * dH1_ + R2 * dH2_);
 }
 
 void Foam::regionTypes::diffuseSpecie::prePredictor()

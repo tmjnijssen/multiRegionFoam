@@ -118,6 +118,9 @@ protected:
         //- temperature
         autoPtr<volScalarField> T_;
 
+        //- heat source
+        autoPtr<volScalarField> source_;
+
 public:
 
     TypeName("conductTemperature");
