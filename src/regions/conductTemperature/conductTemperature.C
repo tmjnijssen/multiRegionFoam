@@ -132,10 +132,6 @@ Foam::regionTypes::conductTemperature::~conductTemperature()
 void Foam::regionTypes::conductTemperature::correct()
 {
     kappa_().correctBoundaryConditions();
-
-    // reset heat source
-    Info << "Resetting heat source field " << source_().name() << " in region " << mesh().name() << endl;
-    source_() = dimensionedScalar("heatSource", dimEnergy/dimTime/dimVolume, 0.0);
 }
 
 

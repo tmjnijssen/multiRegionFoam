@@ -350,7 +350,7 @@ void Foam::regionTypes::diffuseSpecie::solveRegion()
     dqdtH2O_ = R2;
 
     // heat source
-    heatSource_() -= (R1 * dH1_ + R2 * dH2_);
+    heatSource_() = -(R1 * dH1_ + R2 * dH2_);
 }
 
 void Foam::regionTypes::diffuseSpecie::prePredictor()
