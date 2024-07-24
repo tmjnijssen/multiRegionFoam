@@ -97,6 +97,7 @@ Foam::regionTypes::conductTemperature::conductTemperature
     ),
 
     kappa_(nullptr),
+    source_(nullptr),
     T_(nullptr)
 {
     // set thermal diffusivity field
@@ -108,9 +109,6 @@ Foam::regionTypes::conductTemperature::conductTemperature
         true
     );
 
-    // set temperature field
-    T_ = lookupOrRead<volScalarField>(mesh(), "T");
-
     // read source field
     source_ = lookupOrRead<volScalarField>
     (
@@ -119,6 +117,9 @@ Foam::regionTypes::conductTemperature::conductTemperature
         dimensionedScalar("heatSource", dimEnergy/dimTime/dimVolume, 0.0),
         true
     );
+
+    // set temperature field
+    T_ = lookupOrRead<volScalarField>(mesh(), "T");
 }
 
 

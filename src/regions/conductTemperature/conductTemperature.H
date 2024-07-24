@@ -110,6 +110,9 @@ class conductTemperature
         //- thermal conductivity field
         autoPtr<volScalarField> kappa_;
 
+        //- heat source
+        autoPtr<volScalarField> source_;
+
         //- Cached temperature matrix
         tmp<fvScalarMatrix> TEqn;
 
@@ -117,9 +120,6 @@ protected:
 
         //- temperature
         autoPtr<volScalarField> T_;
-
-        //- heat source
-        autoPtr<volScalarField> source_;
 
 public:
 

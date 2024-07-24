@@ -207,33 +207,25 @@ Foam::regionTypes::diffuseSpecie::diffuseSpecie
         mesh(),
         dimensionedScalar("HCO3m", dimMoles/dimVolume, 0.0)
     ),
-    T_
-    (
-        IOobject
-        (
-            "T",
-            mesh().time().timeName(),
-            mesh(),
-            IOobject::MUST_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh()
-    ),
+    T_(nullptr),
+    heatSource_(nullptr),
     CO2_(nullptr),
     H2O_(nullptr)
 {
-    // set specie concentration fields and loadings in sorbent
-    CO2_ = lookupOrRead<volScalarField>(mesh(), "CO2");
-    H2O_ = lookupOrRead<volScalarField>(mesh(), "H2O");
+    // temperature field
+    T_ = lookupOrRead<volScalarField>(mesh(), "T");
 
     // heat source field
     heatSource_ = lookupOrRead<volScalarField>
     (
-        mesh(),
-        transportProperties_.lookupOrDefault<word>("heatSourceName", "heatSource"),
+        mesh(), transportProperties_.lookupOrDefault<word>("heatSourceName", "heatSource"),
         dimensionedScalar("heatSource", dimEnergy/dimTime/dimVolume, 0.0),
         true
     );
+
+    // set specie concentration fields and loadings in sorbent
+    CO2_ = lookupOrRead<volScalarField>(mesh(), "CO2");
+    H2O_ = lookupOrRead<volScalarField>(mesh(), "H2O");
 }
 
 
@@ -319,25 +311,25 @@ void Foam::regionTypes::diffuseSpecie::solveRegion()
     volScalarField HH2O = HrH2O_*H2O_();
 
     dimensionedScalar R = dimensionedScalar("R", dimEnergy/dimMoles/dimTemperature, 8.314);
-    volScalarField invRT = (1./(R*T_));
+    volScalarField invRT = (1./(R*T_()));
 
     // reaction rates
     volScalarField k1 = A1_ * exp(-Ea1_ * invRT);
     volScalarField k2 = A2_ * exp(-Ea2_ * invRT);
 
     // Gibbs free energy of reaction
-    volScalarField dG1 = dH1_ - T_ * dS1_;
-    volScalarField dG2 = dH2_ - T_ * dS2_;
+    volScalarField dG1 = dH1_ - T_() * dS1_;
+    volScalarField dG2 = dH2_ - T_() * dS2_;
 
     // Equilibrium constants
     volScalarField K1 = exp(-dG1 * invRT);
     volScalarField K2 = exp(-dG2 * invRT);
 
     // carbamate reaction rate
-    volScalarField R1 = k1 * (HCO2*R2NH_*R2NH_ - (1/K1)*R2NH2p_*R2NCO2m_*dimensionedScalar("one", dimMoles/dimVolume, 1.0));
+    volScalarField R1 = k1 * (HCO2*R2NH_*R2NH_ - (1./K1)*R2NH2p_*R2NCO2m_*dimensionedScalar("one", dimMoles/dimVolume, 1.0));
 
     // bicarbonate reaction rate
-    volScalarField R2 = k2 * (HCO2*HH2O*R2NH_ - (1/K2)*R2NH2p_*HCO3m_*dimensionedScalar("one", dimMoles/dimVolume, 1.0));
+    volScalarField R2 = k2 * (HCO2*HH2O*R2NH_ - (1./K2)*R2NH2p_*HCO3m_*dimensionedScalar("one", dimMoles/dimVolume, 1.0));
 
     // solve adsorbed species
     solve(fvm::ddt(R2NH_   ) == -2*R1 - R2);

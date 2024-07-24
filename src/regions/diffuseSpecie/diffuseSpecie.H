@@ -143,7 +143,10 @@ class diffuseSpecie
         volScalarField HCO3m_;
 
         //- Temperature
-        volScalarField T_;
+        autoPtr<volScalarField> T_;
+
+        //- Heat source
+        autoPtr<volScalarField> heatSource_;
          
         //- Cached concentration matrices
         tmp<fvScalarMatrix> CO2Eqn;
@@ -154,10 +157,6 @@ protected:
         //- Gas phase concentrations
          autoPtr<volScalarField> CO2_;
          autoPtr<volScalarField> H2O_;
-
-        //- Heat source
-        autoPtr<volScalarField> heatSource_;
-
 
 public:
 
