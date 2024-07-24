@@ -20,19 +20,19 @@ FoamFile
 // copper properties taken from https://www.engineeringtoolbox.com/copper-density-specific-heat-thermal-conductivity-vs-temperature-d_2223.html
 
 // Density - Dimensions: kg/m3
-rho             rho [1 -3 0 0 0 0 0] 8940;
+rho             rho [1 -3 0 0 0 0 0] 3600;
 
 // Specific heat - Dimensions: J/kg-K
-cv              cv  [0 2 -2 -1 0 0 0] 385.0;
+cv              cv  [0 2 -2 -1 0 0 0] 784.;
 
 // Thermal conductivity - Dimensions: W/m-K
-k           	    k [1 1 -3 -1 0 0 0] 380.0;
+k           	    k [1 1 -3 -1 0 0 0] 35.0;
 
 // Porosity - Dimensions: -
-eps             eps [0 0 0 0 0 0 0] 1.0;
+eps             eps [0 0 0 0 0 0 0] 0.48;
 
 // Pore diffusion coefficients - Dimensions: m2/s
-DporeCO2              DporeCO2  [0 2 -1 0 0 0 0] 1e-7;
-DporeH2O              DporeH2O  [0 2 -1 0 0 0 0] 2e-7;
+DporeCO2              DporeCO2  [0 2 -1 0 0 0 0] 1.8e-6;
+DporeH2O              DporeH2O  [0 2 -1 0 0 0 0] 2.9e-6;
 
 // ************************************************************************* //
