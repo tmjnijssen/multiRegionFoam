@@ -141,12 +141,7 @@ tmp<vectorField> regionCoupledMassTransferVelocityFlux::fluxJump() const
 
     // surface velocity terms
     const areaVectorField& Us = capInterface().Us();
-    Info << "Us " <<
-        sum
-        ( 
-            Us & refMesh().boundary()[refPatchID()].Sf()
-        )*refMesh().time().deltaT().value()
-        << endl;
+
     areaScalarField divSU = fac::div(Us);
 
     // [MP] Already done in fac::div
@@ -208,6 +203,7 @@ tmp<vectorField> regionCoupledMassTransferVelocityFlux::fluxJump() const
         );  
         
         dimensionedScalar muFluidCalc = nuFluid*rhoFluid; 
+
         if (muFluidCalc.value() != muFluid.value())
         {
             FatalErrorInFunction  << this->typeName 

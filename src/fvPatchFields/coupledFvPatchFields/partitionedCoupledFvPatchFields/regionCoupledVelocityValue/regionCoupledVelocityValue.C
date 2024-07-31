@@ -133,8 +133,6 @@ tmp<vectorField> Foam::regionCoupledVelocityValue::valueJump() const
         - nf*(nf & UsNbrToOwn)
         + nf * meshPhi/
          refMesh().boundary()[refPatchID()].magSf()
-        //+ nf * fvc::meshPhi(rho,U)().boundaryField()[refPatchID()]/
-        // refMesh().boundary()[refPatchID()].magSf()
     );
 }
 

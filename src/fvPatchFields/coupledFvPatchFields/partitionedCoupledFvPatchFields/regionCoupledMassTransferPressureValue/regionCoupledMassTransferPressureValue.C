@@ -181,7 +181,7 @@ tmp<scalarField> regionCoupledMassTransferPressureValue::valueJump() const
                     ) & g.value()
                 )
             - (1.0/rhoFluid.value() - 1.0/rhoFluidNbr.value())
-                *Foam::pow(mDots,2)
+                * Foam::pow(mDots,2)
             )/rhoFluid.value()
             - kinPressureNbrToOwn
         );
@@ -206,7 +206,7 @@ tmp<scalarField> regionCoupledMassTransferPressureValue::valueJump() const
                     ) & g.value()
                 )
             - (1.0/rhoFluid.value() - 1.0/rhoFluidNbr.value())
-                *Foam::pow(mDots,2)
+                * Foam::pow(mDots,2)
         );
         
         return
