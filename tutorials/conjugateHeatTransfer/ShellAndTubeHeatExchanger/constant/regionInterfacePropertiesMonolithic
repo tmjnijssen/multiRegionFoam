@@ -22,7 +22,7 @@ monolithicCoupledPatches
 (
     innersolid
     {
-        interfaceType heatTransferInterface;
+        interfaceType (heatTransferInterface);
 
         coupledPatchPair
         (
@@ -44,7 +44,7 @@ monolithicCoupledPatches
 
     outersolid
     {
-        interfaceType heatTransferInterface;
+        interfaceType (heatTransferInterface);
 
         coupledPatchPair
         (

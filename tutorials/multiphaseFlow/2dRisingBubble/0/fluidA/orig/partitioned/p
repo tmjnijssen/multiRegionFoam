@@ -32,7 +32,7 @@ boundaryField
         neighbourRegionName     fluidB;
         neighbourPatchName      interfaceShadow;
         neighbourFieldName      p;
-        interfaceType           capillaryInterface;
+        interfaceType           (capillaryInterface);
         secondOrder             false;
         nonOrthCorr             false;
         value                   uniform 0;

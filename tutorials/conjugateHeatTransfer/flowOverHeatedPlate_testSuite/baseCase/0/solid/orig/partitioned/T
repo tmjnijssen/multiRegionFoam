@@ -26,7 +26,7 @@ boundaryField
     top
     {
         type                    regionCoupledHeatFlux;
-        interfaceType           heatTransferInterface;
+        interfaceType           (heatTransferInterface);
         k                       "k";
         neighbourRegionName     fluid;
         neighbourPatchName      interface;

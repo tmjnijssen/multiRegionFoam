@@ -18,7 +18,7 @@ partitionedCoupledPatches
 (
     fluidsolid
     {
-        interfaceType heatTransferInterface;
+        interfaceType (heatTransferInterface);
 
         coupledPatchPair
         (

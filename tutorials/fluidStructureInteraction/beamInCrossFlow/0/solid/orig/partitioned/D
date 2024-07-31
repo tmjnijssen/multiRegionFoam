@@ -26,7 +26,7 @@ boundaryField
         neighbourRegionName     fluid;
         neighbourPatchName      interfaceShadow;
         neighbourFieldName      sigma;
-        interfaceType           fsiInterface;
+        interfaceType           (fsiInterface);
         secondOrder             false;
         nonOrthCorr             false;
         value                   uniform (0 0 0);

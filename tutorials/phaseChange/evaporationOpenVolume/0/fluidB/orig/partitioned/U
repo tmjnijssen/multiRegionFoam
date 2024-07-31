@@ -46,7 +46,7 @@ boundaryField
     
     top
     {
-        type            zeroGradient;
+        type            fixedValue;
         inletValue      uniform (0 0 0);
         value           uniform (0 0 0);
     }

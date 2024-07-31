@@ -18,7 +18,7 @@ partitionedCoupledPatches
 (
     innersolid
     {
-        interfaceType heatTransferInterface;
+        interfaceType (heatTransferInterface);
 
         coupledPatchPair
         (
