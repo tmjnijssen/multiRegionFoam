@@ -80,6 +80,7 @@ $(regions)/region/newRegionType.C
 $(regions)/region/regionTypeList.C
 
 $(regions)/conductTemperature/conductTemperature.C
+$(regions)/solidTemp/solidTemp.C
 $(regions)/transportTemperature/transportTemperature.C
 
 $(regions)/transportSpecie/transportSpecie.C

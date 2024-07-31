@@ -1,0 +1,65 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application 		multiRegionFoam;
+startFrom       	startTime;
+startTime       	0;
+stopAt          	endTime;
+endTime         	5000;
+deltaT          	1;
+writeControl    	runTime;
+writeInterval   	100;
+purgeWrite      	0;
+writeFormat     	ascii;
+writePrecision  	8;
+writeCompression 	uncompressed;
+timeFormat      	general;
+timePrecision   	10;
+runTimeModifiable 	no;
+maxCo			0.75;
+maxDeltaT		5E-3;
+		
+functions
+(
+    volAverageSolid
+    {
+        type            cellSource;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+
+        region          solid;
+        enabled         true;
+        outputControl   outputTime;
+        log             true;
+        valueOutput     true;
+        source          all;
+        operation       volAverage;
+
+        fields
+        (
+            T
+            CO2
+            H2O
+            R2NH
+            HCO3m
+            R2NH2p
+            heatSource
+            R2NCO2m
+        );
+    }
+);
+
+
+// ************************************************************************* //

@@ -1,0 +1,38 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.3                                   |
+|   \\  /    A nd           | Web:      http://www.openfoam.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    version         2.0;
+    format          ascii;
+    class           dictionary;
+    object          sorbentProperties;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Reaction rate and equilibria constants
+
+// Dry reaction
+A1		  A1  [0  6 -1  0 -2 0 0]  1.5e-2; // Arrhenius prefactor (mol/m3)^-2 / s
+Ea1               Ea1 [1  2 -2  0 -1 0 0]  26000;  // Activation energy (J/mol)
+dH1               dH1 [1  2 -2  0 -1 0 0] -72000;  // Enthalpy of reaction (J/mol)
+dS1               dS1 [1  2 -2 -1 -1 0 0] -225;    // Entropy of reaction (J/molK)
+
+// Wet reaction
+A2		  A1  [0  6 -1  0 -2 0 0]  3.8e-4; // Arrhenius prefactor (mol/m3)^-2 / s
+Ea2               Ea1 [1  2 -2  0 -1 0 0]  28000;  // Activation energy (J/mol)
+dH2               dH1 [1  2 -2  0 -1 0 0] -50000;  // Enthalpy of reaction (J/mol)
+dS2               dS1 [1  2 -2 -1 -1 0 0] -130;    // Entropy of reaction (J/molK)
+
+
+// Henry coefficients
+HrCO2		HrCO2 [0 0 0 0 0 0 0] 0.83;
+HrH2O		HrH2O [0 0 0 0 0 0 0] 1.00;
+
+// ************************************************************************* //
