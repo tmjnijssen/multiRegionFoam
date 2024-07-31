@@ -381,31 +381,6 @@ void Foam::regionTypes::pimpleFluid::pressureCorrector()
 
             correctClosedVolumePhi(phi_(), U_(), pKin_(),rAU_());
 
-            // if (mesh().moving() && mesh().time().timeIndex() > 10)
-            // {
-            //     fvc::makeRelative(phi_(), U_());
-
-            //     forAll (phi_().boundaryField(), patchi)
-            //     {
-            //         const fvPatchVectorField& Up = U_().boundaryField()[patchi];
-            //         if
-            //         (
-            //             isA<regionCoupledMassTransferVelocityValue>(Up) ||
-            //             isA<regionCoupledVelocityValue>(Up)
-
-            //         )
-            //         {
-            //             scalar dV = sum(fvc::meshPhi(U_())().boundaryField()[patchi]);
-
-            //             scalar correction = -dV/sum(phi_().boundaryField()[patchi]);
-
-            //             phi_().boundaryField()[patchi] *= correction;
-            //         }
-            //     }
-
-            //     fvc::makeAbsolute(phi_(), U_());
-            // }
-
             Info <<  "AdjustPhi " << mesh().time().value() << " " << mesh().name() << " Volume Transfer:";
 
             forAll(U_().boundaryField(), patchi)
