@@ -1,0 +1,41 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.1                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0/solid";
+    object      CO2;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 -3 0 0 1 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    solid_to_fluid
+    {
+        type                    regionCoupledScalarJump; //regionCoupledScalarFlux;
+        interfaceType           defaultInterface;
+        k                       "DporeCO2";
+        accType                 fixed;
+        relax                   1.0;
+        neighbourRegionName     fluid;
+        neighbourPatchName      fluid_to_solid;
+        neighbourFieldName      CO2;
+        secondOrder             false;
+        nonOrthCorr             true;
+        value                   $internalField;
+    }
+}
+
+
+// ************************************************************************* //

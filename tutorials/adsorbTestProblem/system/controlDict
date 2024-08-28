@@ -1,0 +1,289 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application 		multiRegionFoam;
+startFrom       	startTime;
+startTime       	10;
+stopAt          	endTime;
+endTime         	30000;
+deltaT          	2E-3;
+writeControl    	runTime;
+writeInterval   	0.1;
+purgeWrite      	0;
+writeFormat     	ascii;
+writePrecision  	8;
+writeCompression 	uncompressed;
+timeFormat      	general;
+timePrecision   	10;
+runTimeModifiable 	no;
+maxCo			0.75;
+maxDeltaT		5E-3;
+functions
+(
+    massflow1
+    {
+        type            faceSource;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+
+        region          fluid;
+        enabled         true;
+        outputControl   outputTime;
+
+        // Output to log&file (true) or to file only
+        log             true;
+
+        // Output field values as well
+        valueOutput     true;
+
+        // Output value format
+        surfaceFormat   foamFile;
+
+        // Type of source: patch/faceZone/sampledSurface
+        source          patch;
+
+        // if patch or faceZone: name of patch or faceZone
+        sourceName      inlet;
+
+        // Operation: areaAverage/sum/weightedAverage ...
+        operation       sum;
+
+        fields
+        (
+           phi
+        );
+    }
+    
+    massflow2
+    {
+        type            faceSource;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+
+        region          fluid;
+        enabled         true;
+        outputControl   outputTime;
+
+        // Output to log&file (true) or to file only
+        log             true;
+
+        // Output field values as well
+        valueOutput     true;
+
+        // Output value format
+        surfaceFormat   foamFile;
+
+        // Type of source: patch/faceZone/sampledSurface
+        source          patch;
+
+        // if patch or faceZone: name of patch or faceZone
+        sourceName      outlet;
+
+        // Operation: areaAverage/sum/weightedAverage ...
+        operation       sum;
+
+        fields
+        (
+           phi
+        );
+    }
+    
+
+    heatFlux1
+    {
+        type               heatFlux;
+	functionObjectLibs ("libsimpleFunctionObjects.so");
+        region             fluid;
+        enabled            true;
+        outputControl      outputTime;
+	log		   true;
+        K                  k;
+        valueOutput        true;
+        surfaceFormat      foamFile;
+        
+    }
+    
+    heatFlux2
+    {
+        type               heatFlux;
+	functionObjectLibs ("libsimpleFunctionObjects.so");
+        region             solid;
+        enabled            true;
+        outputControl      outputTime;
+	log		   true;
+        K                  k;
+        log                true;
+        valueOutput        true;
+        surfaceFormat      foamFile;
+    }
+
+    faceAverageInlet
+    {
+        type            faceSource;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+
+        region          fluid;
+        enabled         true;
+        outputControl   outputTime;
+
+        // Output to log&file (true) or to file only
+        log             true;
+
+        // Output field values as well
+        valueOutput     true;
+
+        // Output value format
+        surfaceFormat   foamFile;
+
+        // Type of source: patch/faceZone/sampledSurface
+        source          patch;
+
+        // if patch or faceZone: name of patch or faceZone
+        sourceName      inlet;
+
+        // Operation: areaAverage/sum/weightedAverage ...
+        operation       areaAverage;
+
+        fields
+        (
+            p
+            T
+            U
+            CO2
+            H2O
+        );
+    }
+
+    faceAverageOutlet
+    {
+        type            faceSource;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+
+        region          fluid;
+        enabled         true;
+        outputControl   outputTime;
+
+        // Output to log&file (true) or to file only
+        log             true;
+
+        // Output field values as well
+        valueOutput     true;
+
+        // Output value format
+        surfaceFormat   foamFile;
+
+        // Type of source: patch/faceZone/sampledSurface
+        source          patch;
+
+        // if patch or faceZone: name of patch or faceZone
+        sourceName      outlet;
+
+        // Operation: areaAverage/sum/weightedAverage ...
+        operation       areaAverage;
+
+        fields
+        (
+            p
+            T
+            U
+            CO2
+            H2O
+        );
+    }
+
+    volAverageFluid
+    {
+        type            cellSource;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+
+        region          fluid;
+
+        enabled         true;
+
+        outputControl   outputTime;
+        log             true;
+        valueOutput     true;
+
+        source          all;
+        operation       volAverage;
+
+        fields
+        (
+            p
+            U
+            T
+            CO2
+            H2O
+        );
+    }
+
+    volAverageSolid
+    {
+        type            cellSource;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+
+        region          solid;
+        enabled         true;
+        outputControl   outputTime;
+        log             true;
+        valueOutput     true;
+        source          all;
+        operation       volAverage;
+
+        fields
+        (
+            T
+            CO2
+            H2O
+            HCO3m
+            R2NH
+            R2NH2p
+            R2NHCO2m
+            dqdtCO2
+            dqdqH2O
+            heatSource
+        );
+    }
+    
+    weightedVolAverageSolid
+    {
+        type            cellSource;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+
+        region          solid;
+        enabled         true;
+        outputControl   outputTime;
+        log             true;
+        valueOutput     true;
+        source          all;
+        operation       weightedVolAverage;
+
+        fields
+        (
+            T
+            CO2
+            H2O
+            HCO3m
+            R2NH
+            R2NH2p
+            R2NHCO2m
+            dqdtCO2
+            dqdtH2O
+            heatSource
+        );
+    }
+    
+);
+
+// ************************************************************************* //

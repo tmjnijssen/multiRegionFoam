@@ -238,7 +238,8 @@ Foam::regionTypes::diffuseSpecie::~diffuseSpecie()
 
 void Foam::regionTypes::diffuseSpecie::correct()
 {
-    // do nothing, add as required
+   CO2_().correctBoundaryConditions();
+   H2O_().correctBoundaryConditions();
 }
 
 
@@ -343,6 +344,9 @@ void Foam::regionTypes::diffuseSpecie::solveRegion()
 
     // heat source
     heatSource_() = -(R1 * dH1_ + R2 * dH2_);
+
+   CO2_().correctBoundaryConditions();
+   H2O_().correctBoundaryConditions();
 }
 
 void Foam::regionTypes::diffuseSpecie::prePredictor()
