@@ -1,0 +1,5 @@
+1. set desired setup in constant/multiRegionFoamProperties
+2. set time step
+3. decomposePar -region solid && decomposePar -region fluid
+4. mpirun -np 8 multiRegionFoam -parallel > log.adsorbDebug
+
