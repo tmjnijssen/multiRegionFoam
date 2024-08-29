@@ -88,7 +88,7 @@ Foam::regionTypes::transportTemperature::transportTemperature
     (
         mesh(),
         "phi",
-        false,
+        true,
         true,
         linearInterpolate(U_()) & mesh().Sf()
     );

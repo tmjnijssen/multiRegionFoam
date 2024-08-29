@@ -89,7 +89,7 @@ Foam::regionTypes::transportSpecie::transportSpecie
     (
         mesh(),
         "phi",
-        false,
+        true,
         true,
         linearInterpolate(U_()) & mesh().Sf()
     );
