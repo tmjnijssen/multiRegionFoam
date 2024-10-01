@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.3                                   |
+|   \\  /    A nd           | Web:      http://www.openfoam.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    version         2.0;
+    format          ascii;
+    class           dictionary;
+    object          transportProperties;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+// volume fraction electrolyte phase - Dimensions: -
+epsE             epsE [0 0 0 0 0 0 0] 0.724;
+
+// volume fraction filler - Dimensions: -
+epsF             epsF [0 0 0 0 0 0 0] 0;
+
+// bruggeman coefficient - Dimensions: -
+brugg            brugg [0 0 0 0 0 0 0] 4;
+
+// electrolyte diffusion coefficient - Dimensions: m²/s
+DE               DE [0 2 -1 0 0 0 0] 7.5e-10;
+
+// density - Dimension kg/m³
+rho              rho [1 -3 0 0 0 0 0] 1100;
+
+// specific heat - Dimension: J/(kg K)
+cp               cp [0 2 -2 -1 0 0 0] 700;
+
+// thermal conductivity - Dimension: W/(m K)
+kT               kT [1 1 -3 -1 0 0 0] 0.16;
+
+
+// ************************************************************************* //

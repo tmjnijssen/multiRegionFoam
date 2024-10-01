@@ -1,0 +1,124 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+ddtSchemes
+{
+    
+}
+
+gradSchemes
+{
+    
+}
+
+divSchemes
+{
+    
+}
+
+laplacianSchemes
+{
+    
+}
+
+interpolationSchemes
+{
+    
+}
+
+snGradSchemes
+{
+    
+}
+
+fluxRequired
+{
+    
+}
+
+// ************************************************************************* //
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    
+    
+}
+
+SIMPLE
+{
+    
+}
+
+PISO
+{
+
+}
+
+PIMPLE
+{
+    
+}
+
+relaxationFactors
+{
+    
+}
+
+
+
+// ************************************************************************* //
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.1                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  | For copyright notice see file Copyright         |
+\*---------------------------------------------------------------------------*/
+Build  : 4.1-70b064d0f326
+Exec   : makeFaMesh -region anode
+Date   : Oct 01 2024
+Time   : 11:41:07
+Host   : "DESKTOP-5DKJAJJ"
+PID    : 20997
+CtrlDict : "/home/lhuef/foam/lhuef-4.1/run/P2D.orig/system/controlDict"
+Case   : /home/lhuef/foam/lhuef-4.1/run/P2D.orig
+nProcs : 1
+sigFpe : Enabling floating point exception trapping (FOAM_SIGFPE).
+allowSystemOperations : Disallowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh anode for time = 0
+
+Create faMesh ... Done
+Add faPatches ... Done
+Write finite area mesh ... Done

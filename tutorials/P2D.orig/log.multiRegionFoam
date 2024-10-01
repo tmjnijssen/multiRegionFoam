@@ -1,0 +1,954 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+ddtSchemes
+{
+    
+}
+
+gradSchemes
+{
+    
+}
+
+divSchemes
+{
+    
+}
+
+laplacianSchemes
+{
+    
+}
+
+interpolationSchemes
+{
+    
+}
+
+snGradSchemes
+{
+    
+}
+
+fluxRequired
+{
+    
+}
+
+// ************************************************************************* //
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    
+    
+}
+
+SIMPLE
+{
+    
+}
+
+PISO
+{
+
+}
+
+PIMPLE
+{
+    
+}
+
+relaxationFactors
+{
+    
+}
+
+
+
+// ************************************************************************* //
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.1                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  | For copyright notice see file Copyright         |
+\*---------------------------------------------------------------------------*/
+Build  : 4.1-70b064d0f326
+Exec   : multiRegionFoam
+Date   : Oct 01 2024
+Time   : 11:41:07
+Host   : "DESKTOP-5DKJAJJ"
+PID    : 21006
+CtrlDict : "/home/lhuef/foam/lhuef-4.1/run/P2D.orig/system/controlDict"
+Case   : /home/lhuef/foam/lhuef-4.1/run/P2D.orig
+nProcs : 1
+sigFpe : Enabling floating point exception trapping (FOAM_SIGFPE).
+allowSystemOperations : Disallowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Creating multi-region system
+
+Creating regions:
+Creating region anode: intercalationAnode
+Selecting regionType: intercalationAnode
+--> FOAM Warning : 
+    From function void* Foam::dlOpen(const Foam::fileName&, bool)
+    in file POSIX.C at line 1204
+    dlopen error : libmesquiteMotionSolver.so: cannot open shared object file: No such file or directory
+--> FOAM Warning : 
+    From function bool Foam::dlLibraryTable::open(const Foam::fileName&, bool)
+    in file db/dynamicLibrary/dlLibraryTable/dlLibraryTable.C at line 97
+    could not load "libmesquiteMotionSolver.so"
+--> FOAM Warning : 
+    From function dynamicFvMesh::New(const IOobject& io)
+    in file dynamicFvMesh/newDynamicFvMesh.C at line 46
+    Loading of dynamic mesh library libmesquiteMotionSolver.so unsuccesful. Some dynamic mesh  methods may not be  available
+Selecting dynamicFvMesh staticFvMesh
+Selecting an aitkenRelaxation model for faiE::boundaryField::right with initial relaxation factor 0.75
+Selecting an aitkenRelaxation model for cE::boundaryField::right with initial relaxation factor 0.75
+Selecting an aitkenRelaxation model for T::boundaryField::right with initial relaxation factor 0.75
+Creating region sep: separator
+Selecting regionType: separator
+--> FOAM Warning : 
+    From function void* Foam::dlOpen(const Foam::fileName&, bool)
+    in file POSIX.C at line 1204
+    dlopen error : libmesquiteMotionSolver.so: cannot open shared object file: No such file or directory
+--> FOAM Warning : 
+    From function bool Foam::dlLibraryTable::open(const Foam::fileName&, bool)
+    in file db/dynamicLibrary/dlLibraryTable/dlLibraryTable.C at line 97
+    could not load "libmesquiteMotionSolver.so"
+--> FOAM Warning : 
+    From function dynamicFvMesh::New(const IOobject& io)
+    in file dynamicFvMesh/newDynamicFvMesh.C at line 46
+    Loading of dynamic mesh library libmesquiteMotionSolver.so unsuccesful. Some dynamic mesh  methods may not be  available
+Selecting dynamicFvMesh staticFvMesh
+--> FOAM Warning : 
+    From function accelerationModel<Type>::New
+
+    in file /home/lhuef/foam/lhuef-4.1/multiregionfoam/src/lnInclude/newAccelerationModel.C at line 56
+    No accType entry in faiE::boundaryField::left
+	Assuming that no acceleration model should be applied
+Selecting an aitkenRelaxation model for faiE::boundaryField::right with initial relaxation factor 0.75
+--> FOAM Warning : 
+    From function accelerationModel<Type>::New
+
+    in file /home/lhuef/foam/lhuef-4.1/multiregionfoam/src/lnInclude/newAccelerationModel.C at line 56
+    No accType entry in cE::boundaryField::left
+	Assuming that no acceleration model should be applied
+Selecting an aitkenRelaxation model for cE::boundaryField::right with initial relaxation factor 0.75
+--> FOAM Warning : 
+    From function accelerationModel<Type>::New
+
+    in file /home/lhuef/foam/lhuef-4.1/multiregionfoam/src/lnInclude/newAccelerationModel.C at line 56
+    No accType entry in T::boundaryField::left
+	Assuming that no acceleration model should be applied
+Selecting an aitkenRelaxation model for T::boundaryField::right with initial relaxation factor 0.75
+Creating region cathode: intercalationCathode
+Selecting regionType: intercalationCathode
+--> FOAM Warning : 
+    From function void* Foam::dlOpen(const Foam::fileName&, bool)
+    in file POSIX.C at line 1204
+    dlopen error : libmesquiteMotionSolver.so: cannot open shared object file: No such file or directory
+--> FOAM Warning : 
+    From function bool Foam::dlLibraryTable::open(const Foam::fileName&, bool)
+    in file db/dynamicLibrary/dlLibraryTable/dlLibraryTable.C at line 97
+    could not load "libmesquiteMotionSolver.so"
+--> FOAM Warning : 
+    From function dynamicFvMesh::New(const IOobject& io)
+    in file dynamicFvMesh/newDynamicFvMesh.C at line 46
+    Loading of dynamic mesh library libmesquiteMotionSolver.so unsuccesful. Some dynamic mesh  methods may not be  available
+Selecting dynamicFvMesh staticFvMesh
+--> FOAM Warning : 
+    From function accelerationModel<Type>::New
+
+    in file /home/lhuef/foam/lhuef-4.1/multiregionfoam/src/lnInclude/newAccelerationModel.C at line 56
+    No accType entry in faiE::boundaryField::left
+	Assuming that no acceleration model should be applied
+--> FOAM Warning : 
+    From function accelerationModel<Type>::New
+
+    in file /home/lhuef/foam/lhuef-4.1/multiregionfoam/src/lnInclude/newAccelerationModel.C at line 56
+    No accType entry in cE::boundaryField::left
+	Assuming that no acceleration model should be applied
+--> FOAM Warning : 
+    From function accelerationModel<Type>::New
+
+    in file /home/lhuef/foam/lhuef-4.1/multiregionfoam/src/lnInclude/newAccelerationModel.C at line 56
+    No accType entry in T::boundaryField::left
+	Assuming that no acceleration model should be applied
+No PIMPLE active
+
+Creating region interfaces:
+Creating global patches : right and left for regionInterfaceType anodeRightSepLeftDefaultInterface
+Creating new interpolator for regionInterfaceType anodeRightSepLeftDefaultInterface
+Selecting interfaceToInterfaceMapping directMap
+Creating global patches : right and left for regionInterfaceType sepRightCathodeLeftDefaultInterface
+Creating new interpolator for regionInterfaceType sepRightCathodeLeftDefaultInterface
+Selecting interfaceToInterfaceMapping directMap
+
+DNA-Control: max iterations = 3
+    field: cE	, maxIntRes: 1e+300, maxJumpRes: 1e-07, maxFluxRes: 1e-07
+
+
+DNA-Control: max iterations = 3
+    field: faiE	, maxIntRes: 1e+300, maxJumpRes: 1e-07, maxFluxRes: 1e-07
+
+
+DNA-Control: max iterations = 3
+    field: T	, maxIntRes: 1e+300, maxJumpRes: 1e-07, maxFluxRes: 1e-07
+
+/*---------------------------------------------------------------------------*\
+|    For further information on multiRegionFoam, please see the               |
+|    following publication:                                                   |
+|                                                                             |
+|    Alkafri, H., Habes, C., Fadeli, M. E., Hess, S., Beale, S. B.,           |
+|    Zhang, S., Jasak, H., & Marschall, H. (2023).                            |
+|    multiRegionFoam -- A Unified Multiphysics Framework for Multi-Region     |
+|    Coupled Continuum-Physical Problems (Version 1). arXiv.                  |
+|    https://doi.org/10.48550/ARXIV.2306.01924                                |
+|                                                                             |
+\*---------------------------------------------------------------------------*/
+
+
+Starting time loop
+
+Time = 0.01
+Time step = 0.01 Index = 1
+
+Solved region specific physics in 0 s.
+
+DNA iteration: 1
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for cE in intercalationAnode
+DICPCG:  Solving for cE, Initial residual = 0.9999984, Final residual = 2.7088299e-32, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for cE in separator
+DICPCG:  Solving for cE, Initial residual = 0.99608217, Final residual = 6.5518603e-35, No Iterations 2
+
+Solving for cE in intercalationCathode
+DICPCG:  Solving for cE, Initial residual = 0.00011630874, Final residual = 2.169405e-36, No Iterations 2
+anodeRightSepLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 5.3130114e-08
+    globalMaxFluxRes: 3.9042047e-16
+anodeRightSepLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 5.3130114e-08
+    globalMaxFluxRes: 3.9042047e-16
+sepRightCathodeLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 5.3130114e-08
+    globalMaxFluxRes: 3.9042047e-16
+sepRightCathodeLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 5.3130114e-08
+    globalMaxFluxRes: 3.9042047e-16
+
+    cE initialMaxIntRes: 0
+    cE initialMaxJumpRes: 5.3130114e-08
+    cE initialMaxFluxRes: 3.9042047e-16
+
+    cE finalMaxIntRes: 0
+    cE finalMaxJumpRes: 5.3130114e-08
+    cE finalMaxFluxRes: 3.9042047e-16
+DNA: converged in 1 iterations
+Solved cE field with DNA coupling in 0.01 s.
+
+DNA iteration: 1
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for faiE in intercalationAnode
+DICPCG:  Solving for faiE, Initial residual = 0.99999999, Final residual = 2.7233882e-32, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for faiE in separator
+DICPCG:  Solving for faiE, Initial residual = 0.99999345, Final residual = 4.2787829e-34, No Iterations 2
+
+Solving for faiE in intercalationCathode
+DICPCG:  Solving for faiE, Initial residual = 1, Final residual = 3.334342e-32, No Iterations 2
+anodeRightSepLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 3.9792024e-09
+    globalMaxFluxRes: 2.4937869e+12
+anodeRightSepLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 3.9792024e-09
+    globalMaxFluxRes: 2.4937869e+12
+sepRightCathodeLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 2.0935095e-05
+    globalMaxFluxRes: 2.4937869e+12
+sepRightCathodeLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 2.0935095e-05
+    globalMaxFluxRes: 2.4937869e+12
+
+    faiE initialMaxIntRes: 0
+    faiE initialMaxJumpRes: 2.0935095e-05
+    faiE initialMaxFluxRes: 2.4937869e+12
+
+DNA iteration: 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for faiE in intercalationAnode
+DICPCG:  Solving for faiE, Initial residual = 0.98875226, Final residual = 2.5703835e-32, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for faiE in separator
+DICPCG:  Solving for faiE, Initial residual = 0.99305134, Final residual = 3.3056576e-35, No Iterations 2
+
+Solving for faiE in intercalationCathode
+DICPCG:  Solving for faiE, Initial residual = 0.87282919, Final residual = 8.4008486e-33, No Iterations 2
+anodeRightSepLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.2239065e-07
+    globalMaxFluxRes: 0
+anodeRightSepLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.2239065e-07
+    globalMaxFluxRes: 0
+sepRightCathodeLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.00022242676
+    globalMaxFluxRes: 0
+sepRightCathodeLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.00022242676
+    globalMaxFluxRes: 0
+
+DNA iteration: 3
+
+Relaxing field with Aitken relaxation factor: 0.0018424872
+
+Solving for faiE in intercalationAnode
+DICPCG:  Solving for faiE, Initial residual = 0.97116336, Final residual = 1.2783205e-32, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.064530411
+
+Solving for faiE in separator
+DICPCG:  Solving for faiE, Initial residual = 0.017777854, Final residual = 2.301139e-34, No Iterations 2
+
+Solving for faiE in intercalationCathode
+DICPCG:  Solving for faiE, Initial residual = 0.95580136, Final residual = 2.0315824e-32, No Iterations 2
+anodeRightSepLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.9820451e-07
+    globalMaxFluxRes: 0
+anodeRightSepLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.9820451e-07
+    globalMaxFluxRes: 0
+sepRightCathodeLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 3.4237167e-06
+    globalMaxFluxRes: 2.1327718e-15
+sepRightCathodeLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 3.4237167e-06
+    globalMaxFluxRes: 2.1327718e-15
+
+    faiE finalMaxIntRes: 0
+    faiE finalMaxJumpRes: 3.4237167e-06
+    faiE finalMaxFluxRes: 2.1327718e-15
+DNA: not converged within 3 iterations
+Solved faiE field with DNA coupling in 0 s.
+
+DNA iteration: 1
+
+Relaxing field with Aitken relaxation factor: 9.3154682e-05
+
+Solving for T in intercalationAnode
+DICPCG:  Solving for T, Initial residual = 0.99984961, Final residual = 5.8442243e-30, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.063551758
+
+Solving for T in separator
+DICPCG:  Solving for T, Initial residual = 0.44891708, Final residual = 1.0755563e-30, No Iterations 2
+
+Solving for T in intercalationCathode
+DICPCG:  Solving for T, Initial residual = 0.99999824, Final residual = 7.4420114e-30, No Iterations 2
+anodeRightSepLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 2.6691527e-15
+    globalMaxFluxRes: 7.0127157e+12
+anodeRightSepLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 2.6691527e-15
+    globalMaxFluxRes: 7.0127157e+12
+sepRightCathodeLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 8.8619643e-10
+    globalMaxFluxRes: 7.0127157e+12
+sepRightCathodeLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 8.8619643e-10
+    globalMaxFluxRes: 7.0127157e+12
+
+    T initialMaxIntRes: 0
+    T initialMaxJumpRes: 8.8619643e-10
+    T initialMaxFluxRes: 7.0127157e+12
+
+DNA iteration: 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for T in intercalationAnode
+DICPCG:  Solving for T, Initial residual = 0.17020705, Final residual = 8.3416853e-31, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for T in separator
+DICPCG:  Solving for T, Initial residual = 0.99999133, Final residual = 1.4973503e-30, No Iterations 2
+
+Solving for T in intercalationCathode
+DICPCG:  Solving for T, Initial residual = 0.62271811, Final residual = 3.7765408e-30, No Iterations 2
+anodeRightSepLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.60003e-09
+    globalMaxFluxRes: 0
+anodeRightSepLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.60003e-09
+    globalMaxFluxRes: 0
+sepRightCathodeLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 3.6733981e-09
+    globalMaxFluxRes: 0
+sepRightCathodeLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 3.6733981e-09
+    globalMaxFluxRes: 0
+
+    T finalMaxIntRes: 0
+    T finalMaxJumpRes: 3.6733981e-09
+    T finalMaxFluxRes: 0
+DNA: converged in 2 iterations
+Solved T field with DNA coupling in 0 s.
+ExecutionTime = 0.02 s
+
+
+Time = 0.02
+Time step = 0.01 Index = 2
+
+Solved region specific physics in 0 s.
+
+DNA iteration: 1
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for cE in intercalationAnode
+DICPCG:  Solving for cE, Initial residual = 0.99533102, Final residual = 1.1519556e-31, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for cE in separator
+DICPCG:  Solving for cE, Initial residual = 0.149315, Final residual = 5.4517276e-35, No Iterations 2
+
+Solving for cE in intercalationCathode
+DICPCG:  Solving for cE, Initial residual = 0.99999991, Final residual = 1.6361804e-32, No Iterations 2
+anodeRightSepLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 9.3783974e-09
+    globalMaxFluxRes: 1.1270897
+anodeRightSepLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 9.3783974e-09
+    globalMaxFluxRes: 1.1270897
+sepRightCathodeLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.0596979e-05
+    globalMaxFluxRes: 1.1270897
+sepRightCathodeLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.0596979e-05
+    globalMaxFluxRes: 1.1270897
+
+    cE initialMaxIntRes: 0
+    cE initialMaxJumpRes: 1.0596979e-05
+    cE initialMaxFluxRes: 1.1270897
+
+DNA iteration: 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for cE in intercalationAnode
+DICPCG:  Solving for cE, Initial residual = 0.98676836, Final residual = 2.2824187e-32, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for cE in separator
+DICPCG:  Solving for cE, Initial residual = 0.94556608, Final residual = 4.9418062e-35, No Iterations 2
+
+Solving for cE in intercalationCathode
+DICPCG:  Solving for cE, Initial residual = 0.99558629, Final residual = 2.2087975e-32, No Iterations 2
+anodeRightSepLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 8.9106873e-08
+    globalMaxFluxRes: 1.6020605e-16
+anodeRightSepLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 8.9106873e-08
+    globalMaxFluxRes: 1.6020605e-16
+sepRightCathodeLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.0001101265
+    globalMaxFluxRes: 1.6020605e-16
+sepRightCathodeLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.0001101265
+    globalMaxFluxRes: 1.6020605e-16
+
+DNA iteration: 3
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for cE in intercalationAnode
+DICPCG:  Solving for cE, Initial residual = 0.98170006, Final residual = 2.2116195e-32, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for cE in separator
+DICPCG:  Solving for cE, Initial residual = 0.87231114, Final residual = 4.1258904e-37, No Iterations 2
+
+Solving for cE in intercalationCathode
+DICPCG:  Solving for cE, Initial residual = 0.99558071, Final residual = 1.0562584e-32, No Iterations 2
+anodeRightSepLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 5.0296086e-08
+    globalMaxFluxRes: 0
+anodeRightSepLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 5.0296086e-08
+    globalMaxFluxRes: 0
+sepRightCathodeLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.00099580756
+    globalMaxFluxRes: 0
+sepRightCathodeLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.00099580756
+    globalMaxFluxRes: 0
+
+    cE finalMaxIntRes: 0
+    cE finalMaxJumpRes: 0.00099580756
+    cE finalMaxFluxRes: 0
+DNA: not converged within 3 iterations
+Solved cE field with DNA coupling in 0.01 s.
+
+DNA iteration: 1
+
+Aitken relaxation factor greater than 1
+Clipping Aitken relaxation factor to 1
+
+Relaxing field with Aitken relaxation factor: 1
+
+Solving for faiE in intercalationAnode
+DICPCG:  Solving for faiE, Initial residual = 0.94648851, Final residual = 2.1102974e-32, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.074681511
+
+Solving for faiE in separator
+DICPCG:  Solving for faiE, Initial residual = 0.39959194, Final residual = 1.6012195e-33, No Iterations 2
+
+Solving for faiE in intercalationCathode
+DICPCG:  Solving for faiE, Initial residual = 0.99651524, Final residual = 1.850216e-32, No Iterations 2
+anodeRightSepLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 2.3254103e-07
+    globalMaxFluxRes: 0.31955493
+anodeRightSepLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 2.3254103e-07
+    globalMaxFluxRes: 0.31955493
+sepRightCathodeLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.00023332213
+    globalMaxFluxRes: 3.8406068
+sepRightCathodeLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.00023332213
+    globalMaxFluxRes: 3.8406068
+
+    faiE initialMaxIntRes: 0
+    faiE initialMaxJumpRes: 0.00023332213
+    faiE initialMaxFluxRes: 3.8406068
+
+DNA iteration: 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for faiE in intercalationAnode
+DICPCG:  Solving for faiE, Initial residual = 0.92308095, Final residual = 5.3758393e-32, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for faiE in separator
+DICPCG:  Solving for faiE, Initial residual = 0.54653625, Final residual = 1.2697667e-34, No Iterations 2
+
+Solving for faiE in intercalationCathode
+DICPCG:  Solving for faiE, Initial residual = 0.9424654, Final residual = 2.9322662e-32, No Iterations 2
+anodeRightSepLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.5759304e-07
+    globalMaxFluxRes: 0
+anodeRightSepLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.5759304e-07
+    globalMaxFluxRes: 0
+sepRightCathodeLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.0024893689
+    globalMaxFluxRes: 0
+sepRightCathodeLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.0024893689
+    globalMaxFluxRes: 0
+
+DNA iteration: 3
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for faiE in intercalationAnode
+DICPCG:  Solving for faiE, Initial residual = 0.90050673, Final residual = 1.8466367e-32, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for faiE in separator
+DICPCG:  Solving for faiE, Initial residual = 0.87277395, Final residual = 1.0314118e-34, No Iterations 2
+
+Solving for faiE in intercalationCathode
+DICPCG:  Solving for faiE, Initial residual = 0.98034516, Final residual = 1.4911862e-32, No Iterations 2
+anodeRightSepLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.0443405e-07
+    globalMaxFluxRes: 0
+anodeRightSepLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.0443405e-07
+    globalMaxFluxRes: 0
+sepRightCathodeLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.026048051
+    globalMaxFluxRes: 0
+sepRightCathodeLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.026048051
+    globalMaxFluxRes: 0
+
+    faiE finalMaxIntRes: 0
+    faiE finalMaxJumpRes: 0.026048051
+    faiE finalMaxFluxRes: 0
+DNA: not converged within 3 iterations
+Solved faiE field with DNA coupling in 0 s.
+
+DNA iteration: 1
+
+Relaxing field with Aitken relaxation factor: 0.034789508
+
+Solving for T in intercalationAnode
+DICPCG:  Solving for T, Initial residual = 0.77639102, Final residual = 1.1386159e-30, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.065386665
+
+Solving for T in separator
+DICPCG:  Solving for T, Initial residual = 0.89192423, Final residual = 1.2393891e-29, No Iterations 2
+Cathode cSE too low! Value reset to 0.427*cSMax
+
+Solving for T in intercalationCathode
+DICPCG:  Solving for T, Initial residual = 0.98660498, Final residual = 1.7405354e-29, No Iterations 2
+anodeRightSepLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.8687905e-07
+    globalMaxFluxRes: 14.338327
+anodeRightSepLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.8687905e-07
+    globalMaxFluxRes: 14.338327
+sepRightCathodeLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 2.7675813e-07
+    globalMaxFluxRes: 14.338327
+sepRightCathodeLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 2.7675813e-07
+    globalMaxFluxRes: 14.338327
+
+    T initialMaxIntRes: 0
+    T initialMaxJumpRes: 2.7675813e-07
+    T initialMaxFluxRes: 14.338327
+
+DNA iteration: 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for T in intercalationAnode
+DICPCG:  Solving for T, Initial residual = 0.99525037, Final residual = 6.2929379e-31, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for T in separator
+DICPCG:  Solving for T, Initial residual = 0.973075, Final residual = 2.556657e-30, No Iterations 2
+Cathode cSE too high! Value reset to 0.99*cSMax
+
+Solving for T in intercalationCathode
+DICPCG:  Solving for T, Initial residual = 1, Final residual = 8.6445806e-30, No Iterations 2
+anodeRightSepLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.6956875e-06
+    globalMaxFluxRes: 1.6604847e-16
+anodeRightSepLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.6956875e-06
+    globalMaxFluxRes: 1.6604847e-16
+sepRightCathodeLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.8082648e+10
+    globalMaxFluxRes: 1.6604847e-16
+sepRightCathodeLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 1.8082648e+10
+    globalMaxFluxRes: 1.6604847e-16
+
+DNA iteration: 3
+
+Relaxing field with Aitken relaxation factor: 0.074451276
+
+Solving for T in intercalationAnode
+DICPCG:  Solving for T, Initial residual = 0.75381996, Final residual = 2.7661892e-31, No Iterations 2
+
+Aitken relaxation tending to 0
+Setting Aitken relaxation factor to intial relaxation factor of 0.75
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for T in separator
+DICPCG:  Solving for T, Initial residual = 1, Final residual = 1.1777347e-30, No Iterations 2
+Cathode cSE too low! Value reset to 0.427*cSMax
+
+Solving for T in intercalationCathode
+DICPCG:  Solving for T, Initial residual = 1, Final residual = 2.703574e-30, No Iterations 2
+anodeRightSepLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 7.7748284e+08
+    globalMaxFluxRes: 1.9696464e-16
+anodeRightSepLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 7.7748284e+08
+    globalMaxFluxRes: 1.9696464e-16
+sepRightCathodeLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 3.4276362e+28
+    globalMaxFluxRes: 1.9696464e-16
+sepRightCathodeLeftDefaultInterface for field T: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 3.4276362e+28
+    globalMaxFluxRes: 1.9696464e-16
+
+    T finalMaxIntRes: 0
+    T finalMaxJumpRes: 3.4276362e+28
+    T finalMaxFluxRes: 1.9696464e-16
+DNA: not converged within 3 iterations
+Solved T field with DNA coupling in 0.01 s.
+ExecutionTime = 0.04 s
+
+
+Time = 0.03
+Time step = 0.01 Index = 3
+
+Solved region specific physics in 0 s.
+
+DNA iteration: 1
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for cE in intercalationAnode
+DICPCG:  Solving for cE, Initial residual = 0.98695976, Final residual = 3.767995e-32, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for cE in separator
+DICPCG:  Solving for cE, Initial residual = 0.040960691, Final residual = 1.9139238e-35, No Iterations 2
+Cathode cSE too low! Value reset to 0.427*cSMax
+
+Solving for cE in intercalationCathode
+DICPCG:  Solving for cE, Initial residual = 0.99937568, Final residual = 1.9005326e-32, No Iterations 2
+anodeRightSepLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 9.7343153e-09
+    globalMaxFluxRes: 4.1760358
+anodeRightSepLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 9.7343153e-09
+    globalMaxFluxRes: 4.1760358
+sepRightCathodeLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.00079706478
+    globalMaxFluxRes: 4.1760358
+sepRightCathodeLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.00079706478
+    globalMaxFluxRes: 4.1760358
+
+    cE initialMaxIntRes: 0
+    cE initialMaxJumpRes: 0.00079706478
+    cE initialMaxFluxRes: 4.1760358
+
+DNA iteration: 2
+
+Relaxing field with Aitken relaxation factor: 1
+
+Solving for cE in intercalationAnode
+DICPCG:  Solving for cE, Initial residual = 0.89652824, Final residual = 1.9823626e-32, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for cE in separator
+DICPCG:  Solving for cE, Initial residual = 0.91582299, Final residual = 2.9032722e-33, No Iterations 2
+Cathode cSE too low! Value reset to 0.427*cSMax
+
+Solving for cE in intercalationCathode
+DICPCG:  Solving for cE, Initial residual = 0.98045132, Final residual = 1.2303797e-32, No Iterations 2
+anodeRightSepLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 6.6818102e-08
+    globalMaxFluxRes: 0
+anodeRightSepLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 6.6818102e-08
+    globalMaxFluxRes: 0
+sepRightCathodeLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.0068873833
+    globalMaxFluxRes: 0
+sepRightCathodeLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.0068873833
+    globalMaxFluxRes: 0
+
+DNA iteration: 3
+
+Relaxing field with Aitken relaxation factor: 1
+
+Solving for cE in intercalationAnode
+DICPCG:  Solving for cE, Initial residual = 0.8192448, Final residual = 1.4516445e-32, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.75
+
+Solving for cE in separator
+DICPCG:  Solving for cE, Initial residual = 0.87621612, Final residual = 4.0242041e-37, No Iterations 2
+Cathode cSE too low! Value reset to 0.427*cSMax
+
+Solving for cE in intercalationCathode
+DICPCG:  Solving for cE, Initial residual = 0.98309225, Final residual = 9.0657518e-33, No Iterations 2
+anodeRightSepLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 9.998703e-09
+    globalMaxFluxRes: 0
+anodeRightSepLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 9.998703e-09
+    globalMaxFluxRes: 0
+sepRightCathodeLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.064536142
+    globalMaxFluxRes: 0
+sepRightCathodeLeftDefaultInterface for field cE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 0.064536142
+    globalMaxFluxRes: 0
+
+    cE finalMaxIntRes: 0
+    cE finalMaxJumpRes: 0.064536142
+    cE finalMaxFluxRes: 0
+DNA: not converged within 3 iterations
+Solved cE field with DNA coupling in 0 s.
+
+DNA iteration: 1
+
+Aitken relaxation factor greater than 1
+Clipping Aitken relaxation factor to 1
+
+Relaxing field with Aitken relaxation factor: 1
+
+Solving for faiE in intercalationAnode
+DICPCG:  Solving for faiE, Initial residual = 1, Final residual = 1.596059e-69, No Iterations 2
+
+Relaxing field with Aitken relaxation factor: 0.072210289
+
+Solving for faiE in separator
+DICPCG:  Solving for faiE, Initial residual = 1, Final residual = 1.0343611e-152, No Iterations 2
+Cathode cSE too low! Value reset to 0.427*cSMax
+
+Solving for faiE in intercalationCathode
+DICPCG:  Solving for faiE, Initial residual = 1, Final residual = 8.4381739e-35, No Iterations 2
+anodeRightSepLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 936797.42
+    globalMaxFluxRes: 5668203.3
+anodeRightSepLeftDefaultInterface for field faiE: 
+    globalMaxIntRes: 0
+    globalMaxJumpRes: 936797.42
+    globalMaxFluxRes: 5668203.3
+
+#0  Foam::error::printStack(Foam::Ostream&) at ??:?
+#1  Foam::sigFpe::sigHandler(int) at ??:?
+#2   in "/lib/x86_64-linux-gnu/libc.so.6"
+#3  Foam::tmp<Foam::Field<double> > Foam::magSqr<double>(Foam::tmp<Foam::Field<double> > const&) at ??:?
+#4  Foam::genericRegionCoupledFluxFvPatchField<double>::normResidual() const at ??:?
+#5  double Foam::regionInterfaceType::normFluxRes<double>(Foam::word const&) const at ??:?
+#6  void Foam::dnaControl::maxTypeRes<double>(Foam::regionInterfaceType const&, Foam::word const&, double&, double&, double&) at ??:?
+#7  Foam::dnaControl::maxRes(Foam::regionInterfaceType const&, Foam::word const&, double&, double&, double&) at ??:?
+#8  Foam::dnaControl::criteriaSatisfied() at ??:?
+#9  Foam::dnaControl::loop() at ??:?
+#10  Foam::multiRegionSystem::solve() at ??:?
+#11   in "/home/lhuef/foam/lhuef-4.1/applications/bin/linux64GccDPInt32Opt/multiRegionFoam"
+#12  __libc_start_main in "/lib/x86_64-linux-gnu/libc.so.6"
+#13   in "/home/lhuef/foam/lhuef-4.1/applications/bin/linux64GccDPInt32Opt/multiRegionFoam"
+Floating point exception

@@ -1,0 +1,30 @@
+#!/bin/sh
+
+find -type l -delete
+
+rm -rf 0.* [1-9]* log* proc* VTK
+
+rm constant/anode/polyMesh/blockMeshDict 2>/dev/null
+rm constant/sep/polyMesh/blockMeshDict 2>/dev/null
+rm constant/cathode/polyMesh/blockMeshDict 2>/dev/null
+
+rm 0/anode/faiS 2>/dev/null
+rm 0/anode/faiE 2>/dev/null
+rm 0/anode/cS 2>/dev/null
+rm 0/anode/cE 2>/dev/null
+rm 0/anode/cSE 2>/dev/null
+rm 0/anode/T 2>/dev/null
+
+rm 0/sepr/faiE 2>/dev/null
+rm 0/sep/cE 2>/dev/null
+rm 0/sep/T 2>/dev/null
+
+rm 0/cathode/faiS 2>/dev/null
+rm 0/cathode/faiE 2>/dev/null
+rm 0/cathode/cS 2>/dev/null
+rm 0/cathode/cE 2>/dev/null
+rm 0/cathode/cSE 2>/dev/null
+rm 0/cathode/T 2>/dev/null
+
+rm constant/regionInterfaceProperties 2>/dev/null
+

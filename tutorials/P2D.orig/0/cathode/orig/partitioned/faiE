@@ -1,0 +1,55 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.3                                   |
+|   \\  /    A nd           | Web:      http://www.openfoam.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    version         2.0;
+    format          ascii;
+    class           volScalarField;
+    object          faiE;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+dimensions      [1 2 -3 0 0 -1 0];
+
+internalField   uniform -0.075;
+
+boundaryField
+{
+    right
+    {
+        type                    zeroGradient;
+    }
+    left
+    {
+        type                    regionCoupledScalarFlux;
+        interfaceType           defaultInterface;
+        k			            "kappa";
+
+        neighbourRegionName     sep;
+       	neighbourPatchName      right;
+       	neighbourFieldName      faiE;
+       	
+	    secondOrder		        false;
+	    nonOrthCorr		        false;
+       	value                   $internalField;
+    }
+    topAndBottom
+    {
+        type                    empty;
+    }
+    frontAndBack
+    {
+        type                    empty;
+    }
+
+}
+
+// ************************************************************************* //
