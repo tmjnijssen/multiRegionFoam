@@ -111,18 +111,22 @@ class diffuseSpecie
         //- Arrhenius prefactor
         dimensionedScalar A1_;
         dimensionedScalar A2_;
+        dimensionedScalar A3_;
 
         // Activation energy
         dimensionedScalar Ea1_;
         dimensionedScalar Ea2_;
+        dimensionedScalar Ea3_;
 
         // Enthalpy of reaction
         dimensionedScalar dH1_;
         dimensionedScalar dH2_;
+        dimensionedScalar dH3_;
 
         // Entropy of reaction
         dimensionedScalar dS1_;
         dimensionedScalar dS2_;
+        dimensionedScalar dS3_;
 
         //- pore diffusion coefficients
         volScalarField DporeCO2_;
@@ -134,13 +138,18 @@ class diffuseSpecie
 
         //- Adsorption rates
         volScalarField dqdtCO2_;
+        volScalarField dqdtCO2ex_;
+        volScalarField dqdtCO2im_;
         volScalarField dqdtH2O_;
+        volScalarField dqdtH2Oex_;
+        volScalarField dqdtH2Oim_;
 
         //- Concentrations
         volScalarField R2NH_;
         volScalarField R2NH2p_;
         volScalarField R2NCO2m_;
         volScalarField HCO3m_;
+        volScalarField H2Oads_;
 
         //- Temperature
         autoPtr<volScalarField> T_;
