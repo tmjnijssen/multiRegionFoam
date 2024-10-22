@@ -407,6 +407,7 @@ void Foam::regionTypes::diffuseSpecie::solveRegion()
 
     // water physisorption rate
     volScalarField R3 = (k3 * (H2O_() - (1./K3)*H2Oads_)*dimensionedScalar("one", dimMoles/dimVolume, 1.0))*dimensionedScalar("one", dimMoles/dimVolume, 1.0);
+
     // solve adsorbed species
     solve(fvm::ddt(R2NH_   ) == -2*R1 - R2);
     solve(fvm::ddt(R2NH2p_ ) ==    R1 + R2);
@@ -419,7 +420,7 @@ void Foam::regionTypes::diffuseSpecie::solveRegion()
     dqdtH2O_ = R2 + R3;
 
     // heat source
-    heatSource_() = -(R1 * dH1_ + R2 * dH2_);
+    heatSource_() = -(R1 * dH1_ + R2 * dH2_ + R3 * dH3_);
 
    CO2_().correctBoundaryConditions();
    H2O_().correctBoundaryConditions();
