@@ -318,7 +318,6 @@ Foam::scalar Foam::regionTypes::diffuseSpecie::getMinDeltaT()
     return GREAT;
 }
 
-
 void Foam::regionTypes::diffuseSpecie::setCoupledEqns(word fieldName)
 {
     if
@@ -406,18 +405,18 @@ void Foam::regionTypes::diffuseSpecie::solveRegion()
     volScalarField R2 = k2 * (HCO2*HH2O*R2NH_ - (1./K2)*R2NH2p_*HCO3m_*dimensionedScalar("one", dimMoles/dimVolume, 1.0));
 
     // water physisorption rate
-    volScalarField R3 = (k3 * (H2O_() - (1./K3)*H2Oads_)*dimensionedScalar("one", dimMoles/dimVolume, 1.0))*dimensionedScalar("one", dimMoles/dimVolume, 1.0);
-
+    volScalarField R31 = k3 * (H2O_()*H2O_() - (1./K3)*H2Oads_*dimensionedScalar("one", dimMoles/dimVolume, 1.0));
+    volScalarField R3 = R31*dimensionedScalar("one", dimMoles/dimVolume, 1.0);
     // solve adsorbed species
     solve(fvm::ddt(R2NH_   ) == -2*R1 - R2);
     solve(fvm::ddt(R2NH2p_ ) ==    R1 + R2);
     solve(fvm::ddt(R2NCO2m_) ==    R1     );
     solve(fvm::ddt(HCO3m_  ) ==         R2);
-    solve(fvm::ddt(H2Oads_  ) ==  2*R3 - R2);
+    solve(fvm::ddt(H2Oads_ ) ==  2*R3 - R2);
 
     // total adsorption rate
     dqdtCO2_ = R1 + R2;
-    dqdtH2O_ = R2 + R3;
+    dqdtH2O_ = R2 + R3;// + R3;
 
     // heat source
     heatSource_() = -(R1 * dH1_ + R2 * dH2_ + R3 * dH3_);
@@ -425,7 +424,6 @@ void Foam::regionTypes::diffuseSpecie::solveRegion()
    CO2_().correctBoundaryConditions();
    H2O_().correctBoundaryConditions();
 }
-
 void Foam::regionTypes::diffuseSpecie::prePredictor()
 {
     // do nothing, add as required
