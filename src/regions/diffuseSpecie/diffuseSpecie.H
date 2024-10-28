@@ -132,10 +132,6 @@ class diffuseSpecie
         volScalarField DporeCO2_;
         volScalarField DporeH2O_;
 
-        //- Henry coefficients
-        dimensionedScalar HrCO2_;
-        dimensionedScalar HrH2O_;
-
         //- Adsorption rates
         volScalarField dqdtCO2_;
         volScalarField dqdtCO2ex_;
