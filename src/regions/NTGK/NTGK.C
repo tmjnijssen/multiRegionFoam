@@ -52,38 +52,38 @@ namespace regionTypes
 
 void Foam::regionTypes::NTGK::calculateElectrochemicalParameters()
 {
-    dimensionedScalar dimVolt = 
+    dimensionedScalar dimVolt =
         dimensionedScalar("dimVolt", dimensionSet(1, 2, -3, 0, 0, -1, 0), 1);
-    
+
     volScalarField U0 = a0_
                       + a1_*DOD_()
-                      + a2_*Foam::pow(DOD_(), 2) 
+                      + a2_*Foam::pow(DOD_(), 2)
                       + a3_*Foam::pow(DOD_(), 3);
-    
+
     volScalarField Y0 = a4_
                       + a5_*DOD_()
-                      + a6_*Foam::pow(DOD_(), 2) 
+                      + a6_*Foam::pow(DOD_(), 2)
                       + a7_*Foam::pow(DOD_(), 3)
                       + a8_*Foam::pow(DOD_(), 4)
                       + a9_*Foam::pow(DOD_(), 5);
-    
+
     U_() = U0 - C2_*(T_() - TRef_);
-    
+
     volScalarField Y = Y0*Foam::exp(-C1_*(1/T_() - 1/TRef_));
-    
+
     j_() = spArea_*Y*(faiPos_() - faiNeg_() - U_())/dimVolt;
-    
+
 }
 
 
 void Foam::regionTypes::NTGK::calculateThermalBehavior()
-{    
-    
+{
+
     volScalarField QEch = Foam::mag(j_()*(U_() - (faiPos_() - faiNeg_())));
-    
+
     volScalarField Qohm = Foam::mag(sigmaPos_*(fvc::grad(faiPos_())&fvc::grad(faiPos_()))
                         + sigmaNeg_*(fvc::grad(faiNeg_())&fvc::grad(faiNeg_())));
-    
+
     ST_() = QEch /*+ Qohm*/;
 }
 
@@ -91,7 +91,7 @@ void Foam::regionTypes::NTGK::calculateThermalBehavior()
 void Foam::regionTypes::NTGK::calculateThermalAbuse()
 {
 	// thermal abuse model for li-ion cells
-    // source: Kim, G. H., Pesaran, A., & Spotnitz, R. (2007). 
+    // source: Kim, G. H., Pesaran, A., & Spotnitz, R. (2007).
     // A three-dimensional thermal abuse model for lithium-ion cells.
     // Journal of power sources, 170(2), 476-489.
     const dimensionedScalar TSEIScalar = dimensionedScalar("TSEI", dimensionSet(0, 0, 0, 1, 0, 0, 0), 363.15);
@@ -102,7 +102,7 @@ void Foam::regionTypes::NTGK::calculateThermalAbuse()
     volScalarField TSEI = Tdummy_() + TSEIScalar;
     volScalarField TNE = Tdummy_() + TNEScalar;
     volScalarField TELE = Tdummy_() + TELEScalar;
-    
+
     if(T_() > TSEI && T_() <= TNE)
     {
         RSEI_() = ASEI_*Foam::exp(-EASEI_/R/T_())*Foam::pow(cSEI_(), mSEI_);
@@ -182,7 +182,7 @@ Foam::regionTypes::NTGK::NTGK
             IOobject::NO_WRITE
         )
     ),
-    
+
     electrochemicalProperties_
     (
         IOobject
@@ -206,7 +206,7 @@ Foam::regionTypes::NTGK::NTGK
             IOobject::NO_WRITE
         )
     ),
-    
+
     sigmaPos_(transportProperties_.lookup("sigmaPos")),
     sigmaNeg_(transportProperties_.lookup("sigmaNeg")),
     rho_(transportProperties_.lookup("rho")),
@@ -265,7 +265,7 @@ Foam::regionTypes::NTGK::NTGK
     cELE_(nullptr),
     T_(nullptr)
 {
-    
+
     // set depth of discharge field
     DOD_ = lookupOrRead<volScalarField>
     (
@@ -367,7 +367,7 @@ Foam::regionTypes::NTGK::NTGK
 
     // set dimensionless concentration of electrolyte field
     cELE_ = lookupOrRead<volScalarField>(mesh(), "cELE");
-    
+
     // set temperature field
     T_ = lookupOrRead<volScalarField>(mesh(), "T");
 
@@ -383,7 +383,7 @@ Foam::regionTypes::NTGK::~NTGK()
 
 void Foam::regionTypes::NTGK::correct()
 {
-    
+
 }
 
 
@@ -398,19 +398,32 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
 	calculateElectrochemicalParameters();
     calculateThermalBehavior();
     calculateThermalAbuse();
-     	
+
 	faiPosEqn =
     (
         fvm::laplacian(sigmaPos_, faiPos(), "laplacian(sigma,fai)")
       ==
-       - j_()
+        -1.0 *
+        fvc::reconstruct
+        (
+            fvc::interpolate
+            (
+                j_()
+            ) * mesh().magSf()
+        )
     );
 
     faiNegEqn =
     (
         fvm::laplacian(sigmaNeg_, faiNeg(), "laplacian(sigma,fai)")
       ==
-        j_()
+        fvc::reconstruct
+        (
+            fvc::interpolate
+            (
+                j_()
+            ) * mesh().magSf()
+        )
     );
 
     cSEIEqn =
@@ -455,7 +468,7 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
        ==
          ST_()
     );
-    
+
     fvScalarMatrices.set
     (
         faiPos_().name()
@@ -527,7 +540,7 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
       + "Eqn",
         &TEqn()
     );
-    
+
 }
 
 void Foam::regionTypes::NTGK::postSolve()
