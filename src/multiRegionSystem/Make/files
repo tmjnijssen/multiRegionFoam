@@ -92,14 +92,6 @@ $(regions)/anodicCL/anodicCL.C
 $(regions)/cathodicCL/cathodicCL.C
 $(regions)/cathodicGDL/cathodicGDL.C
 $(regions)/ionomer/ionomer.C
-$(regions)/conductElectrons/conductElectrons.C
-$(regions)/conductElectronsReaction/conductElectronsReaction.C
-$(regions)/diluteElectrolyte/diluteElectrolyte.C
-$(regions)/surfaceTransportSPM/surfaceTransportSPM.C
-$(regions)/surfaceTransportP2D/surfaceTransportP2D.C
-$(regions)/conductElectronsP2D/conductElectronsP2D.C
-$(regions)/ionTransportP2D/ionTransportP2D.C
-$(regions)/conductTemperatureP2D/conductTemperatureP2D.C
 $(regions)/intercalationCathode/intercalationCathode.C
 $(regions)/intercalationAnode/intercalationAnode.C
 $(regions)/separator/separator.C

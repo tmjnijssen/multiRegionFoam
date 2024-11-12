@@ -404,12 +404,9 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
         fvm::laplacian(sigmaPos_, faiPos(), "laplacian(sigma,fai)")
       ==
         -1.0 *
-        fvc::reconstruct
+        fvc::average
         (
-            fvc::interpolate
-            (
-                j_()
-            ) * mesh().magSf()
+            fvc::interpolate(j_())
         )
     );
 
@@ -417,12 +414,9 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
     (
         fvm::laplacian(sigmaNeg_, faiNeg(), "laplacian(sigma,fai)")
       ==
-        fvc::reconstruct
+        fvc::average
         (
-            fvc::interpolate
-            (
-                j_()
-            ) * mesh().magSf()
+            fvc::interpolate(j_())
         )
     );
 
