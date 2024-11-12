@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Fork:     foam-extend
-    \\  /    A nd           | Version:  4.1                                 
+    \\  /    A nd           | Version:  4.1
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -44,7 +44,7 @@ Affiliations
     Darmstadt, Germany
 
 Description
-    
+
     This file is part of the multiRegionFoam library.
 
     You may refer to this software as :
@@ -58,7 +58,7 @@ Description
 
     Kwon, Ki Hyun, et al. "A two-dimensional modeling of a lithium-polymer
     battery." Journal of Power Sources 163.1 (2006): 151-157.
-    
+
     Kim, Gi-Heon, Ahmad Pesaran, and Robert Spotnitz. "A three-dimensional
     thermal abuse model for lithium-ion cells."
     Journal of power sources 170.2 (2007): 476-489.
@@ -97,7 +97,7 @@ class NTGK
 
         //- transport properties dictionary
         IOdictionary transportProperties_;
-        
+
         //- electrochemical properties dictionary
         IOdictionary electrochemicalProperties_;
 
@@ -229,7 +229,7 @@ class NTGK
 
         //- T-dependent open circuit potential
         autoPtr<volScalarField> U_;
-        
+
         //- volumetric exchange current density
         autoPtr<volScalarField> j_;
 
@@ -274,16 +274,20 @@ class NTGK
 
         //- Cached temperature matrix
         tmp<fvScalarMatrix> TEqn;
-        
+
     //private member functions
         //- calculate electrochemical parameters like current density with semi-empirical approach
         void calculateElectrochemicalParameters();
-        
+
         //- calculate thermal behavior variables
         void calculateThermalBehavior();
 
         // calculate thermal abuse model variables
         void calculateThermalAbuse();
+
+        tmp<fvScalarMatrix> jPos();
+
+        tmp<fvScalarMatrix> jNeg();
 
 protected:
 
@@ -293,10 +297,10 @@ protected:
         //- negative electrode potential
         autoPtr<volScalarField> faiNeg_;
 
-        //- dimensionless amount of Li-containg meta-stabel species in SEI 
+        //- dimensionless amount of Li-containg meta-stabel species in SEI
         autoPtr<volScalarField> cSEI_;
 
-        //- Cached dimensionless amount of Li amount intercalacted within the carbon 
+        //- Cached dimensionless amount of Li amount intercalacted within the carbon
         autoPtr<volScalarField> cNE_;
 
         //- dimensionless measure of SEI layer thickness
@@ -398,7 +402,7 @@ public:
         {
             return cELE_();
         }
-        
+
         const volScalarField& T() const
         {
             return T_();

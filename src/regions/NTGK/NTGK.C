@@ -155,8 +155,68 @@ void Foam::regionTypes::NTGK::calculateThermalAbuse()
         ST_() = ST_()*1;
     }
 
+}
 
+Foam::tmp<fvScalarMatrix> Foam::regionTypes::NTGK::jPos()
+{
+    dimensionedScalar dimVolt =
+        dimensionedScalar("dimVolt", dimensionSet(1, 2, -3, 0, 0, -1, 0), 1);
 
+    volScalarField U0 = a0_
+                      + a1_*DOD_()
+                      + a2_*Foam::pow(DOD_(), 2)
+                      + a3_*Foam::pow(DOD_(), 3);
+
+    volScalarField Y0 = a4_
+                      + a5_*DOD_()
+                      + a6_*Foam::pow(DOD_(), 2)
+                      + a7_*Foam::pow(DOD_(), 3)
+                      + a8_*Foam::pow(DOD_(), 4)
+                      + a9_*Foam::pow(DOD_(), 5);
+
+    U_() = U0 - C2_*(T_() - TRef_);
+
+    volScalarField Y = Y0*Foam::exp(-C1_*(1/T_() - 1/TRef_));
+
+    return
+    (
+        fvm::Sp(spArea_*Y/dimVolt, faiPos_())
+      + fvc::average
+        (
+            fvc::interpolate(spArea_*Y*(- faiNeg_() - U_())/dimVolt)
+        )
+    );
+}
+
+Foam::tmp<fvScalarMatrix> Foam::regionTypes::NTGK::jNeg()
+{
+    dimensionedScalar dimVolt =
+        dimensionedScalar("dimVolt", dimensionSet(1, 2, -3, 0, 0, -1, 0), 1);
+
+    volScalarField U0 = a0_
+                      + a1_*DOD_()
+                      + a2_*Foam::pow(DOD_(), 2)
+                      + a3_*Foam::pow(DOD_(), 3);
+
+    volScalarField Y0 = a4_
+                      + a5_*DOD_()
+                      + a6_*Foam::pow(DOD_(), 2)
+                      + a7_*Foam::pow(DOD_(), 3)
+                      + a8_*Foam::pow(DOD_(), 4)
+                      + a9_*Foam::pow(DOD_(), 5);
+
+    U_() = U0 - C2_*(T_() - TRef_);
+
+    volScalarField Y = Y0*Foam::exp(-C1_*(1/T_() - 1/TRef_));
+
+    return
+    (
+      - fvm::Sp(spArea_*Y/dimVolt, faiNeg_())
+      + fvc::average
+        (
+            fvc::interpolate(spArea_*Y*(faiPos_() - U_())/dimVolt)
+        )
+    );
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -403,21 +463,14 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
     (
         fvm::laplacian(sigmaPos_, faiPos(), "laplacian(sigma,fai)")
       ==
-        -1.0 *
-        fvc::average
-        (
-            fvc::interpolate(j_())
-        )
+        -1.0 * jPos()
     );
 
     faiNegEqn =
     (
         fvm::laplacian(sigmaNeg_, faiNeg(), "laplacian(sigma,fai)")
       ==
-        fvc::average
-        (
-            fvc::interpolate(j_())
-        )
+        jNeg()
     );
 
     cSEIEqn =
