@@ -79,18 +79,84 @@ void Foam::regionTypes::NTGK::calculateElectrochemicalParameters()
 void Foam::regionTypes::NTGK::calculateThermalBehavior()
 {    
     
-    volScalarField QEch = j_()*(U_() - (faiPos_() - faiNeg_()));
+    volScalarField QEch = Foam::mag(j_()*(U_() - (faiPos_() - faiNeg_())));
     
-    volScalarField Qohm = sigmaPos_*(fvc::grad(faiPos_())&fvc::grad(faiPos_()))
-                        + sigmaNeg_*(fvc::grad(faiNeg_())&fvc::grad(faiNeg_()));
+    volScalarField Qohm = Foam::mag(sigmaPos_*(fvc::grad(faiPos_())&fvc::grad(faiPos_()))
+                        + sigmaNeg_*(fvc::grad(faiNeg_())&fvc::grad(faiNeg_())));
     
-    ST_() = QEch + Qohm;
+    ST_() = QEch /*+ Qohm*/;
 }
 
 
 void Foam::regionTypes::NTGK::calculateThermalAbuse()
 {
-	
+	// thermal abuse model for li-ion cells
+    // source: Kim, G. H., Pesaran, A., & Spotnitz, R. (2007). 
+    // A three-dimensional thermal abuse model for lithium-ion cells.
+    // Journal of power sources, 170(2), 476-489.
+    const dimensionedScalar TSEIScalar = dimensionedScalar("TSEI", dimensionSet(0, 0, 0, 1, 0, 0, 0), 363.15);
+    const dimensionedScalar TNEScalar = dimensionedScalar("TNE", dimensionSet(0, 0, 0, 1, 0, 0, 0), 393.15);
+    const dimensionedScalar TELEScalar = dimensionedScalar("TELE", dimensionSet(0, 0, 0, 1, 0, 0, 0), 473.15);
+
+
+    volScalarField TSEI = Tdummy_() + TSEIScalar;
+    volScalarField TNE = Tdummy_() + TNEScalar;
+    volScalarField TELE = Tdummy_() + TELEScalar;
+    
+    if(T_() > TSEI && T_() <= TNE)
+    {
+        RSEI_() = ASEI_*Foam::exp(-EASEI_/R/T_())*Foam::pow(cSEI_(), mSEI_);
+
+        volScalarField QSEI = HSEI_*WC_*RSEI_();
+
+        ST_() += QSEI;
+
+    }
+    if(T_() > TNE && T_() <= TELE)
+    {
+        RSEI_() = ASEI_*Foam::exp(-EASEI_/R/T_())*Foam::pow(cSEI_(), mSEI_);
+
+        RNE_() = ANE_*Foam::exp(-tSEI_()/tSEIRef_)*Foam::pow(cNE_(), mNE_)*Foam::exp(-EANE_/R/T_());
+
+        RPE_() = APE_*Foam::pow(alpha_(), mPE1_)*Foam::pow((1-alpha_()), mPE2_)*Foam::exp(-EAPE_/R/T_());
+
+        volScalarField QSEI = HSEI_*WC_*RSEI_();
+
+        volScalarField QNE = HNE_*WC_*RNE_();
+
+        volScalarField QPE = HPE_*WP_*RPE_();
+
+        ST_() += (QSEI + QNE + QPE);
+
+    }
+    if(T_() > TELE)
+    {
+        RSEI_() = ASEI_*Foam::exp(-EASEI_/R/T_())*Foam::pow(cSEI_(), mSEI_);
+
+        RNE_() = ANE_*Foam::exp(-tSEI_()/tSEIRef_)*Foam::pow(cNE_(), mNE_)*Foam::exp(-EANE_/R/T_());
+
+        RPE_() = APE_*Foam::pow(alpha_(), mPE1_)*Foam::pow((1-alpha_()), mPE2_)*Foam::exp(-EAPE_/R/T_());
+
+        RELE_() = AELE_*Foam::exp(-EAELE_/R/T_())*Foam::pow(cELE_(), mELE_);
+
+        volScalarField QSEI = HSEI_*WC_*RSEI_();
+
+        volScalarField QNE = HNE_*WC_*RNE_();
+
+        volScalarField QPE = HPE_*WP_*RPE_();
+
+        volScalarField QELE = HELE_*WELE_*RELE_();
+
+        ST_() += (QSEI + QNE + QPE + QELE);
+
+    }
+    else
+    {
+        ST_() = ST_()*1;
+    }
+
+
+
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -128,6 +194,18 @@ Foam::regionTypes::NTGK::NTGK
             IOobject::NO_WRITE
         )
     ),
+
+    thermalAbuseProperties_
+    (
+        IOobject
+        (
+            "thermalAbuseProperties",
+            mesh().time().constant(),
+            mesh(),
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE
+        )
+    ),
     
     sigmaPos_(transportProperties_.lookup("sigmaPos")),
     sigmaNeg_(transportProperties_.lookup("sigmaNeg")),
@@ -148,12 +226,43 @@ Foam::regionTypes::NTGK::NTGK
     a9_(electrochemicalProperties_.lookup("a9")),
     C1_(electrochemicalProperties_.lookup("C1")),
     C2_(electrochemicalProperties_.lookup("C2")),
+    ASEI_(thermalAbuseProperties_.lookup("ASEI")),
+    ANE_(thermalAbuseProperties_.lookup("ANE")),
+    APE_(thermalAbuseProperties_.lookup("APE")),
+    AELE_(thermalAbuseProperties_.lookup("AELE")),
+    EASEI_(thermalAbuseProperties_.lookup("EASEI")),
+    EANE_(thermalAbuseProperties_.lookup("EANE")),
+    EAPE_(thermalAbuseProperties_.lookup("EAPE")),
+    EAELE_(thermalAbuseProperties_.lookup("EAELE")),
+    mSEI_(thermalAbuseProperties_.lookup("mSEI")),
+    mNE_(thermalAbuseProperties_.lookup("mNE")),
+    mPE1_(thermalAbuseProperties_.lookup("mPE1")),
+    mPE2_(thermalAbuseProperties_.lookup("mPE2")),
+    mELE_(thermalAbuseProperties_.lookup("mELE")),
+    HSEI_(thermalAbuseProperties_.lookup("HSEI")),
+    HNE_(thermalAbuseProperties_.lookup("HNE")),
+    HPE_(thermalAbuseProperties_.lookup("HPE")),
+    HELE_(thermalAbuseProperties_.lookup("HELE")),
+    WC_(thermalAbuseProperties_.lookup("WC")),
+    WP_(thermalAbuseProperties_.lookup("WP")),
+    WELE_(thermalAbuseProperties_.lookup("WELE")),
+    tSEIRef_(thermalAbuseProperties_.lookup("tSEIRef")),
     DOD_(nullptr),
     U_(nullptr),
     j_(nullptr),
+    RSEI_(nullptr),
+    RNE_(nullptr),
+    RPE_(nullptr),
+    RELE_(nullptr),
+    Tdummy_(nullptr),
     ST_(nullptr),
     faiPos_(nullptr),
     faiNeg_(nullptr),
+    cSEI_(nullptr),
+    cNE_(nullptr),
+    tSEI_(nullptr),
+    alpha_(nullptr),
+    cELE_(nullptr),
     T_(nullptr)
 {
     
@@ -184,6 +293,51 @@ Foam::regionTypes::NTGK::NTGK
         true
     );
 
+    // set reaction rate SEI decomposition field
+    RSEI_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        "RSEI",
+        dimensionedScalar("RSEI0", dimensionSet(0, 0, -1, 0, 0, 0, 0), 0),
+        true
+    );
+
+    // set reaction rate negative solvent reaction field
+    RNE_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        "RNE",
+        dimensionedScalar("RNE0", dimensionSet(0, 0, -1, 0, 0, 0, 0), 0),
+        true
+    );
+
+    // set reaction rate positive solvent reaction field
+    RPE_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        "RPE",
+        dimensionedScalar("RPE0", dimensionSet(0, 0, -1, 0, 0, 0, 0), 0),
+        true
+    );
+
+    // set reaction rate electrolyte decomposition field
+    RELE_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        "RELE",
+        dimensionedScalar("RELE0", dimensionSet(0, 0, -1, 0, 0, 0, 0), 0),
+        true
+    );
+
+    // set reaction rate electrolyte decomposition field
+    Tdummy_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        "Tdummy",
+        dimensionedScalar("Tdummy0", dimensionSet(0, 0, 0, 1, 0, 0, 0), 0),
+        true
+    );
+
     // set summarized heat source terms field
     ST_ = lookupOrRead<volScalarField>
     (
@@ -198,6 +352,21 @@ Foam::regionTypes::NTGK::NTGK
 
     // set negative electrode potential field
     faiNeg_ = lookupOrRead<volScalarField>(mesh(), "faiNeg");
+
+    // set dimensionless amount of Li-containg meta-stabel species in SEI field
+    cSEI_ = lookupOrRead<volScalarField>(mesh(), "cSEI");
+
+    // set dimensionless amount of Li amount intercalacted within the carbon field
+    cNE_ = lookupOrRead<volScalarField>(mesh(), "cNE");
+
+    // set dimensionless measure of SEI layer thickness field
+    tSEI_ = lookupOrRead<volScalarField>(mesh(), "tSEI");
+
+    // set degree of conversion field
+    alpha_ = lookupOrRead<volScalarField>(mesh(), "alpha");
+
+    // set dimensionless concentration of electrolyte field
+    cELE_ = lookupOrRead<volScalarField>(mesh(), "cELE");
     
     // set temperature field
     T_ = lookupOrRead<volScalarField>(mesh(), "T");
@@ -244,6 +413,41 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
         j_()
     );
 
+    cSEIEqn =
+    (
+        fvm::ddt(1, cSEI())
+      ==
+       - RSEI_()
+    );
+
+    cNEEqn =
+    (
+        fvm::ddt(1, cNE())
+      ==
+       - RNE_()
+    );
+
+    tSEIEqn =
+    (
+        fvm::ddt(1, tSEI())
+      ==
+        RNE_()
+    );
+
+    alphaEqn =
+    (
+        fvm::ddt(1, alpha())
+      ==
+        RPE_()
+    );
+
+    cELEEqn =
+    (
+        fvm::ddt(1, cELE())
+      ==
+       - RELE_()
+    );
+
     TEqn =
     (
          fvm::ddt(rho_*cp_, T())
@@ -268,6 +472,51 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
       + NTGK::typeName + "Type"
       + "Eqn",
         &faiNegEqn()
+    );
+
+    fvScalarMatrices.set
+    (
+        cSEI_().name()
+      + mesh().name() + "Mesh"
+      + NTGK::typeName + "Type"
+      + "Eqn",
+        &cSEIEqn()
+    );
+
+    fvScalarMatrices.set
+    (
+        cNE_().name()
+      + mesh().name() + "Mesh"
+      + NTGK::typeName + "Type"
+      + "Eqn",
+        &cNEEqn()
+    );
+
+    fvScalarMatrices.set
+    (
+        tSEI_().name()
+      + mesh().name() + "Mesh"
+      + NTGK::typeName + "Type"
+      + "Eqn",
+        &tSEIEqn()
+    );
+
+    fvScalarMatrices.set
+    (
+        alpha_().name()
+      + mesh().name() + "Mesh"
+      + NTGK::typeName + "Type"
+      + "Eqn",
+        &alphaEqn()
+    );
+
+    fvScalarMatrices.set
+    (
+        cELE_().name()
+      + mesh().name() + "Mesh"
+      + NTGK::typeName + "Type"
+      + "Eqn",
+        &cELEEqn()
     );
 
     fvScalarMatrices.set

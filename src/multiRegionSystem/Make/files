@@ -103,6 +103,9 @@ $(regions)/conductTemperatureP2D/conductTemperatureP2D.C
 $(regions)/intercalationCathode/intercalationCathode.C
 $(regions)/intercalationAnode/intercalationAnode.C
 $(regions)/separator/separator.C
+$(regions)/NTGK/NTGK.C
+$(regions)/conductPosPotentialTemperature/conductPosPotentialTemperature.C
+$(regions)/conductNegPotentialTemperature/conductNegPotentialTemperature.C
 
 physicalModels = ./../physicalModels
 $(physicalModels)/thermoPhysicalConstants/thermoPhysicalConstants.C

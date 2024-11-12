@@ -101,6 +101,9 @@ class NTGK
         //- electrochemical properties dictionary
         IOdictionary electrochemicalProperties_;
 
+        //- thermal abuse reaction parameters dictionary
+        IOdictionary thermalAbuseProperties_;
+
         //- electric conductivity positive electrode material
         dimensionedScalar sigmaPos_;
 
@@ -158,6 +161,69 @@ class NTGK
         //- fitting parameter C2 for fit T-dependency of U
         dimensionedScalar C2_;
 
+        //- SEI-decomposition frequency factor
+        dimensionedScalar ASEI_;
+
+        //- negative solvent frequency factor
+        dimensionedScalar ANE_;
+
+        //- positive solvent frequency factor
+        dimensionedScalar APE_;
+
+        //- electrolyte decomposition frequency factor
+        dimensionedScalar AELE_;
+
+        //- SEI-decomposition activation energy
+        dimensionedScalar EASEI_;
+
+        //- negative solvent activation energy
+        dimensionedScalar EANE_;
+
+        //- positive solvent activation energy
+        dimensionedScalar EAPE_;
+
+        //- electrolyte decomposition activation energy
+        dimensionedScalar EAELE_;
+
+        //- SEI-decomposition reaction order
+        dimensionedScalar mSEI_;
+
+        //- negative solvent reaction order
+        dimensionedScalar mNE_;
+
+        //- positive solvent reaction order 1
+        dimensionedScalar mPE1_;
+
+        //- positive solvent reaction order 2
+        dimensionedScalar mPE2_;
+
+        //- electrolyte decomposition reaction order
+        dimensionedScalar mELE_;
+
+        //- SEI-decomposition heat release
+        dimensionedScalar HSEI_;
+
+        //- negative solvent heat release
+        dimensionedScalar HNE_;
+
+        //- positive solvent heat release
+        dimensionedScalar HPE_;
+
+        //- electrolyte decomposition heat release
+        dimensionedScalar HELE_;
+
+        //- specific carbon content in jelly roll
+        dimensionedScalar WC_;
+
+        //- specific positive active content in jelly roll
+        dimensionedScalar WP_;
+
+        //- specific electrolyte content in jelly roll
+        dimensionedScalar WELE_;
+
+        //- initial/reference dimensionless thickness of SEI layer
+        dimensionedScalar tSEIRef_;
+
         //- depth of discharge
         autoPtr<volScalarField> DOD_;
 
@@ -167,6 +233,21 @@ class NTGK
         //- volumetric exchange current density
         autoPtr<volScalarField> j_;
 
+        //- reaction rate SEI decomposition
+        autoPtr<volScalarField> RSEI_;
+
+        //- reaction rate negative solvent reaction
+        autoPtr<volScalarField> RNE_;
+
+        //- reaction rate positive solvent reaction
+        autoPtr<volScalarField> RPE_;
+
+        //- reaction rate electrolyte decomposition
+        autoPtr<volScalarField> RELE_;
+
+        //- dummy T-field
+        autoPtr<volScalarField> Tdummy_;
+
         //- heat source term
         autoPtr<volScalarField> ST_;
 
@@ -175,6 +256,21 @@ class NTGK
 
         //- Cached negative electrode potential matrix
         tmp<fvScalarMatrix> faiNegEqn;
+
+        //- Cached dimensionless amount of Li-containg meta-stabel species in SEI matrix
+        tmp<fvScalarMatrix> cSEIEqn;
+
+        //- Cached dimensionless amount of Li amount intercalacted within the carbon matrix
+        tmp<fvScalarMatrix> cNEEqn;
+
+        //- Cached dimensionless measure of SEI layer thickness matrix
+        tmp<fvScalarMatrix> tSEIEqn;
+
+        //- Cached degree of conversion matrix
+        tmp<fvScalarMatrix> alphaEqn;
+
+        //- Cached dimensionless concentration of electrolyte matrix
+        tmp<fvScalarMatrix> cELEEqn;
 
         //- Cached temperature matrix
         tmp<fvScalarMatrix> TEqn;
@@ -196,6 +292,21 @@ protected:
 
         //- negative electrode potential
         autoPtr<volScalarField> faiNeg_;
+
+        //- dimensionless amount of Li-containg meta-stabel species in SEI 
+        autoPtr<volScalarField> cSEI_;
+
+        //- Cached dimensionless amount of Li amount intercalacted within the carbon 
+        autoPtr<volScalarField> cNE_;
+
+        //- dimensionless measure of SEI layer thickness
+        autoPtr<volScalarField> tSEI_;
+
+        //- Cached degree of conversion
+        autoPtr<volScalarField> alpha_;
+
+        //- Cached dimensionless concentration of electrolyte
+        autoPtr<volScalarField> cELE_;
 
         //- temperature
         autoPtr<volScalarField> T_;
@@ -236,6 +347,56 @@ public:
         volScalarField& faiNeg()
         {
             return faiNeg_();
+        }
+
+        const volScalarField& cSEI() const
+        {
+            return cSEI_();
+        }
+
+        volScalarField& cSEI()
+        {
+            return cSEI_();
+        }
+
+        const volScalarField& cNE() const
+        {
+            return cNE_();
+        }
+
+        volScalarField& cNE()
+        {
+            return cNE_();
+        }
+
+        const volScalarField& tSEI() const
+        {
+            return tSEI_();
+        }
+
+        volScalarField& tSEI()
+        {
+            return tSEI_();
+        }
+
+        const volScalarField& alpha() const
+        {
+            return alpha_();
+        }
+
+        volScalarField& alpha()
+        {
+            return alpha_();
+        }
+
+        const volScalarField& cELE() const
+        {
+            return cELE_();
+        }
+
+        volScalarField& cELE()
+        {
+            return cELE_();
         }
         
         const volScalarField& T() const
