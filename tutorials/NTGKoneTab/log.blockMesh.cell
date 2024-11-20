@@ -1,0 +1,180 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+ddtSchemes
+{
+    
+}
+
+gradSchemes
+{
+    
+}
+
+divSchemes
+{
+    
+}
+
+laplacianSchemes
+{
+    
+}
+
+interpolationSchemes
+{
+    
+}
+
+snGradSchemes
+{
+    
+}
+
+fluxRequired
+{
+    
+}
+
+// ************************************************************************* //
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    
+    
+}
+
+SIMPLE
+{
+    
+}
+
+PISO
+{
+
+}
+
+PIMPLE
+{
+    
+}
+
+relaxationFactors
+{
+    
+}
+
+
+
+// ************************************************************************* //
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.1                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  | For copyright notice see file Copyright         |
+\*---------------------------------------------------------------------------*/
+Build  : 4.1-70b064d0f326
+Exec   : blockMesh -region cell
+Date   : Nov 20 2024
+Time   : 14:48:23
+Host   : "DESKTOP-5DKJAJJ"
+PID    : 86647
+CtrlDict : "/home/lhuef/foam/lhuef-4.1/run/NTGKoneTab/system/controlDict"
+Case   : /home/lhuef/foam/lhuef-4.1/run/NTGKoneTab
+nProcs : 1
+sigFpe : Enabling floating point exception trapping (FOAM_SIGFPE).
+allowSystemOperations : Disallowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+
+Generating mesh for region cell
+
+Creating block mesh from
+    "/home/lhuef/foam/lhuef-4.1/run/NTGKoneTab/constant/cell/polyMesh/blockMeshDict"
+
+No non-linear edges defined
+Creating topology blocks
+Creating topology patches
+
+Reading patches section
+
+Creating block mesh topology
+
+Reading physicalType from existing boundary file
+
+Default patch type set to empty
+
+Check topology
+
+	Basic statistics
+		Number of internal faces : 0
+		Number of boundary faces : 6
+		Number of defined boundary faces : 6
+		Number of undefined boundary faces : 0
+	Checking patch -> block consistency
+
+Creating block offsets
+Creating merge list .
+
+Creating polyMesh from blockMesh
+Creating patches
+Creating cells
+Creating points with scale 1
+    Block 0 cell size :
+        i : 0.00025 .. 0.00025
+        j : 0.00025 .. 0.00025
+        k : 0.00025 .. 0.00025
+
+
+There are no merge patch pairs edges
+
+Writing polyMesh
+----------------
+Mesh Information
+----------------
+  boundingBox: (0 0 0) (0.035 0.0025 0.062)
+  nPoints: 386199
+  nCells: 347200
+  nFaces: 1080200
+  nInternalFaces: 1003000
+----------------
+Patches
+----------------
+  patch 0 (start: 1003000 size: 4960) name: leftRight
+  patch 1 (start: 1007960 size: 1400) name: intPositiveTab
+  patch 2 (start: 1009360 size: 1400) name: intNegativeTab
+  patch 3 (start: 1010760 size: 69440) name: frontAndBack
+
+End
+

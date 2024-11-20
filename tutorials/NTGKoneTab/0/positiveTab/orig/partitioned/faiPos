@@ -1,0 +1,98 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.3                                   |
+|   \\  /    A nd           | Web:      http://www.openfoam.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    version         2.0;
+    format          ascii;
+    class           volScalarField;
+    object          faiPos;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+dimensions      [1 2 -3 0 0 -1 0];
+
+internalField   uniform 4.112;
+
+boundaryField
+{
+    leftRight
+    {
+        type                    zeroGradient;
+        
+    }
+    bottom
+    {
+        /*type                    regionCoupledScalarFlux;
+        interfaceType           defaultInterface;
+        k                       "sigmaPos";
+        
+        neighbourRegionName     cell;
+        neighbourPatchName      intPositiveTab;
+        neighbourFieldName      faiPos;
+        
+        secondOrder             true;
+        nonOrthCorr             false;
+        value                   $internalField;*/
+
+        type                    regionCoupledScalarJump;
+        interfaceType           defaultInterface;
+        k                       "sigmaPos";
+
+        accType                 fixed;
+        relax                   0.01;
+
+         //accType               aitken;
+         //relax                   0.75;
+
+        // accType               IQN-ILS;
+        // relax                   0.75;
+        // couplingReuse           0; //2;
+
+
+        neighbourRegionName     cell;
+        neighbourPatchName      intPositiveTab;
+        neighbourFieldName      faiPos;
+        
+        secondOrder             true;
+        nonOrthCorr             false;
+        value                   $internalField;
+    }
+    top
+    {
+        //type                    fixedGradient;
+        //gradient                uniform 10.0;
+
+
+        type                    fixedValue;
+        value                   uniform 4.0;
+
+        //BC for charge/discharge with constant current density IApp
+        //type                  groovyBC;
+        //variables             "IApp=-30;sigma=sigma;";
+        //gradientExpression        "IApp/sigma";
+        //fractionExpression        "( faiPos > 0 ) ? 0 : 1";
+        //value                 $internalField;
+        
+        //BC for charge/discharge with given C-Rate CR
+        //type                  groovyBC;
+        //varialbes             "CR=1;sigma=sigma;  ;"; //TO DO: Expression from Capacity/Electrolyte concentration/SoC over C-Rate to IApp
+        //gradientExpression    "IApp/sigma";
+        //fractionExpression    "( faiPos > 0 ) ? 0 : 1";
+        //value                 $internalField;
+    }
+    frontAndBack
+    {
+        type                    zeroGradient;
+    }
+
+}
+
+// ************************************************************************* //

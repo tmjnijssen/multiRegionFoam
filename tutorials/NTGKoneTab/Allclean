@@ -1,0 +1,28 @@
+#!/bin/sh
+
+find -type l -delete
+
+rm -rf 0.* [1-9]* log* proc* VTK
+
+rm constant/cell/polyMesh/blockMeshDict 2>/dev/null
+rm constant/positiveTab/polyMesh/blockMeshDict 2>/dev/null
+rm constant/negativeTab/polyMesh/blockMeshDict 2>/dev/null
+
+rm 0/cell/faiNeg 2>/dev/null
+rm 0/cell/faiPos 2>/dev/null
+rm 0/cell/alpha 2>/dev/null
+rm 0/cell/cELE 2>/dev/null
+rm 0/cell/cNE 2>/dev/null
+rm 0/cell/cSEI 2>/dev/null
+rm 0/cell/tSEI 2>/dev/null
+rm 0/cell/j 2>/dev/null
+rm 0/cell/T 2>/dev/null
+
+rm 0/positiveTab/faiPos 2>/dev/null
+rm 0/positiveTab/T 2>/dev/null
+
+rm 0/negativeTab/faiNeg 2>/dev/null
+rm 0/negativeTab/T 2>/dev/null
+
+rm constant/regionInterfaceProperties 2>/dev/null
+
