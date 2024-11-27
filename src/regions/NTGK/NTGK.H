@@ -119,6 +119,9 @@ class NTGK
         //- thermal conductivity of jelly roll
         dimensionedScalar k_;
 
+        //- specific electric capacity for transient term of poisson equation
+        dimensionedScalar C_;
+
         //- reference temperature
         dimensionedScalar TRef_;
 

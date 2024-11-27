@@ -84,7 +84,7 @@ void Foam::regionTypes::NTGK::calculateThermalBehavior()
     volScalarField Qohm = Foam::mag(sigmaPos_*(fvc::grad(faiPos_())&fvc::grad(faiPos_()))
                         + sigmaNeg_*(fvc::grad(faiNeg_())&fvc::grad(faiNeg_())));
 
-    ST_() = QEch /*+ Qohm*/;
+    ST_() = QEch + Qohm;
 }
 
 
@@ -272,6 +272,7 @@ Foam::regionTypes::NTGK::NTGK
     rho_(transportProperties_.lookup("rho")),
     cp_(transportProperties_.lookup("cp")),
     k_(transportProperties_.lookup("k")),
+    C_(dimensionedScalar("C", dimensionSet(-1, -5, 4, 0, 0, 2, 0), 1)),
     TRef_(transportProperties_.lookup("TRef")),
     spArea_(transportProperties_.lookup("spArea")),
     a0_(electrochemicalProperties_.lookup("a0")),
@@ -461,14 +462,16 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
 
 	faiPosEqn =
     (
-        fvm::laplacian(sigmaPos_, faiPos(), "laplacian(sigma,fai)")
+        C_*fvm::ddt(faiPos(), "fai")
+      - fvm::laplacian(sigmaPos_, faiPos(), "laplacian(sigma,fai)")
       ==
         -1.0 * jPos()
     );
 
     faiNegEqn =
     (
-        fvm::laplacian(sigmaNeg_, faiNeg(), "laplacian(sigma,fai)")
+        C_*fvm::ddt(faiNeg(), "fai")
+      - fvm::laplacian(sigmaNeg_, faiNeg(), "laplacian(sigma,fai)")
       ==
         jNeg()
     );

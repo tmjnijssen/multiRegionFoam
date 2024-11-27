@@ -86,6 +86,7 @@ Foam::regionTypes::conductNegPotentialTemperature::conductNegPotentialTemperatur
     rho_(transportProperties_.lookup("rho")),
     cp_(transportProperties_.lookup("cp")),
     k_(transportProperties_.lookup("k")),
+    C_(dimensionedScalar("C", dimensionSet(-1, -5, 4, 0, 0, 2, 0), 1)),
     ST_(nullptr),
     faiNeg_(nullptr),
     T_(nullptr)
@@ -134,6 +135,7 @@ void Foam::regionTypes::conductNegPotentialTemperature::setCoupledEqns()
          	
 	faiNegEqn =
     (
+         C_*fvm::ddt(faiNeg(), "fai")
        - fvm::laplacian(sigmaNeg_, faiNeg(), "laplacian(sigma,fai)")
     );
 
