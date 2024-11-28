@@ -1,0 +1,2 @@
+faceSet bottomNZone new patchToFace bottom;
+quit;
