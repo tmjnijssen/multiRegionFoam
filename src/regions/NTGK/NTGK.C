@@ -181,10 +181,7 @@ Foam::tmp<fvScalarMatrix> Foam::regionTypes::NTGK::jPos()
     return
     (
         fvm::Sp(spArea_*Y/dimVolt, faiPos_())
-      + fvc::average
-        (
-            fvc::interpolate(spArea_*Y*(- faiNeg_() - U_())/dimVolt)
-        )
+      + spArea_*Y*(- faiNeg_() - U_())/dimVolt
     );
 }
 
@@ -212,10 +209,7 @@ Foam::tmp<fvScalarMatrix> Foam::regionTypes::NTGK::jNeg()
     return
     (
       - fvm::Sp(spArea_*Y/dimVolt, faiNeg_())
-      + fvc::average
-        (
-            fvc::interpolate(spArea_*Y*(faiPos_() - U_())/dimVolt)
-        )
+      + spArea_*Y*(faiPos_() - U_())/dimVolt
     );
 }
 
@@ -444,7 +438,6 @@ Foam::regionTypes::NTGK::~NTGK()
 
 void Foam::regionTypes::NTGK::correct()
 {
-
 }
 
 
@@ -462,7 +455,6 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
 
 	faiPosEqn =
     (
-        C_*fvm::ddt(faiPos(), "fai")
       - fvm::laplacian(sigmaPos_, faiPos(), "laplacian(sigma,fai)")
       ==
         -1.0 * jPos()
@@ -470,7 +462,6 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
 
     faiNegEqn =
     (
-        C_*fvm::ddt(faiNeg(), "fai")
       - fvm::laplacian(sigmaNeg_, faiNeg(), "laplacian(sigma,fai)")
       ==
         jNeg()
@@ -478,42 +469,42 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
 
     cSEIEqn =
     (
-        fvm::ddt(1, cSEI())
+        fvm::ddt(cSEI())
       ==
        - RSEI_()
     );
 
     cNEEqn =
     (
-        fvm::ddt(1, cNE())
+        fvm::ddt(cNE())
       ==
        - RNE_()
     );
 
     tSEIEqn =
     (
-        fvm::ddt(1, tSEI())
+        fvm::ddt(tSEI())
       ==
         RNE_()
     );
 
     alphaEqn =
     (
-        fvm::ddt(1, alpha())
+        fvm::ddt(alpha())
       ==
         RPE_()
     );
 
     cELEEqn =
     (
-        fvm::ddt(1, cELE())
+        fvm::ddt(cELE())
       ==
        - RELE_()
     );
 
     TEqn =
     (
-         fvm::ddt(rho_*cp_, T())
+         fvm::ddt(rho_*cp_, T(), "ddt(rho*cp,T)")
        - fvm::laplacian(k_, T(), "laplacian(k,T)")
        ==
          ST_()
