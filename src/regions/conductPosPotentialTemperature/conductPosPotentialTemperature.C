@@ -53,9 +53,9 @@ namespace regionTypes
 void Foam::regionTypes::conductPosPotentialTemperature::calculateJouleHeating()
 {    
     
-    //volScalarField Qohm = sigmaPos_*(fvc::grad(faiPos_())&fvc::grad(faiPos_()));
+    volScalarField Qohm = sigmaPos_*(fvc::grad(faiPos_())&fvc::grad(faiPos_()));
                             
-    //ST_() = Qohm;
+    ST_() = Qohm;
     
 }
 
@@ -87,6 +87,7 @@ Foam::regionTypes::conductPosPotentialTemperature::conductPosPotentialTemperatur
     rho_(transportProperties_.lookup("rho")),
     cp_(transportProperties_.lookup("cp")),
     k_(transportProperties_.lookup("k")),
+    C_(dimensionedScalar("C", dimensionSet(-1, -5, 4, 0, 0, 2, 0), 1)),
     ST_(nullptr),
     faiPos_(nullptr),
     T_(nullptr)
@@ -135,6 +136,7 @@ void Foam::regionTypes::conductPosPotentialTemperature::setCoupledEqns()
          	
 	faiPosEqn =
     (
+         C_*fvm::ddt(faiPos(), "fai")
        - fvm::laplacian(sigmaPos_, faiPos(), "laplacian(sigma,fai)")
     );
 
