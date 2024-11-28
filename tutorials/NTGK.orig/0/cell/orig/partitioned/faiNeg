@@ -1,0 +1,73 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.3                                   |
+|   \\  /    A nd           | Web:      http://www.openfoam.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    version         2.0;
+    format          ascii;
+    class           volScalarField;
+    object          faiNeg;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+dimensions      [1 2 -3 0 0 -1 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    top
+    {
+        type            zeroGradient;
+    }
+    leftRight
+    {
+        type            zeroGradient;
+    }
+    frontAndBack
+    {
+        type            zeroGradient;
+    }
+    bottom
+    {
+        type            zeroGradient;
+    }
+    intPositiveTab
+    {
+        type            zeroGradient;
+    }
+    intNegativeTab
+    {
+        type                    regionCoupledScalarJump;
+        interfaceType           defaultInterface;
+        k                       "sigmaNeg";
+
+        //accType                 fixed;
+        //relax                   0.001;
+
+         accType               aitken;
+         relax                   0.75;
+
+        // accType               IQN-ILS;
+        // relax                   0.75;
+        // couplingReuse           0; //2;
+
+
+        neighbourRegionName     negativeTab;
+        neighbourPatchName      bottom;
+        neighbourFieldName      faiNeg;
+        
+        secondOrder             false;
+        nonOrthCorr             false;
+        value                   $internalField;
+    }
+}
+
+// ************************************************************************* //
