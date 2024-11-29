@@ -1,3 +1,0 @@
-faceSet pIntZone new patchToFace intPositiveTab;
-faceSet nIntZone new patchToFace intNegativeTab;
-quit;

@@ -1,2 +1,0 @@
-faceSet bottomPZone new patchToFace bottom;
-quit;

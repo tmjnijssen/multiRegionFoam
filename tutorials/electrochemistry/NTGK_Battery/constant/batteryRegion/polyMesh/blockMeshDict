@@ -1,0 +1,165 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Everything in mm
+convertToMeters 0.001;
+
+// Depth of cell and tabs (irrelevant for 2D case)
+dZ 1;
+
+// The whole width of the battery cell is 2*dCellOutX2
+// and the whole width of each tab is dTabsOutX2 - dTabsInX2:
+// Half the distance between inside of the tabs
+dTabsInX1 -10;
+dTabsInX2  10;
+// Half the distance between outside of the tabs
+dTabsOutX1 -30;
+dTabsOutX2  30;
+// Half the distance between outside of the battery cell
+dCellOutX1 -50;
+dCellOutX2  50;
+
+// Height of the battery cell
+hCellY 120;
+
+vertices
+(
+
+    // Cell middle
+    ($dTabsInX1   0       0)        //0
+    ($dTabsInX2   0       0)        //1
+    ($dTabsInX2   $hCellY 0)        //2
+    ($dTabsInX1   $hCellY 0)        //3
+
+    ($dTabsInX1   0       $dZ)      //4
+    ($dTabsInX2   0       $dZ)      //5
+    ($dTabsInX2   $hCellY $dZ)      //6
+    ($dTabsInX1   $hCellY $dZ)      //7
+
+    // Cell positive left tab
+    ($dTabsOutX1  0       0)        //8
+    ($dTabsOutX1  $hCellY 0)        //9
+    ($dTabsOutX1  0       $dZ)      //10
+    ($dTabsOutX1  $hCellY $dZ)      //11
+
+    // Cell left out
+    ($dCellOutX1  0       0)        //12
+    ($dCellOutX1  $hCellY 0)        //13
+    ($dCellOutX1  0       $dZ)      //14
+    ($dCellOutX1  $hCellY $dZ)      //15
+
+    // Cell negative right tab
+    ($dTabsOutX2  0       0)        //16
+    ($dTabsOutX2  $hCellY 0)        //17
+    ($dTabsOutX2  0       $dZ)      //18
+    ($dTabsOutX2  $hCellY $dZ)      //19
+
+    // Cell right out
+    ($dCellOutX2  0       0)        //20
+    ($dCellOutX2  $hCellY 0)        //21
+    ($dCellOutX2  0       $dZ)      //22
+    ($dCellOutX2  $hCellY $dZ)      //23
+
+
+
+);
+
+
+blocks
+(
+    // Cell middle
+    hex (0 1 2 3 4 5 6 7) (20 120 1) simpleGrading (1 1 1)
+
+    // Cell positive left tab
+    hex (8 0 3 9 10 4 7 11) (20 120 1) simpleGrading (1 1 1)
+
+    // Cell left out
+    hex (12 8 9 13 14 10 11 15) (20 120 1) simpleGrading (1 1 1)
+
+    // Cell negative right tab
+    hex (1 16 17 2 5 18 19 6) (20 120 1) simpleGrading (1 1 1)
+
+    // Cell right out
+    hex (16 20 21 17 18 22 23 19) (20 120 1) simpleGrading (1 1 1)
+);
+
+
+boundary
+(
+
+    left
+    {
+        type patch;
+        faces
+        (
+            (14 15 13 12)
+        );
+    }
+
+    right
+    {
+        type patch;
+        faces
+        (
+            (20 21 23 22)
+        );
+    }
+
+    top
+    {
+        type patch;
+        faces
+        (
+            (7 6 2 3)
+            (15 11 9 13)
+            (19 23 21 17)
+        );
+    }
+
+    toPosTab
+    {
+        type patch;
+        faces
+        (
+            (11 7 3 9)
+        );
+    }
+
+    toNegTab
+    {
+        type patch;
+        faces
+        (
+            (6 19 17 2)
+        );
+    }
+
+    bottom
+    {
+        type patch;
+        faces
+        (
+            (4 0 1 5)
+            (10 8 0 4)
+            (14 12 8 10)
+            (5 1 16 18)
+            (18 16 20 22)
+        );
+    }
+
+);
+
+// ************************************************************************* //
