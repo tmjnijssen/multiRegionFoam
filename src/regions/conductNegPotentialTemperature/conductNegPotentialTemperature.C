@@ -51,11 +51,11 @@ namespace regionTypes
 // * * * * * * * * * * * * * * * Private Functions * * * * * * * * * * * * * //
 
 void Foam::regionTypes::conductNegPotentialTemperature::calculateJouleHeating()
-{    
-    
-    //volScalarField Qohm = sigmaNeg_*(fvc::grad(faiNeg_())&fvc::grad(faiNeg_()));
-    
-    //ST_() = Qohm;
+{
+
+    volScalarField Qohm = sigmaNeg_*(fvc::grad(faiNeg_())&fvc::grad(faiNeg_()));
+
+    ST_() = Qohm;
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -81,7 +81,7 @@ Foam::regionTypes::conductNegPotentialTemperature::conductNegPotentialTemperatur
             IOobject::NO_WRITE
         )
     ),
-    
+
     sigmaNeg_(transportProperties_.lookup("sigmaNeg")),
     rho_(transportProperties_.lookup("rho")),
     cp_(transportProperties_.lookup("cp")),
@@ -91,7 +91,7 @@ Foam::regionTypes::conductNegPotentialTemperature::conductNegPotentialTemperatur
     faiNeg_(nullptr),
     T_(nullptr)
 {
-    
+
     // set summarized heat source terms field
     ST_ = lookupOrRead<volScalarField>
     (
@@ -103,7 +103,7 @@ Foam::regionTypes::conductNegPotentialTemperature::conductNegPotentialTemperatur
 
     // set negative electrode potential field
     faiNeg_ = lookupOrRead<volScalarField>(mesh(), "faiNeg");
-    
+
     // set temperature field
     T_ = lookupOrRead<volScalarField>(mesh(), "T");
 
@@ -119,7 +119,7 @@ Foam::regionTypes::conductNegPotentialTemperature::~conductNegPotentialTemperatu
 
 void Foam::regionTypes::conductNegPotentialTemperature::correct()
 {
-    
+    calculateJouleHeating();
 }
 
 
@@ -131,8 +131,6 @@ Foam::scalar Foam::regionTypes::conductNegPotentialTemperature::getMinDeltaT()
 
 void Foam::regionTypes::conductNegPotentialTemperature::setCoupledEqns()
 {
-	calculateJouleHeating();
-         	
 	faiNegEqn =
     (
          C_*fvm::ddt(faiNeg(), "fai")
@@ -146,7 +144,7 @@ void Foam::regionTypes::conductNegPotentialTemperature::setCoupledEqns()
        ==
          ST_()
     );
-    
+
     fvScalarMatrices.set
     (
         faiNeg_().name()
@@ -164,12 +162,12 @@ void Foam::regionTypes::conductNegPotentialTemperature::setCoupledEqns()
       + "Eqn",
         &TEqn()
     );
-    
+
 }
 
 void Foam::regionTypes::conductNegPotentialTemperature::postSolve()
 {
-    // do nothing, add as required
+    this->correct();
 }
 
 void Foam::regionTypes::conductNegPotentialTemperature::solveRegion()

@@ -408,20 +408,75 @@ Foam::regionTypes::NTGK::NTGK
     // set negative electrode potential field
     faiNeg_ = lookupOrRead<volScalarField>(mesh(), "faiNeg");
 
-    // set dimensionless amount of Li-containg meta-stabel species in SEI field
-    cSEI_ = lookupOrRead<volScalarField>(mesh(), "cSEI");
+    // set dimensionless amount of Li-containing meta-stable species in SEI field
+    cSEI_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        "cSEI",
+        dimensionedScalar
+        (
+            "cSEIinit",
+            dimensionSet(0, 0, 0, 0, 0, 0, 0),
+            electrochemicalProperties_.lookup("cSEI")
+        ),
+        true
+    );
 
     // set dimensionless amount of Li amount intercalacted within the carbon field
-    cNE_ = lookupOrRead<volScalarField>(mesh(), "cNE");
+    cNE_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        "cNE",
+        dimensionedScalar
+        (
+            "cNEinit",
+            dimensionSet(0, 0, 0, 0, 0, 0, 0),
+            electrochemicalProperties_.lookup("cNE")
+        ),
+        true
+    );
 
     // set dimensionless measure of SEI layer thickness field
-    tSEI_ = lookupOrRead<volScalarField>(mesh(), "tSEI");
+    tSEI_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        "tSEI",
+        dimensionedScalar
+        (
+            "tSEIinit",
+            dimensionSet(0, 0, 0, 0, 0, 0, 0),
+            electrochemicalProperties_.lookup("tSEI")
+        ),
+        true
+    );
 
     // set degree of conversion field
-    alpha_ = lookupOrRead<volScalarField>(mesh(), "alpha");
+    alpha_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        "alpha",
+        dimensionedScalar
+        (
+            "alphainit",
+            dimensionSet(0, 0, 0, 0, 0, 0, 0),
+            electrochemicalProperties_.lookup("alpha")
+        ),
+        true
+    );
 
     // set dimensionless concentration of electrolyte field
-    cELE_ = lookupOrRead<volScalarField>(mesh(), "cELE");
+    cELE_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        "cELE",
+        dimensionedScalar
+        (
+            "cELEinit",
+            dimensionSet(0, 0, 0, 0, 0, 0, 0),
+            electrochemicalProperties_.lookup("cELE")
+        ),
+        true
+    );
 
     // set temperature field
     T_ = lookupOrRead<volScalarField>(mesh(), "T");
@@ -438,6 +493,9 @@ Foam::regionTypes::NTGK::~NTGK()
 
 void Foam::regionTypes::NTGK::correct()
 {
+    calculateElectrochemicalParameters();
+    calculateThermalBehavior();
+    calculateThermalAbuse();
 }
 
 
@@ -449,10 +507,6 @@ Foam::scalar Foam::regionTypes::NTGK::getMinDeltaT()
 
 void Foam::regionTypes::NTGK::setCoupledEqns()
 {
-	calculateElectrochemicalParameters();
-    calculateThermalBehavior();
-    calculateThermalAbuse();
-
 	faiPosEqn =
     (
       - fvm::laplacian(sigmaPos_, faiPos(), "laplacian(sigma,fai)")
@@ -465,41 +519,6 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
       - fvm::laplacian(sigmaNeg_, faiNeg(), "laplacian(sigma,fai)")
       ==
         jNeg()
-    );
-
-    cSEIEqn =
-    (
-        fvm::ddt(cSEI())
-      ==
-       - RSEI_()
-    );
-
-    cNEEqn =
-    (
-        fvm::ddt(cNE())
-      ==
-       - RNE_()
-    );
-
-    tSEIEqn =
-    (
-        fvm::ddt(tSEI())
-      ==
-        RNE_()
-    );
-
-    alphaEqn =
-    (
-        fvm::ddt(alpha())
-      ==
-        RPE_()
-    );
-
-    cELEEqn =
-    (
-        fvm::ddt(cELE())
-      ==
-       - RELE_()
     );
 
     TEqn =
@@ -530,51 +549,6 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
 
     fvScalarMatrices.set
     (
-        cSEI_().name()
-      + mesh().name() + "Mesh"
-      + NTGK::typeName + "Type"
-      + "Eqn",
-        &cSEIEqn()
-    );
-
-    fvScalarMatrices.set
-    (
-        cNE_().name()
-      + mesh().name() + "Mesh"
-      + NTGK::typeName + "Type"
-      + "Eqn",
-        &cNEEqn()
-    );
-
-    fvScalarMatrices.set
-    (
-        tSEI_().name()
-      + mesh().name() + "Mesh"
-      + NTGK::typeName + "Type"
-      + "Eqn",
-        &tSEIEqn()
-    );
-
-    fvScalarMatrices.set
-    (
-        alpha_().name()
-      + mesh().name() + "Mesh"
-      + NTGK::typeName + "Type"
-      + "Eqn",
-        &alphaEqn()
-    );
-
-    fvScalarMatrices.set
-    (
-        cELE_().name()
-      + mesh().name() + "Mesh"
-      + NTGK::typeName + "Type"
-      + "Eqn",
-        &cELEEqn()
-    );
-
-    fvScalarMatrices.set
-    (
         T_().name()
       + mesh().name() + "Mesh"
       + NTGK::typeName + "Type"
@@ -586,12 +560,50 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
 
 void Foam::regionTypes::NTGK::postSolve()
 {
-    // do nothing, add as required
+    this->correct();
 }
 
 void Foam::regionTypes::NTGK::solveRegion()
 {
-    // do nothing, add as required
+    fvScalarMatrix cSEIEqn
+    (
+        fvm::ddt(cSEI())
+      ==
+       - RSEI_()
+    );
+    cSEIEqn.solve();
+
+    fvScalarMatrix cNEEqn
+    (
+        fvm::ddt(cNE())
+      ==
+       - RNE_()
+    );
+    cNEEqn.solve();
+
+    fvScalarMatrix tSEIEqn
+    (
+        fvm::ddt(tSEI())
+      ==
+        RNE_()
+    );
+    tSEIEqn.solve();
+
+    fvScalarMatrix alphaEqn
+    (
+        fvm::ddt(alpha())
+      ==
+        RPE_()
+    );
+    alphaEqn.solve();
+
+    fvScalarMatrix cELEEqn
+    (
+        fvm::ddt(cELE())
+      ==
+       - RELE_()
+    );
+    cELEEqn.solve();
 }
 
 void Foam::regionTypes::NTGK::prePredictor()

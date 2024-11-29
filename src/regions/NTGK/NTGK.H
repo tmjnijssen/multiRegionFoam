@@ -260,21 +260,6 @@ class NTGK
         //- Cached negative electrode potential matrix
         tmp<fvScalarMatrix> faiNegEqn;
 
-        //- Cached dimensionless amount of Li-containg meta-stabel species in SEI matrix
-        tmp<fvScalarMatrix> cSEIEqn;
-
-        //- Cached dimensionless amount of Li amount intercalacted within the carbon matrix
-        tmp<fvScalarMatrix> cNEEqn;
-
-        //- Cached dimensionless measure of SEI layer thickness matrix
-        tmp<fvScalarMatrix> tSEIEqn;
-
-        //- Cached degree of conversion matrix
-        tmp<fvScalarMatrix> alphaEqn;
-
-        //- Cached dimensionless concentration of electrolyte matrix
-        tmp<fvScalarMatrix> cELEEqn;
-
         //- Cached temperature matrix
         tmp<fvScalarMatrix> TEqn;
 

@@ -51,12 +51,11 @@ namespace regionTypes
 // * * * * * * * * * * * * * * * Private Functions * * * * * * * * * * * * * //
 
 void Foam::regionTypes::conductPosPotentialTemperature::calculateJouleHeating()
-{    
-    
+{
+
     volScalarField Qohm = sigmaPos_*(fvc::grad(faiPos_())&fvc::grad(faiPos_()));
-                            
+
     ST_() = Qohm;
-    
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -82,7 +81,7 @@ Foam::regionTypes::conductPosPotentialTemperature::conductPosPotentialTemperatur
             IOobject::NO_WRITE
         )
     ),
-    
+
     sigmaPos_(transportProperties_.lookup("sigmaPos")),
     rho_(transportProperties_.lookup("rho")),
     cp_(transportProperties_.lookup("cp")),
@@ -92,7 +91,7 @@ Foam::regionTypes::conductPosPotentialTemperature::conductPosPotentialTemperatur
     faiPos_(nullptr),
     T_(nullptr)
 {
-    
+
     // set summarized heat source terms field
     ST_ = lookupOrRead<volScalarField>
     (
@@ -120,7 +119,7 @@ Foam::regionTypes::conductPosPotentialTemperature::~conductPosPotentialTemperatu
 
 void Foam::regionTypes::conductPosPotentialTemperature::correct()
 {
-    
+    calculateJouleHeating();
 }
 
 
@@ -132,22 +131,19 @@ Foam::scalar Foam::regionTypes::conductPosPotentialTemperature::getMinDeltaT()
 
 void Foam::regionTypes::conductPosPotentialTemperature::setCoupledEqns()
 {
-	calculateJouleHeating();
-         	
 	faiPosEqn =
     (
-         C_*fvm::ddt(faiPos(), "fai")
-       - fvm::laplacian(sigmaPos_, faiPos(), "laplacian(sigma,fai)")
+       fvm::laplacian(sigmaPos_, faiPos(), "laplacian(sigma,fai)")
     );
 
     TEqn =
     (
-         fvm::ddt(rho_*cp_, T())
+         fvm::ddt(rho_*cp_, T(), "ddt(rho*cp,T)")
        - fvm::laplacian(k_, T(), "laplacian(k,T)")
        ==
          ST_()
     );
-    
+
     fvScalarMatrices.set
     (
         faiPos_().name()
@@ -165,12 +161,12 @@ void Foam::regionTypes::conductPosPotentialTemperature::setCoupledEqns()
       + "Eqn",
         &TEqn()
     );
-    
+
 }
 
 void Foam::regionTypes::conductPosPotentialTemperature::postSolve()
 {
-    // do nothing, add as required
+    this->correct();
 }
 
 void Foam::regionTypes::conductPosPotentialTemperature::solveRegion()
