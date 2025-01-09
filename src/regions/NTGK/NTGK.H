@@ -95,6 +95,9 @@ class NTGK
         //- name
         word regionName_;
 
+        //- time index
+        label timeIndex_;
+
         //- transport properties dictionary
         IOdictionary transportProperties_;
 
@@ -119,25 +122,28 @@ class NTGK
         //- thermal conductivity of jelly roll
         dimensionedScalar k_;
 
-        //- specific electric capacity for transient term of poisson equation
-        dimensionedScalar C_;
-
         //- reference temperature
         dimensionedScalar TRef_;
 
-        //- specific area of the battery
-        dimensionedScalar spArea_;
+        //- Thickness of positive electrode
+        dimensionedScalar Dp_;
 
-        //- fitting parameter a0 for fit U0
+        //- Thickness of negative electrode
+        dimensionedScalar Dn_;
+
+        //- Thickness of electrochemical active region
+        dimensionedScalar Dech_;
+
+        //- fitting parameter a0 for fit Y0
         dimensionedScalar a0_;
 
-        //- fitting parameter a1 for fit U0
+        //- fitting parameter a1 for fit Y0
         dimensionedScalar a1_;
 
-        //- fitting parameter a2 for fit U0
+        //- fitting parameter a2 for fit Y0
         dimensionedScalar a2_;
 
-        //- fitting parameter a3 for fit U0
+        //- fitting parameter a3 for fit Y0
         dimensionedScalar a3_;
 
         //- fitting parameter a4 for fit Y0
@@ -146,17 +152,23 @@ class NTGK
         //- fitting parameter a5 for fit Y0
         dimensionedScalar a5_;
 
-        //- fitting parameter a6 for fit Y0
-        dimensionedScalar a6_;
+        //- fitting parameter b0 for fit U0
+        dimensionedScalar b0_;
 
-        //- fitting parameter a7 for fit Y0
-        dimensionedScalar a7_;
+        //- fitting parameter b1 for fit U0
+        dimensionedScalar b1_;
 
-        //- fitting parameter a8 for fit Y0
-        dimensionedScalar a8_;
+        //- fitting parameter b2 for fit U0
+        dimensionedScalar b2_;
 
-        //- fitting parameter a9 for fit Y0
-        dimensionedScalar a9_;
+        //- fitting parameter b3 for fit U0
+        dimensionedScalar b3_;
+
+        //- fitting parameter b4 for fit U0
+        dimensionedScalar b4_;
+
+        //- fitting parameter b5 for fit U0
+        dimensionedScalar b5_;
 
         //- fitting parameter C1 for fit T-dependency of Y
         dimensionedScalar C1_;
@@ -228,7 +240,18 @@ class NTGK
         dimensionedScalar tSEIRef_;
 
         //- depth of discharge
-        autoPtr<volScalarField> DOD_;
+        dimensionedScalar QBat_;
+
+        //- depth of discharge
+        dimensionedScalar DOD_;
+        dimensionedScalar DODoldTime_;
+        volScalarField DODField_;
+
+        //- Y0
+        dimensionedScalar Y0_;
+
+        //- U0
+        dimensionedScalar U0_;
 
         //- T-dependent open circuit potential
         autoPtr<volScalarField> U_;

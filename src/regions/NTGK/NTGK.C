@@ -52,26 +52,54 @@ namespace regionTypes
 
 void Foam::regionTypes::NTGK::calculateElectrochemicalParameters()
 {
-    dimensionedScalar dimVolt =
-        dimensionedScalar("dimVolt", dimensionSet(1, 2, -3, 0, 0, -1, 0), 1);
+    // Store DOD from previous time step
+    if (mesh().time().timeIndex() != timeIndex_)
+    {
+        DODoldTime_ = DOD_;
 
-    volScalarField U0 = a0_
-                      + a1_*DOD_()
-                      + a2_*Foam::pow(DOD_(), 2)
-                      + a3_*Foam::pow(DOD_(), 3);
+        timeIndex_ = mesh().time().timeIndex();
+    }
 
-    volScalarField Y0 = a4_
-                      + a5_*DOD_()
-                      + a6_*Foam::pow(DOD_(), 2)
-                      + a7_*Foam::pow(DOD_(), 3)
-                      + a8_*Foam::pow(DOD_(), 4)
-                      + a9_*Foam::pow(DOD_(), 5);
+    // Calculate DOD
+    DOD_ = DODoldTime_
+         + dimensionedScalar
+           (
+               "DODNewTime",
+                dimless,
+                gSum(j_().internalField() * mesh().V()/Dech_.value())
+              * mesh().time().deltaT().value()
+              / (QBat_.value())
+            );
+    DODField_ = DOD_;
 
-    U_() = U0 - C2_*(T_() - TRef_);
+    Info << "DOD: " << DOD_.value() << endl;
 
-    volScalarField Y = Y0*Foam::exp(-C1_*(1/T_() - 1/TRef_));
+    Info << "minMax faiPos: " << gMin(faiPos_()) << " , " << gMax(faiPos_()) << endl;
+    Info << "minMax faiNeg: " << gMin(faiNeg_()) << " , " << gMax(faiNeg_()) << endl;
 
-    j_() = spArea_*Y*(faiPos_() - faiNeg_() - U_())/dimVolt;
+    Y0_ = a0_*Foam::pow(DOD_, 0)
+        + a1_*Foam::pow(DOD_, 1)
+        + a2_*Foam::pow(DOD_, 2)
+        + a3_*Foam::pow(DOD_, 3)
+        + a4_*Foam::pow(DOD_, 4)
+        + a5_*Foam::pow(DOD_, 5);
+
+    volScalarField Y = Y0_*Foam::exp(-C1_*(1/T_() - 1/TRef_));
+
+    U0_ = b0_*Foam::pow(DOD_, 0)
+        + b1_*Foam::pow(DOD_, 1)
+        + b2_*Foam::pow(DOD_, 2)
+        + b3_*Foam::pow(DOD_, 3)
+        + b4_*Foam::pow(DOD_, 4)
+        + b5_*Foam::pow(DOD_, 5);
+
+    U_() = U0_ + C2_*(T_() - TRef_);
+
+    Info << "minMax U: " << gMin(U_()) << " , " << gMax(U_()) << endl;
+
+    j_() = Y*(faiPos_() - faiNeg_() - U_());
+
+    Info << "minMax J: " << gMin(j_()) << " , " << gMax(j_()) << endl;
 
 }
 
@@ -79,10 +107,10 @@ void Foam::regionTypes::NTGK::calculateElectrochemicalParameters()
 void Foam::regionTypes::NTGK::calculateThermalBehavior()
 {
 
-    volScalarField QEch = Foam::mag(j_()*(U_() - (faiPos_() - faiNeg_())));
+    volScalarField QEch = (1/Dech_)*j_()*(faiPos_() - faiNeg_() - U_() + C2_*T_());
 
-    volScalarField Qohm = Foam::mag(sigmaPos_*(fvc::grad(faiPos_())&fvc::grad(faiPos_()))
-                        + sigmaNeg_*(fvc::grad(faiNeg_())&fvc::grad(faiNeg_())));
+    volScalarField Qohm = sigmaPos_*(fvc::grad(faiPos_())&fvc::grad(faiPos_()))
+                        + sigmaNeg_*(fvc::grad(faiNeg_())&fvc::grad(faiNeg_()));
 
     ST_() = QEch + Qohm;
 }
@@ -159,57 +187,27 @@ void Foam::regionTypes::NTGK::calculateThermalAbuse()
 
 Foam::tmp<fvScalarMatrix> Foam::regionTypes::NTGK::jPos()
 {
-    dimensionedScalar dimVolt =
-        dimensionedScalar("dimVolt", dimensionSet(1, 2, -3, 0, 0, -1, 0), 1);
+    volScalarField Y = Y0_*Foam::exp(-C1_*(1/T_() - 1/TRef_));
 
-    volScalarField U0 = a0_
-                      + a1_*DOD_()
-                      + a2_*Foam::pow(DOD_(), 2)
-                      + a3_*Foam::pow(DOD_(), 3);
-
-    volScalarField Y0 = a4_
-                      + a5_*DOD_()
-                      + a6_*Foam::pow(DOD_(), 2)
-                      + a7_*Foam::pow(DOD_(), 3)
-                      + a8_*Foam::pow(DOD_(), 4)
-                      + a9_*Foam::pow(DOD_(), 5);
-
-    U_() = U0 - C2_*(T_() - TRef_);
-
-    volScalarField Y = Y0*Foam::exp(-C1_*(1/T_() - 1/TRef_));
+    U_() = U0_ + C2_*(T_() - TRef_);
 
     return
     (
-        fvm::Sp(spArea_*Y/dimVolt, faiPos_())
-      + spArea_*Y*(- faiNeg_() - U_())/dimVolt
+      - fvm::Sp(Y, faiPos_())
+      + Y*(faiNeg_() + U_())
     );
 }
 
 Foam::tmp<fvScalarMatrix> Foam::regionTypes::NTGK::jNeg()
 {
-    dimensionedScalar dimVolt =
-        dimensionedScalar("dimVolt", dimensionSet(1, 2, -3, 0, 0, -1, 0), 1);
+    volScalarField Y = Y0_*Foam::exp(-C1_*(1/T_() - 1/TRef_));
 
-    volScalarField U0 = a0_
-                      + a1_*DOD_()
-                      + a2_*Foam::pow(DOD_(), 2)
-                      + a3_*Foam::pow(DOD_(), 3);
-
-    volScalarField Y0 = a4_
-                      + a5_*DOD_()
-                      + a6_*Foam::pow(DOD_(), 2)
-                      + a7_*Foam::pow(DOD_(), 3)
-                      + a8_*Foam::pow(DOD_(), 4)
-                      + a9_*Foam::pow(DOD_(), 5);
-
-    U_() = U0 - C2_*(T_() - TRef_);
-
-    volScalarField Y = Y0*Foam::exp(-C1_*(1/T_() - 1/TRef_));
+    U_() = U0_ + C2_*(T_() - TRef_);
 
     return
     (
-      - fvm::Sp(spArea_*Y/dimVolt, faiNeg_())
-      + spArea_*Y*(faiPos_() - U_())/dimVolt
+      - fvm::Sp(Y, faiNeg_())
+      + Y*(faiPos_() - U_())
     );
 }
 
@@ -224,6 +222,8 @@ Foam::regionTypes::NTGK::NTGK
     regionType(runTime, regionName),
 
     regionName_(regionName),
+
+    timeIndex_(-1),
 
     transportProperties_
     (
@@ -266,19 +266,22 @@ Foam::regionTypes::NTGK::NTGK
     rho_(transportProperties_.lookup("rho")),
     cp_(transportProperties_.lookup("cp")),
     k_(transportProperties_.lookup("k")),
-    C_(dimensionedScalar("C", dimensionSet(-1, -5, 4, 0, 0, 2, 0), 1)),
-    TRef_(transportProperties_.lookup("TRef")),
-    spArea_(transportProperties_.lookup("spArea")),
+    TRef_(electrochemicalProperties_.lookup("TRef")),
+    Dp_(electrochemicalProperties_.lookup("Dp")),
+    Dn_(electrochemicalProperties_.lookup("Dn")),
+    Dech_(electrochemicalProperties_.lookup("Dech")),
     a0_(electrochemicalProperties_.lookup("a0")),
     a1_(electrochemicalProperties_.lookup("a1")),
     a2_(electrochemicalProperties_.lookup("a2")),
     a3_(electrochemicalProperties_.lookup("a3")),
     a4_(electrochemicalProperties_.lookup("a4")),
     a5_(electrochemicalProperties_.lookup("a5")),
-    a6_(electrochemicalProperties_.lookup("a6")),
-    a7_(electrochemicalProperties_.lookup("a7")),
-    a8_(electrochemicalProperties_.lookup("a8")),
-    a9_(electrochemicalProperties_.lookup("a9")),
+    b0_(electrochemicalProperties_.lookup("b0")),
+    b1_(electrochemicalProperties_.lookup("b1")),
+    b2_(electrochemicalProperties_.lookup("b2")),
+    b3_(electrochemicalProperties_.lookup("b3")),
+    b4_(electrochemicalProperties_.lookup("b4")),
+    b5_(electrochemicalProperties_.lookup("b5")),
     C1_(electrochemicalProperties_.lookup("C1")),
     C2_(electrochemicalProperties_.lookup("C2")),
     ASEI_(thermalAbuseProperties_.lookup("ASEI")),
@@ -302,7 +305,24 @@ Foam::regionTypes::NTGK::NTGK
     WP_(thermalAbuseProperties_.lookup("WP")),
     WELE_(thermalAbuseProperties_.lookup("WELE")),
     tSEIRef_(thermalAbuseProperties_.lookup("tSEIRef")),
-    DOD_(nullptr),
+    QBat_(electrochemicalProperties_.lookup("QBat")),
+    DOD_(electrochemicalProperties_.lookup("DOD")),
+    DODoldTime_(DOD_),
+    DODField_
+    (
+        IOobject
+        (
+            "DOD",
+            mesh().time().timeName(),
+            mesh(),
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh(),
+        DOD_
+    ),
+    Y0_(a0_),
+    U0_(b0_),
     U_(nullptr),
     j_(nullptr),
     RSEI_(nullptr),
@@ -320,22 +340,12 @@ Foam::regionTypes::NTGK::NTGK
     cELE_(nullptr),
     T_(nullptr)
 {
-
-    // set depth of discharge field
-    DOD_ = lookupOrRead<volScalarField>
-    (
-        mesh(),
-        "DOD",
-        dimensionedScalar("DODinit", dimensionSet(0, 0, 0, 0, 0, 0, 0), 0.7),
-        true
-    );
-
     // set open circuit potential field
     U_ = lookupOrRead<volScalarField>
     (
         mesh(),
         "U",
-        dimensionedScalar("Uinit", dimensionSet(1, 2, -3, 0, 0, -1, 0), 1),
+        dimensionedScalar("Uinit", dimVoltage, 1),
         true
     );
 
@@ -344,7 +354,7 @@ Foam::regionTypes::NTGK::NTGK
     (
         mesh(),
         "j",
-        dimensionedScalar("j_init", dimensionSet(0, -3, 0, 0, 0, 1, 0), 0),
+        dimensionedScalar("j_init", dimensionSet(0, -2, 0, 0, 0, 1, 0), 0),
         true
     );
 
@@ -417,7 +427,7 @@ Foam::regionTypes::NTGK::NTGK
         (
             "cSEIinit",
             dimensionSet(0, 0, 0, 0, 0, 0, 0),
-            electrochemicalProperties_.lookup("cSEI")
+            thermalAbuseProperties_.lookup("cSEI")
         ),
         true
     );
@@ -431,7 +441,7 @@ Foam::regionTypes::NTGK::NTGK
         (
             "cNEinit",
             dimensionSet(0, 0, 0, 0, 0, 0, 0),
-            electrochemicalProperties_.lookup("cNE")
+            thermalAbuseProperties_.lookup("cNE")
         ),
         true
     );
@@ -445,7 +455,7 @@ Foam::regionTypes::NTGK::NTGK
         (
             "tSEIinit",
             dimensionSet(0, 0, 0, 0, 0, 0, 0),
-            electrochemicalProperties_.lookup("tSEI")
+            thermalAbuseProperties_.lookup("tSEI")
         ),
         true
     );
@@ -459,7 +469,7 @@ Foam::regionTypes::NTGK::NTGK
         (
             "alphainit",
             dimensionSet(0, 0, 0, 0, 0, 0, 0),
-            electrochemicalProperties_.lookup("alpha")
+            thermalAbuseProperties_.lookup("alpha")
         ),
         true
     );
@@ -473,7 +483,7 @@ Foam::regionTypes::NTGK::NTGK
         (
             "cELEinit",
             dimensionSet(0, 0, 0, 0, 0, 0, 0),
-            electrochemicalProperties_.lookup("cELE")
+            thermalAbuseProperties_.lookup("cELE")
         ),
         true
     );
@@ -509,16 +519,16 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
 {
 	faiPosEqn =
     (
-      - fvm::laplacian(sigmaPos_, faiPos(), "laplacian(sigma,fai)")
+        fvm::laplacian(sigmaPos_, faiPos(), "laplacian(sigma,fai)")
       ==
-        -1.0 * jPos()
+        (1/Dp_)*jPos()
     );
 
     faiNegEqn =
     (
-      - fvm::laplacian(sigmaNeg_, faiNeg(), "laplacian(sigma,fai)")
+        fvm::laplacian(sigmaNeg_, faiNeg(), "laplacian(sigma,fai)")
       ==
-        jNeg()
+        (1/Dn_)*jNeg()
     );
 
     TEqn =
