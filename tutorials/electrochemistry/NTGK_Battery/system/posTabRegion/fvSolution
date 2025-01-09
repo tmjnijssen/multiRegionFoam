@@ -51,7 +51,9 @@ PIMPLE
 
 relaxationFactors
 {
-	T	1;
+	// T	1;
+    // faiPos   0.1;
+    // faiNeg   0.1;
 }
 
 

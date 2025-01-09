@@ -38,4 +38,4 @@ while getopts "pm" OPTION; do
         esac
 done
 
-runApplication multiRegionFoam 2>/dev/null &
+runApplication multiRegionFoam 2>/dev/null

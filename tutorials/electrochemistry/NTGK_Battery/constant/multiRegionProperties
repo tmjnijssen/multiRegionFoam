@@ -25,7 +25,7 @@ DNA
 {
     faiPos
     {
-        maxCoupleIter 10;
+        maxCoupleIter 25;
 
         residualControl
         {
@@ -38,7 +38,7 @@ DNA
 
     faiNeg
     {
-        maxCoupleIter 10;
+        maxCoupleIter 25;
 
         residualControl
         {

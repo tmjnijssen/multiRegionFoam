@@ -17,23 +17,23 @@ FoamFile
 // Everything in mm
 convertToMeters 0.001;
 
-// Depth of cell and tabs (irrelevant for 2D case)
-dZ 1;
+// Depth of battery and tabs (in 2d depth of one cell)
+dZ 0.381;
 
 // The whole width of the battery cell is 2*dCellOutX2
 // and the whole width of each tab is dTabsOutX2 - dTabsInX2:
 // Half the distance between inside of the tabs
-dTabsInX1 -10;
-dTabsInX2  10;
+dTabsInX1  -20;
+dTabsInX2   20;
 // Half the distance between outside of the tabs
-dTabsOutX1 -30;
-dTabsOutX2  30;
+dTabsOutX1 -50;
+dTabsOutX2  50;
 // Half the distance between outside of the battery cell
-dCellOutX1 -50;
-dCellOutX2  50;
+dCellOutX1 -62.5;
+dCellOutX2  62.5;
 
 // Height of the battery cell
-hCellY 120;
+hCellY 195;
 
 vertices
 (
@@ -81,19 +81,19 @@ vertices
 blocks
 (
     // Cell middle
-    hex (0 1 2 3 4 5 6 7) (20 120 1) simpleGrading (1 1 1)
+    hex (0 1 2 3 4 5 6 7) (40 195 1) simpleGrading (1 1 1)
 
     // Cell positive left tab
-    hex (8 0 3 9 10 4 7 11) (20 120 1) simpleGrading (1 1 1)
+    hex (8 0 3 9 10 4 7 11) (30 195 1) simpleGrading (1 1 1)
 
     // Cell left out
-    hex (12 8 9 13 14 10 11 15) (20 120 1) simpleGrading (1 1 1)
+    hex (12 8 9 13 14 10 11 15) (13 195 1) simpleGrading (1 1 1)
 
     // Cell negative right tab
-    hex (1 16 17 2 5 18 19 6) (20 120 1) simpleGrading (1 1 1)
+    hex (1 16 17 2 5 18 19 6) (30 195 1) simpleGrading (1 1 1)
 
     // Cell right out
-    hex (16 20 21 17 18 22 23 19) (20 120 1) simpleGrading (1 1 1)
+    hex (16 20 21 17 18 22 23 19) (13 195 1) simpleGrading (1 1 1)
 );
 
 

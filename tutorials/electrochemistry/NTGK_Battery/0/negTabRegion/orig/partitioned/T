@@ -19,7 +19,7 @@ FoamFile
 
 dimensions      [0 0 0 1 0 0 0];
 
-internalField   uniform 293;
+internalField   uniform 295.15;
 
 boundaryField
 {
@@ -43,8 +43,6 @@ boundaryField
         neighbourRegionName     batteryRegion;
         neighbourPatchName      toNegTab;
         neighbourFieldName      T;
-        // accType                 aitken;
-        // relax                   0.75;
         secondOrder             false;
         nonOrthCorr             false;
         value                   $internalField;

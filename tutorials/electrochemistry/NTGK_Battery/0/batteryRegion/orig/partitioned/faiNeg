@@ -35,8 +35,6 @@ boundaryField
         neighbourRegionName     negTabRegion;
         neighbourPatchName      toCell;
         neighbourFieldName      faiNeg;
-        // accType                 aitken;
-        // relax                   0.75;
         secondOrder             false;
         nonOrthCorr             false;
         value                   $internalField;

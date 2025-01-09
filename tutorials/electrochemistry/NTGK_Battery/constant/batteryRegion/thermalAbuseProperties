@@ -16,6 +16,27 @@ FoamFile
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+//- Initial dimensionless amount of Li-containing meta-stable species in SEI field
+//  (Could also be specified as an initial field)
+cSEI 0.15;
+
+//- Initial dimensionless amount of Li amount intercalacted within the carbon field
+//  (Could also be specified as an initial field)
+cNE 0.75;
+
+//- Initial dimensionless amount of Li amount intercalacted within the carbon field
+//  (Could also be specified as an initial field)
+cELE 1;
+
+//- Initial dimensionless measure of SEI layer thickness field
+//  (Could also be specified as an initial field)
+tSEI 0.033;
+
+//- Initial degree of conversion field
+//  (Could also be specified as an initial field)
+alpha 0.04;
+
+
 
 //- SEI-decomposition frequency factor
 ASEI             ASEI [0 0 -1 0 0 0 0] 1.667E15;
