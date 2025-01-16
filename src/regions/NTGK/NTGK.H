@@ -76,6 +76,7 @@ Description
 #include "volFields.H"
 #include "IOReferencer.H"
 #include "HashPtrTable.H"
+#include "bound.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -246,12 +247,16 @@ class NTGK
         dimensionedScalar DOD_;
         dimensionedScalar DODoldTime_;
         volScalarField DODField_;
+        volScalarField DODFieldOldTime_;
 
         //- Y0
         dimensionedScalar Y0_;
 
         //- U0
         dimensionedScalar U0_;
+
+        //- T-dependent electrochemical conductance
+        autoPtr<volScalarField> Y_;
 
         //- T-dependent open circuit potential
         autoPtr<volScalarField> U_;

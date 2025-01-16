@@ -57,6 +57,8 @@ void Foam::regionTypes::NTGK::calculateElectrochemicalParameters()
     {
         DODoldTime_ = DOD_;
 
+        DODFieldOldTime_ = DODField_;
+
         timeIndex_ = mesh().time().timeIndex();
     }
 
@@ -66,38 +68,60 @@ void Foam::regionTypes::NTGK::calculateElectrochemicalParameters()
            (
                "DODNewTime",
                 dimless,
-                gSum(j_().internalField() * mesh().V()/Dech_.value())
+                gSum(-j_().internalField() * mesh().V()/Dech_.value())
               * mesh().time().deltaT().value()
               / (QBat_.value())
             );
+
     DODField_ = DOD_;
 
+    // DODField_ = DODFieldOldTime_
+    //             + j_()
+    //                *dimensionedScalar
+    //                 (
+    //                     "1byJdimensions",
+    //                     dimensionSet(0, 2, 0, 0, 0, -1, 0),
+    //                     1
+    //                 )
+    //                *(
+    //                     gSum(mesh().V()) * mesh().time().deltaT().value()
+    //                     /(QBat_.value() * Dech_.value())
+    //                 );
+    // boundMinMax
+    // (
+    //     DODField_,
+    //     dimensionedScalar("minDOD", dimless, 0.0),
+    //     dimensionedScalar("maxDOD", dimless, 1.0)
+    // );
+
+    Y_() = a0_*Foam::pow(DODField_, 0)
+        + a1_*Foam::pow(DODField_, 1)
+        + a2_*Foam::pow(DODField_, 2)
+        + a3_*Foam::pow(DODField_, 3)
+        + a4_*Foam::pow(DODField_, 4)
+        + a5_*Foam::pow(DODField_, 5);
+
+    Y_() *= Foam::exp(-C1_*(1/T_() - 1/TRef_));
+
+    U_() = b0_*Foam::pow(DODField_, 0)
+        + b1_*Foam::pow(DODField_, 1)
+        + b2_*Foam::pow(DODField_, 2)
+        + b3_*Foam::pow(DODField_, 3)
+        + b4_*Foam::pow(DODField_, 4)
+        + b5_*Foam::pow(DODField_, 5);
+
+    U_() += C2_*(T_() - TRef_);
+
+    j_() = Y_()*(faiPos_() - faiNeg_() - U_());
+
     Info << "DOD: " << DOD_.value() << endl;
+    Info << "DOD field sum: " << gSum(DODField_.internalField()*mesh().V()/gSum(mesh().V())) << endl;
 
     Info << "minMax faiPos: " << gMin(faiPos_()) << " , " << gMax(faiPos_()) << endl;
     Info << "minMax faiNeg: " << gMin(faiNeg_()) << " , " << gMax(faiNeg_()) << endl;
-
-    Y0_ = a0_*Foam::pow(DOD_, 0)
-        + a1_*Foam::pow(DOD_, 1)
-        + a2_*Foam::pow(DOD_, 2)
-        + a3_*Foam::pow(DOD_, 3)
-        + a4_*Foam::pow(DOD_, 4)
-        + a5_*Foam::pow(DOD_, 5);
-
-    volScalarField Y = Y0_*Foam::exp(-C1_*(1/T_() - 1/TRef_));
-
-    U0_ = b0_*Foam::pow(DOD_, 0)
-        + b1_*Foam::pow(DOD_, 1)
-        + b2_*Foam::pow(DOD_, 2)
-        + b3_*Foam::pow(DOD_, 3)
-        + b4_*Foam::pow(DOD_, 4)
-        + b5_*Foam::pow(DOD_, 5);
-
-    U_() = U0_ + C2_*(T_() - TRef_);
-
     Info << "minMax U: " << gMin(U_()) << " , " << gMax(U_()) << endl;
 
-    j_() = Y*(faiPos_() - faiNeg_() - U_());
+    Info << "minMax Y: " << gMin(Y_()) << " , " << gMax(Y_()) << endl;
 
     Info << "minMax J: " << gMin(j_()) << " , " << gMax(j_()) << endl;
 
@@ -112,7 +136,7 @@ void Foam::regionTypes::NTGK::calculateThermalBehavior()
     volScalarField Qohm = sigmaPos_*(fvc::grad(faiPos_())&fvc::grad(faiPos_()))
                         + sigmaNeg_*(fvc::grad(faiNeg_())&fvc::grad(faiNeg_()));
 
-    ST_() = QEch + Qohm;
+    ST_() = (QEch + Qohm);
 }
 
 
@@ -187,27 +211,19 @@ void Foam::regionTypes::NTGK::calculateThermalAbuse()
 
 Foam::tmp<fvScalarMatrix> Foam::regionTypes::NTGK::jPos()
 {
-    volScalarField Y = Y0_*Foam::exp(-C1_*(1/T_() - 1/TRef_));
-
-    U_() = U0_ + C2_*(T_() - TRef_);
-
     return
     (
-      - fvm::Sp(Y, faiPos_())
-      + Y*(faiNeg_() + U_())
+      - fvm::Sp((1/Dp_)*Y_(), faiPos_())
+      + (1/Dp_)*Y_()*(faiNeg_() + U_())
     );
 }
 
 Foam::tmp<fvScalarMatrix> Foam::regionTypes::NTGK::jNeg()
 {
-    volScalarField Y = Y0_*Foam::exp(-C1_*(1/T_() - 1/TRef_));
-
-    U_() = U0_ + C2_*(T_() - TRef_);
-
     return
     (
-      - fvm::Sp(Y, faiNeg_())
-      + Y*(faiPos_() - U_())
+      - fvm::Sp((1/Dn_)*Y_(), faiNeg_())
+      + (1/Dn_)*Y_()*(faiPos_() - U_())
     );
 }
 
@@ -321,8 +337,22 @@ Foam::regionTypes::NTGK::NTGK
         mesh(),
         DOD_
     ),
+    DODFieldOldTime_
+    (
+        IOobject
+        (
+            "DODoldTime_",
+            mesh().time().timeName(),
+            mesh(),
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh(),
+        DOD_
+    ),
     Y0_(a0_),
     U0_(b0_),
+    Y_(nullptr),
     U_(nullptr),
     j_(nullptr),
     RSEI_(nullptr),
@@ -341,6 +371,15 @@ Foam::regionTypes::NTGK::NTGK
     T_(nullptr)
 {
     // set open circuit potential field
+    Y_ = lookupOrRead<volScalarField>
+    (
+        mesh(),
+        "Y_ech",
+        dimensionedScalar("Yinit", dimensionSet(-1, -4, 3, 0, 0, 2, 0), 1),
+        true
+    );
+
+    // set open circuit potential field
     U_ = lookupOrRead<volScalarField>
     (
         mesh(),
@@ -354,7 +393,7 @@ Foam::regionTypes::NTGK::NTGK
     (
         mesh(),
         "j",
-        dimensionedScalar("j_init", dimensionSet(0, -2, 0, 0, 0, 1, 0), 0),
+        dimensionedScalar("jinit", dimensionSet(0, -2, 0, 0, 0, 1, 0), 0),
         true
     );
 
@@ -521,14 +560,16 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
     (
         fvm::laplacian(sigmaPos_, faiPos(), "laplacian(sigma,fai)")
       ==
-        (1/Dp_)*jPos()
+        // -(1/Dp_)*j_()
+        jPos()
     );
 
     faiNegEqn =
     (
         fvm::laplacian(sigmaNeg_, faiNeg(), "laplacian(sigma,fai)")
       ==
-        (1/Dn_)*jNeg()
+        //(1/Dn_)*j_()
+        jNeg()
     );
 
     TEqn =
