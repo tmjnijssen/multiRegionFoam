@@ -413,13 +413,13 @@ void Foam::regionTypes::diffuseSpecie::solveRegion()
 
    // bicarbonate reaction rate
     volScalarField R2ex = -(k2/K2) * R2NH2p_*HCO3m_*unitC;   // explicit part
-    volScalarField R2im = k2 * R2NH_*H2Oads_;                // implicit part
+    volScalarField R2im = k2 * R2NH_*pow(H2Oads_, 0.7);                // implicit part
     volScalarField R2   = R2ex + R2im*CO2_();                // total bicarbamate rate
 
     // physical adsorption water
     volScalarField R3ex = -(k3/K3) * H2Oads_;                // explicit part
     volScalarField R3im = k3;                                // implicit part
-    volScalarField R3   = R3ex + R3im*H2O_();                // total water adsorption rate
+    volScalarField R3   = R3ex + R3im*sqr(H2O_());                // total water adsorption rate
 
     // solve adsorbed species
     solve(fvm::ddt(R2NH_   ) == -2*R1 - R2     );
