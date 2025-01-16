@@ -25,7 +25,7 @@ DOD         DOD [0 0 0 0 0 0 0] 0.0;
 
 
 //- Thickness of positive electrode - Dimensions m
-Dp          Dp [0 1 0 0 0 0 0] 161e-6;//161e-6;
+Dp          Dp [0 1 0 0 0 0 0] 161e-6;
 
 //- Thickness of negative electrode - Dimensions m
 Dn          Dn [0 1 0 0 0 0 0] 170e-6;

@@ -24,11 +24,11 @@ stopAt              endTime;
 
 endTime             1200; // 0.3h
 
-deltaT              10;
+deltaT              1; //10;
 
 writeControl        runTime;
 
-writeInterval       60;
+writeInterval       10; //60;
 
 cycleWrite          0;
 

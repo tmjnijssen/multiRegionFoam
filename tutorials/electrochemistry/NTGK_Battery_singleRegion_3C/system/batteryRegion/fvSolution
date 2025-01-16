@@ -20,7 +20,7 @@ solvers
     {
         solver          PCG;
         preconditioner  DIC;
-        tolerance       1e-15;
+        tolerance       1e-8;
         relTol          0;
         minIter         2;
         maxIter         250;
@@ -30,7 +30,7 @@ solvers
     {
         solver          PCG;
         preconditioner  DIC;
-        tolerance       1e-15;
+        tolerance       1e-8;
         relTol          0;
         minIter         2;
         maxIter         250;
@@ -121,8 +121,8 @@ PIMPLE
 relaxationFactors
 {
     // T   1;
-    // faiPos   0.1;
-    // faiNeg   0.1;
+    // faiPos   1;
+    // faiNeg   1;
 }
 
 
