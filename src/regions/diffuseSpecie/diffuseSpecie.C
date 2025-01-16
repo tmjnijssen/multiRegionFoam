@@ -394,7 +394,10 @@ void Foam::regionTypes::diffuseSpecie::solveRegion()
     volScalarField k3 = A3_ * exp(-Ea3_ * invRT);
 
     // placeHolder Arrhenius prefactor for concentrations
+    dimensionedScalar unitB = dimensionedScalar("unitB", dimless, 1.0);
     dimensionedScalar unitC = dimensionedScalar("unitC", dimMoles/dimVolume, 1.0);
+    dimensionedScalar unitD = dimensionedScalar("unitD", dimVolume/dimMoles, 1.0);
+
 
     // Gibbs free energy of reaction
     volScalarField dG1 = dH1_ - T_() * dS1_;
@@ -413,13 +416,13 @@ void Foam::regionTypes::diffuseSpecie::solveRegion()
 
    // bicarbonate reaction rate
     volScalarField R2ex = -(k2/K2) * R2NH2p_*HCO3m_*unitC;   // explicit part
-    volScalarField R2im = k2 * R2NH_*pow(H2Oads_, 0.7);                // implicit part
+    volScalarField R2im = k2 * R2NH_*pow(H2Oads_*unitD, 0.7)*unitC;      // implicit part
     volScalarField R2   = R2ex + R2im*CO2_();                // total bicarbamate rate
 
     // physical adsorption water
     volScalarField R3ex = -(k3/K3) * H2Oads_;                // explicit part
     volScalarField R3im = k3;                                // implicit part
-    volScalarField R3   = R3ex + R3im*sqr(H2O_());                // total water adsorption rate
+    volScalarField R3   = R3ex + R3im*sqr(H2O_()*unitD)*unitC;                // total water adsorption rate
 
     // solve adsorbed species
     solve(fvm::ddt(R2NH_   ) == -2*R1 - R2     );
