@@ -107,7 +107,9 @@ genericRegionCoupledFluxFvPatchField<Type>::genericRegionCoupledFluxFvPatchField
     }
     else
     {
-        this->evaluate();
+        this->gradient() = Field<Type>("gradient", dict, p.size());
+        fvPatchField<Type>::updateCoeffs();
+        fixedGradientFvPatchField<Type>::evaluate();
     }
 
     // Coupled fields should have same names,
