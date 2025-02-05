@@ -126,6 +126,9 @@ class NTGK
         //- reference temperature
         dimensionedScalar TRef_;
 
+        //- Thickness of jelly roll
+        dimensionedScalar D_;
+
         //- Thickness of positive electrode
         dimensionedScalar Dp_;
 

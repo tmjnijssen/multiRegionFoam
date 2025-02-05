@@ -68,7 +68,7 @@ void Foam::regionTypes::NTGK::calculateElectrochemicalParameters()
            (
                "DODNewTime",
                 dimless,
-                gSum(-j_().internalField() * mesh().V()/Dech_.value())
+                gSum(-j_().internalField() * mesh().V()/D_.value())
               * mesh().time().deltaT().value()
               / (QBat_.value())
             );
@@ -283,6 +283,7 @@ Foam::regionTypes::NTGK::NTGK
     cp_(transportProperties_.lookup("cp")),
     k_(transportProperties_.lookup("k")),
     TRef_(electrochemicalProperties_.lookup("TRef")),
+    D_(electrochemicalProperties_.lookup("D")),
     Dp_(electrochemicalProperties_.lookup("Dp")),
     Dn_(electrochemicalProperties_.lookup("Dn")),
     Dech_(electrochemicalProperties_.lookup("Dech")),
