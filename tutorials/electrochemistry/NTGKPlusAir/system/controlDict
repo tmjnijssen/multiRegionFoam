@@ -28,7 +28,7 @@ deltaT              1; //10;
 
 writeControl        runTime;
 
-writeInterval       1; //60;
+writeInterval       10; //60;
 
 cycleWrite          0;
 

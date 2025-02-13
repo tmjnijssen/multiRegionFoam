@@ -26,7 +26,7 @@ boundaryField
     toPosTab
     {
         type            fixedGradient;
-        gradient        uniform 0.14; //3C
+        gradient        uniform 0.1266; //3C
     }
     toNegTab
     {
@@ -48,7 +48,7 @@ boundaryField
     {
         type            zeroGradient;
     }
-    defaultFaces
+    frontAndBack
     {
         type            zeroGradient;
     }
