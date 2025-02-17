@@ -25,15 +25,21 @@ boundaryField
 {
     toPosTab
     {
+        // type            fixedGradient;
+        // gradient        uniform 0.1266; //3C
+
         type                    regionCoupledScalarFlux;
         interfaceType           defaultInterface;
         k                       "sigmaPos";
         neighbourRegionName     posTabRegion;
         neighbourPatchName      toCell;
         neighbourFieldName      faiPos;
+        // accType                 aitken;
+        // relax                   0.01;
         secondOrder             false;
         nonOrthCorr             false;
-        value                   $internalField;
+        // value                   $internalField;
+        gradient                uniform 0.1266;
     }
     toNegTab
     {

@@ -38,14 +38,14 @@ boundaryField
     }
     toCell
     {
-        type                    regionCoupledScalarJump;
+        type                    regionCoupledScalarFlux;
         interfaceType           defaultInterface;
         k                       "sigmaNeg";
         neighbourRegionName     batteryRegion;
         neighbourPatchName      toNegTab;
         neighbourFieldName      faiNeg;
-        accType                 aitken;
-        relax                   0.1;
+        // accType                 aitken;
+        // relax                   0.1;
         secondOrder             false;
         nonOrthCorr             false;
         value                   $internalField;

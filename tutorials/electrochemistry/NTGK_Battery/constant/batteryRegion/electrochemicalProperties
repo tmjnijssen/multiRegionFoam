@@ -30,8 +30,11 @@ Dp          Dp [0 1 0 0 0 0 0] 161e-6;
 //- Thickness of negative electrode - Dimensions m
 Dn          Dn [0 1 0 0 0 0 0] 170e-6;
 
-//- Thickness of electrochemical active region- Dimensions m
+//- Thickness of electrochemical active region - Dimensions m
 Dech        Dech [0 1 0 0 0 0 0] 348e-6;
+
+//- Thickness of whole battery cell - Dimensions m
+D	    D [0 1 0 0 0 0 0] 381e-6;
 
 
 //- Reference Temperature at which fitting parameter were

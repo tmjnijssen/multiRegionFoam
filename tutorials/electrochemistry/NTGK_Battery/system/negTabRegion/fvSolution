@@ -20,7 +20,7 @@ solvers
     {
         solver          PCG;
         preconditioner  DIC;
-        tolerance       1e-15;
+        tolerance       1e-8;
         relTol          0;
         minIter         2;
         maxIter         250;
@@ -30,7 +30,7 @@ solvers
     {
         solver          PCG;
         preconditioner  DIC;
-        tolerance       1e-15;
+        tolerance       1e-8;
         relTol          0;
         minIter         2;
         maxIter         250;
