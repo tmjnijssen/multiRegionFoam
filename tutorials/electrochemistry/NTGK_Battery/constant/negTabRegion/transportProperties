@@ -27,8 +27,8 @@ cp              cp  [0 2 -2 -1 0 0 0] 385; // copper current collector
 k                   k [1 1 -3 -1 0 0 0] 398; // copper current collector
 
 // electric conductivity negative cuurent collector - Dimensions: S/m
-sigmaNeg            sigmaNeg [-1 -3 3 0 0 2 0] 59.6e6; // copper current collector
-// sigmaNeg            sigmaNeg [-1 -3 3 0 0 2 0] 4.207e6;
+// sigmaNeg            sigmaNeg [-1 -3 3 0 0 2 0] 59.6e6; // copper current collector
+sigmaNeg            sigmaNeg [-1 -3 3 0 0 2 0] 4.207e5;
 
 
 // ************************************************************************* //

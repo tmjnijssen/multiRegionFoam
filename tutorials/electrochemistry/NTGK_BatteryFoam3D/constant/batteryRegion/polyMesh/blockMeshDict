@@ -81,24 +81,19 @@ vertices
 blocks
 (
     // Cell middle
-    hex (0 1 2 3 4 5 6 7) (40 195 7) simpleGrading (1 1 1)  //coarser
-    //hex (0 1 2 3 4 5 6 7) (80 390 14) simpleGrading (1 1 1)  //finer
+    hex (0 1 2 3 4 5 6 7) (40 195 7) simpleGrading (1 1 1)
 
     // Cell positive left tab
-    hex (8 0 3 9 10 4 7 11) (30 195 7) simpleGrading (1 1 1)  //coarser
-    //hex (8 0 3 9 10 4 7 11) (60 390 14) simpleGrading (1 1 1)  //finer
+    hex (8 0 3 9 10 4 7 11) (30 195 7) simpleGrading (1 1 1)
 
     // Cell left out
-    hex (12 8 9 13 14 10 11 15) (10 195 7) simpleGrading (1 1 1)  //coarser
-    //hex (12 8 9 13 14 10 11 15) (20 390 14) simpleGrading (1 1 1)  //finer
+    hex (12 8 9 13 14 10 11 15) (13 195 7) simpleGrading (1 1 1)
 
     // Cell negative right tab
-    hex (1 16 17 2 5 18 19 6) (30 195 7) simpleGrading (1 1 1)  //coarser
-    //hex (1 16 17 2 5 18 19 6) (60 390 14) simpleGrading (1 1 1)  //finer
+    hex (1 16 17 2 5 18 19 6) (30 195 7) simpleGrading (1 1 1)
 
     // Cell right out
-    hex (16 20 21 17 18 22 23 19) (10 195 7) simpleGrading (1 1 1)  //coarser
-    //hex (16 20 21 17 18 22 23 19) (20 390 14) simpleGrading (1 1 1)  //finer
+    hex (16 20 21 17 18 22 23 19) (13 195 7) simpleGrading (1 1 1)
 );
 
 
@@ -185,7 +180,6 @@ boundary
             (18 22 23 19)
          );
     }
-
 
 );
 

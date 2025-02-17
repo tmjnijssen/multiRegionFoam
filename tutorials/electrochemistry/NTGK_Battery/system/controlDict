@@ -22,13 +22,13 @@ startTime           0;
 
 stopAt              endTime;
 
-endTime             1000; // 0.3h
+endTime             3600; // 1h
 
-deltaT              1; //10;
+deltaT              10;
 
 writeControl        runTime;
 
-writeInterval       10; //60;
+writeInterval       150;
 
 cycleWrite          0;
 

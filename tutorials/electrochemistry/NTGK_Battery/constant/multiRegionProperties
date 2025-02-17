@@ -25,13 +25,13 @@ DNA
 {
     faiPos
     {
-        maxCoupleIter 50;
+        maxCoupleIter 25;
 
         residualControl
         {
-            maxJumpRes 1e-05;
+            maxJumpRes 1e-07;
             outputJumpResField no;
-            maxFluxRes 1e-05;
+            maxFluxRes 1e-07;
             outputFluxResField no;
         }
     }
@@ -42,9 +42,9 @@ DNA
 
         residualControl
         {
-            maxJumpRes 1e-05;
+            maxJumpRes 1e-07;
             outputJumpResField no;
-            maxFluxRes 1e-05;
+            maxFluxRes 1e-07;
             outputFluxResField no;
         }
     }
@@ -55,9 +55,9 @@ DNA
 
         residualControl
         {
-            maxJumpRes 1e-05;
+            maxJumpRes 1e-07;
             outputJumpResField no;
-            maxFluxRes 1e-05;
+            maxFluxRes 1e-07;
             outputFluxResField no;
         }
     }

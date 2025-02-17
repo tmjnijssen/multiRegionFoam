@@ -20,29 +20,20 @@ solvers
     {
         solver          PCG;
         preconditioner  DIC;
-        tolerance       1e-8;
+        tolerance       1e-15;
         relTol          0;
         minIter         2;
-        maxIter         1000;
+        maxIter         250;
     };
 
     faiNeg
     {
         solver          PCG;
         preconditioner  DIC;
-        tolerance       1e-8;
+        tolerance       1e-15;
         relTol          0;
         minIter         2;
         maxIter         250;
-
-        // solver          GAMG;
-        // tolerance       1e-06;
-        // relTol          0;
-        // smoother        GaussSeidel;
-        // cacheAgglomeration true;
-        // nCellsInCoarsestLevel 10;
-        // agglomerator    faceAreaPair;
-        // mergeLevels     1;
     };
 
     cSEI
@@ -99,7 +90,7 @@ solvers
     {
         solver          PCG;
         preconditioner  DIC;
-        tolerance       1e-8;
+        tolerance       1e-15;
         relTol          0;
         minIter         2;
         maxIter         250;
@@ -121,8 +112,8 @@ PIMPLE
 relaxationFactors
 {
     // T   1;
-    // faiPos   1;
-    // faiNeg   1;
+    // faiPos   0.1;
+    // faiNeg   0.1;
 }
 
 
