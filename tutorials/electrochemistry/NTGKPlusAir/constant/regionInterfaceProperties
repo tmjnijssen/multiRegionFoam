@@ -1,0 +1,145 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      regionInterfaceProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+partitionedCoupledPatches
+(
+    /*cellToNegTab
+    {
+        interfaceType defaultInterface;
+
+        coupledPatchPair
+        (
+            (batteryRegion toNegTab)
+            (batteryRegion toNegTab)
+        );
+
+        coupledFields
+        (
+            faiNeg
+            faiPos
+        );
+
+        defaultInterfaceCoeffs
+        {}
+    }
+
+    cellToPosTab
+    {
+        interfaceType defaultInterface;
+
+        coupledPatchPair
+        (
+            (batteryRegion toPosTab)
+            (batteryRegion toPosTab)
+        );
+
+        coupledFields
+        (
+            faiNeg
+            faiPos
+        );
+
+        defaultInterfaceCoeffs
+        {}
+    }*/
+
+    batteryRegionToPosTabAirCell_toPosTab
+    {
+        interfaceType defaultInterface;
+
+        coupledPatchPair
+        (
+            (batteryRegion toPosTab)
+            (air cell_toPosTab)
+        );
+
+        coupledFields
+        (
+            T
+            faiPos
+            faiNeg
+        );
+
+        defaultInterfaceCoeffs
+        {
+            // Jump coefficient
+            //K               K [ 0 0 0 0 0 0 0 ] 1;
+        }
+    }
+
+    batteryRegionToNegTabAirCell_toNegTab
+    {
+        interfaceType defaultInterface;
+
+        coupledPatchPair
+        (
+            (batteryRegion toNegTab)
+            (air cell_toNegTab)
+        );
+
+        coupledFields
+        (
+            T
+            faiPos
+            faiNeg
+        );
+
+        defaultInterfaceCoeffs
+        {
+            // Jump coefficient
+            //K               K [ 0 0 0 0 0 0 0 ] 1;
+        }
+    }
+
+    batteryRegionHousingAirCell_housing
+    {
+        interfaceType heatTransferInterface;
+
+        coupledPatchPair
+        (
+            (batteryRegion housing)
+            (air cell_housing)
+        );
+
+        coupledFields
+        (
+            T
+        );
+
+        heatTransferInterfaceCoeffs
+        {
+            // Jump coefficient
+            K               K [ 0 0 0 0 0 0 0 ] 1;
+        }
+    }
+);
+
+monolithicCoupledPatches
+();
+
+curvatureCorrectedSurfacePatches 0();
+
+interpolatorUpdateFrequency 0;
+
+interfaceTransferMethod GGI;
+
+directMapCoeffs
+{}
+
+GGICoeffs
+{}
+
+// ************************************************************************* //

@@ -1,0 +1,89 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Everything in mm
+convertToMeters 0.001;
+
+// Depth of battery and environment in z-direction
+dZ 6.858;
+dZOut1 -50;
+dZOut2 50;
+
+// The whole width of the battery cell is 2*dCellOutX2 + x-direction of environment
+dCellOutX1 -62.5;
+dCellOutX2  62.5;
+dXOut1 -100;
+dXOut2  100;
+
+// Height of the battery cell + environemnt above
+hCellY 195;
+dYOut 250;
+
+vertices
+(
+
+    //air box around cell
+    ($dXOut1    0        $dZOut1)   //0
+    ($dXOut2    0        $dZOut1)   //1
+    ($dXOut2    $dYOut   $dZOut1)   //2
+    ($dXOut1    $dYOut   $dZOut1)   //3
+
+    ($dXOut1    0   $dZOut2)        //4
+    ($dXOut2    0   $dZOut2)        //5
+    ($dXOut2    $dYOut   $dZOut2)   //6
+    ($dXOut1    $dYOut   $dZOut2)   //7
+    
+
+);
+
+
+blocks
+(
+    // air block
+    hex (0 1 2 3 4 5 6 7) (20 50 20) simpleGrading (1 1 1)  //coarser
+);
+
+
+boundary
+(
+
+    airbulk
+    {
+        type patch;
+        faces
+        (
+            (3 7 6 2)
+            (0 4 7 3)
+            (2 6 5 1)
+            (0 3 2 1)
+            (4 5 6 7)
+        );
+    }
+
+    ground
+    {
+        type patch;
+        faces
+        (
+            (1 5 4 0)
+        );
+    }
+
+);
+
+// ************************************************************************* //
+
+// ************************************************************************* //

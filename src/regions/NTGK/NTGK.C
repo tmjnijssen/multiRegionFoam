@@ -131,7 +131,7 @@ void Foam::regionTypes::NTGK::calculateElectrochemicalParameters()
 void Foam::regionTypes::NTGK::calculateThermalBehavior()
 {
 
-    volScalarField QEch = (1/Dech_)*j_()*(faiPos_() - faiNeg_() - U_() + C2_*T_());
+    volScalarField QEch = (1/D_)*j_()*(faiPos_() - faiNeg_() - U_() + C2_*T_());
 
     volScalarField Qohm = sigmaPos_*(fvc::grad(faiPos_())&fvc::grad(faiPos_()))
                         + sigmaNeg_*(fvc::grad(faiNeg_())&fvc::grad(faiNeg_()));
