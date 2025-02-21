@@ -1,0 +1,58 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2312                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       dictionary;
+    location    "constant/polyMesh";
+    object      meshMetaDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+surfaceFile     "./constant/triSurface/18650_Battery.fms";
+
+surfaceMeta
+{
+    nPoints         256;
+    nFacets         508;
+    nPatches        3;
+    nFeatureEdges   128;
+    patches
+    {
+        cylinder
+        {
+            type            empty;
+            nFacets         384;
+        }
+        posTab
+        {
+            type            empty;
+            nFacets         62;
+        }
+        negTab
+        {
+            type            empty;
+            nFacets         62;
+        }
+    }
+    pointSubsets
+    {
+    }
+    facetSubsets
+    {
+    }
+    featureEdgeSubsets
+    {
+    }
+}
+
+lastStep        meshOptimisation;
+
+completedSteps  16 ( start start templateGeneration templateGeneration surfaceTopology surfaceTopology surfaceProjection surfaceProjection patchAssignment patchAssignment edgeExtraction edgeExtraction boundaryLayerGeneration boundaryLayerGeneration meshOptimisation meshOptimisation );
