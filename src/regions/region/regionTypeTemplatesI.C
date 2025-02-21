@@ -45,10 +45,16 @@ autoPtr<T> regionType::lookupOrRead
     const word& fldName,
     const bool& read,
     const bool& write,
-    const tmp<T> fld
+    const tmp<T> fld,
+    fileName location
 )
 {
     autoPtr<T> vfPtr(nullptr);
+
+    if (location.empty())
+    {
+        location = mesh.time().timeName();
+    }
 
     if (mesh.foundObject<T>(fldName))
     {
@@ -65,7 +71,7 @@ autoPtr<T> regionType::lookupOrRead
         IOobject header
         (
             fldName,
-            mesh.time().timeName(),
+            location,
             mesh.time(),
             IOobject::NO_READ
         );
@@ -73,7 +79,7 @@ autoPtr<T> regionType::lookupOrRead
         IOobject io
         (
             fldName,
-            mesh.time().timeName(),
+            location,
             mesh,
             IOobject::MUST_READ,
             IOobject::AUTO_WRITE
@@ -115,10 +121,16 @@ autoPtr<T> regionType::lookupOrRead
     const fvMesh& mesh,
     const word& fldName,
     const dimensioned<typename T::PrimitiveType> dimVal,
-    const bool& write
+    const bool& write,
+    fileName location
 )
 {
     autoPtr<T> vfPtr(nullptr);
+
+    if (location.empty())
+    {
+        location = mesh.time().timeName();
+    }
 
     if (mesh.foundObject<T>(fldName))
     {
@@ -135,7 +147,7 @@ autoPtr<T> regionType::lookupOrRead
         IOobject io
         (
             fldName,
-            mesh.time().timeName(),
+            location,
             mesh,
             IOobject::READ_IF_PRESENT,
             IOobject::AUTO_WRITE
@@ -162,10 +174,16 @@ autoPtr<T> regionType::lookupOrRead
     const word& fldName,
     const dimensioned<typename T::PrimitiveType> dimVal,
     const wordList& patchFieldTypes,
-    const bool& write
+    const bool& write,
+    fileName location
 )
 {
     autoPtr<T> vfPtr(nullptr);
+
+    if (location.empty())
+    {
+        location = mesh.time().timeName();
+    }
 
     if (mesh.foundObject<T>(fldName))
     {
@@ -182,7 +200,7 @@ autoPtr<T> regionType::lookupOrRead
         IOobject io
         (
             fldName,
-            mesh.time().timeName(),
+            location,
             mesh,
             IOobject::READ_IF_PRESENT,
             IOobject::AUTO_WRITE

@@ -129,7 +129,8 @@ protected:
             const word& fldName,
             const bool& read=true,
             const bool& write=true,
-            const tmp<T> fld = tmp<T>(nullptr)
+            const tmp<T> fld = tmp<T>(nullptr),
+            fileName location=Foam::fileName()
         );
 
         template <class T>
@@ -138,7 +139,8 @@ protected:
             const fvMesh& mesh,
             const word& fldName,
             const dimensioned<typename T::PrimitiveType> dimVal,
-            const bool& write=true
+            const bool& write=true,
+            fileName location=Foam::fileName()
         );
 
         template <class T>
@@ -148,7 +150,8 @@ protected:
             const word& fldName,
             const dimensioned<typename T::PrimitiveType> dimVal,
             const wordList& patchFieldTypes,
-            const bool& write=true
+            const bool& write=true,
+            fileName location=Foam::fileName()
         );
 
         scalar maxCorr(word name) const;
