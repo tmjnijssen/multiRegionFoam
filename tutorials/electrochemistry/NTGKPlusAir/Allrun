@@ -3,18 +3,37 @@
 # Source tutorial run functions
 . $WM_PROJECT_DIR/bin/tools/RunFunctions
 
-if [ ! $# == 1 ]; then
-        echo "Missing options!"
-        echo "(run $0 -p for partitioned"
-        echo " or -m for monolithic)"
+usage() {
+        echo ""
+        echo "Usage:"
+        echo "($0 [-p or --partitioned | -m or --monolithic] [-S or --serial | -P or --parallel]"
         echo ""
         exit 0
-fi
+}
 
-while getopts "pm" OPTION; do
-        case $OPTION in
+# $@ is all command line parameters passed to the script.
+# -o is for short options like -v
+# -l is for long options with double dash like --version
+# the comma separates different long options
+# -a is for long options with single dash like -version
+options=$(getopt -l "help,partitioned,monolithic:,serial,parallel" -o "hpm:SP" -a -- "$@")
+# set --:
+# If no arguments follow this option, then the positional parameters are unset.
+# Otherwise, the positional parameters are set to the arguments, even if some
+# of them begin with a ‘-’.
+eval set -- "$options"
+no_args=1
+while true
+do
+    case $1 in
+        -h|--help)
+            usage
+            exit 0
+            ;;
 
-        p)
+        -p|--partitioned)
+            no_args=0
+
             cp 0/batteryRegion/orig/partitioned/* 0/batteryRegion/.
             cp 0/air/orig/partitioned/* 0/air/.
 
@@ -34,13 +53,48 @@ while getopts "pm" OPTION; do
 
             ;;
 
-        m)
+        -m|--monolithic)
+            no_args=0
             echo "Monolithic not supported"
             echo ""
         exit 0
             ;;
 
-        esac
+
+        -S|--serial)
+
+            no_args=0
+
+            runApplication multiRegionFoam 2>/dev/null
+
+            ;;
+
+        -P|--parallel)
+
+            no_args=0
+
+            runApplication -l log.decomposePar.batteryRegion decomposePar -region batteryRegion
+            runApplication -l log.decomposePar.air decomposePar -region air
+
+            mpirun -np 4 multiRegionFoam -noFunctionObjects -parallel 2>&1 > log.multiRegionFoam
+
+            #runApplication -l log.reconstructPar.batteryRegion reconstructPar -region batteryRegion
+            #runApplication -l log.reconstructPar.batteryRegion reconstructPar -region air
+
+            #rm -r processor*
+
+            ;;
+
+        --)
+            shift
+            break;;
+    esac
+    shift
 done
 
-runApplication multiRegionFoam 2>/dev/null
+if [ "$no_args" -eq 1 ]; then
+    >&2 echo "No arguments provided"
+    usage
+    exit 1
+fi
+
