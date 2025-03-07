@@ -34,14 +34,22 @@ do
         -p|--partitioned)
             no_args=0
 
-            cp 0/batteryRegion/orig/partitioned/* 0/batteryRegion/.
+            cp 0/cell1/orig/partitioned/* 0/cell1/.
+            cp 0/cell2/orig/partitioned/* 0/cell2/.
             cp 0/air/orig/partitioned/* 0/air/.
 
-            runApplication -l log.blockMesh.batteryRegion blockMesh -region batteryRegion 2>/dev/null
-            runApplication -l log.checkMesh.batteryRegion checkMesh -region batteryRegion 2>/dev/null
-            runApplication -l log.makeFaMesh.batteryRegion makeFaMesh -region batteryRegion 2>/dev/null
-            runApplication -l log.surfaceMeshTriangulate.batteryRegion surfaceMeshTriangulate -region 'batteryRegion' ./constant/triSurface/cell.stl 2>/dev/null
-            runApplication -l log.blockMesh.air blockMesh -dict ./system/blockMeshDict 2>/dev/null
+            runApplication -l log.blockMesh.cell1 blockMesh -region cell1 2>/dev/null
+            runApplication -l log.checkMesh.cell1 checkMesh -region cell1 2>/dev/null
+            runApplication -l log.makeFaMesh.cell1 makeFaMesh -region cell1 2>/dev/null
+
+            runApplication -l log.blockMesh.cell2 blockMesh -region cell2 2>/dev/null
+            runApplication -l log.checkMesh.cell2 checkMesh -region cell2 2>/dev/null
+            runApplication -l log.makeFaMesh.cell2 makeFaMesh -region cell2 2>/dev/null
+
+            runApplication -l log.surfaceMeshTriangulate.cell1 surfaceMeshTriangulate -region 'cell1' ./constant/triSurface/cell1.stl 2>/dev/null
+            runApplication -l log.surfaceMeshTriangulate.cell2 surfaceMeshTriangulate -region 'cell2' ./constant/triSurface/cell2.stl 2>/dev/null
+
+            runApplication -l log.blockMesh.air blockMesh -dict ./system/blockMeshDictAir 2>/dev/null
             runApplication -l log.snappyHexMesh.air snappyHexMesh -overwrite 2>/dev/null
             mv constant/polyMesh constant/air/.
             mv constant/cellLevel constant/air/.
@@ -49,7 +57,7 @@ do
             runApplication -l log.checkMesh.air checkMesh -region air 2>/dev/null
             runApplication -l log.makeFaMesh.air makeFaMesh -region air 2>/dev/null
 
-            ./makeLinks batteryRegion
+            ./makeLinks cell1
 
             ;;
 
@@ -73,13 +81,14 @@ do
 
             no_args=0
 
-            runApplication -l log.decomposePar.batteryRegion decomposePar -region batteryRegion
+            runApplication -l log.decomposePar.cell1 decomposePar -region cell1
+            runApplication -l log.decomposePar.cell2 decomposePar -region cell2
             runApplication -l log.decomposePar.air decomposePar -region air
 
             mpirun -np 4 multiRegionFoam -noFunctionObjects -parallel 2>&1 > log.multiRegionFoam
 
-            #runApplication -l log.reconstructPar.batteryRegion reconstructPar -region batteryRegion
-            #runApplication -l log.reconstructPar.batteryRegion reconstructPar -region air
+            #runApplication -l log.reconstructPar.cell1 reconstructPar -region cell1
+            #runApplication -l log.reconstructPar.cell1 reconstructPar -region air
 
             #rm -r processor*
 

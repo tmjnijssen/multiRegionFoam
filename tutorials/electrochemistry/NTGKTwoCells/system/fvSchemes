@@ -1,8 +1,8 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
-| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  1.5                                   |
-|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.0                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -10,22 +10,43 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      decomposeParDict;
+    location    "system";
+    object      fvSchemes;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-numberOfSubdomains 4;
 
-method		simple;
-
-simpleCoeffs
+ddtSchemes
 {
-    n               (2 2 1);
-    delta           0.001;
 }
 
-roots
-(
-);
+d2dt2Schemes
+{
+}
+
+interpolationSchemes
+{
+}
+
+divSchemes
+{
+}
+
+gradSchemes
+{
+}
+
+snGradSchemes
+{
+}
+
+laplacianSchemes
+{
+}
+
+fluxRequired
+{
+}
+
 
 // ************************************************************************* //

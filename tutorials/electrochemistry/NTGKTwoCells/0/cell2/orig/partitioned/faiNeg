@@ -11,7 +11,7 @@ FoamFile
     version         2.0;
     format          ascii;
     class           volScalarField;
-    object          faiPos;
+    object          faiNeg;
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -19,18 +19,18 @@ FoamFile
 
 dimensions      [1 2 -3 0 0 -1 0];
 
-internalField   uniform 4.125;
+internalField   uniform 0;
 
 boundaryField
 {
     toPosTab
     {
-        type            fixedGradient;
-        gradient        uniform 0.1266; //3C
+        type            zeroGradient;
     }
     toNegTab
     {
-        type            zeroGradient;
+        type            fixedValue;
+        value           uniform 0;
     }
     bottom
     {
