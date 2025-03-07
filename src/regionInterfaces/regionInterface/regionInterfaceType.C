@@ -337,17 +337,6 @@ Foam::regionInterfaceType::regionInterfaceType
             IOobject::NO_WRITE
         )
     ),
-    gravitationalProperties_
-    (
-        IOobject
-        (
-            "g",
-            runTime.constant(),
-            runTime,
-            IOobject::MUST_READ_IF_MODIFIED,
-            IOobject::NO_WRITE
-        )
-    ),
     runTime_(runTime),
     patchA_(patchA),
     patchB_(patchB),

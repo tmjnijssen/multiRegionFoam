@@ -102,7 +102,7 @@ tmp<scalarField> regionCoupledPressureValue::valueJump() const
     // gravity term
     vector pRefPoint(mesh.solutionDict().subDict("PISO").lookup("pRefPoint"));
 
-    dimensionedVector g (capInterface().gravitationalProperties().lookup("g"));
+    dimensionedVector g (mesh.lookupObject<uniformDimensionedVectorField>("g"));
 
     dimensionedScalar muFluidNbr
     (
