@@ -83,6 +83,7 @@ $(regions)/conductTemperature/conductTemperature.C
 $(regions)/transportTemperature/transportTemperature.C
 $(regions)/icoFluid/icoFluid.C
 $(regions)/pimpleFluid/pimpleFluid.C
+$(regions)/buoyantPimpleFluid/buoyantPimpleFluid.C
 $(regions)/pUCoupledIcoFluid/pUCoupledIcoFluid.C
 
 
