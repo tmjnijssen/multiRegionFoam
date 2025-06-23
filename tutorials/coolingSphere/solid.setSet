@@ -1,0 +1,2 @@
+faceSet solid_to_fluid_zone new patchToFace solid_to_fluid;
+quit;
