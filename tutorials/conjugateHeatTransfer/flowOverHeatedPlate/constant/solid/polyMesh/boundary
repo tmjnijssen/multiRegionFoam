@@ -40,7 +40,7 @@ FoamFile
         attached        off;
         master          off;
         isWall          on;
-        bridgeOverlap   off;
+        bridgeOverlap   on;
     }
     bottom
     {

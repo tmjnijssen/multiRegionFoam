@@ -27,6 +27,7 @@ Author
 \*---------------------------------------------------------------------------*/
 
 #include "monolithicCouplingFvPatchField.H"
+#include "scalar.H"
 #include "symmTransformField.H"
 #include "harmonic.H"
 #include "volFields.H"
@@ -66,6 +67,7 @@ monolithicCouplingFvPatchField<Type>::monolithicCouplingFvPatchField
 )
 :
     coupledFvPatchField<Type>(p, iF),
+    interfaceToInterfaceCoupleManager(p),
     regionCouplePatch_(refCast<const regionCoupleFvPatch>(p)),
     remoteFieldName_(iF.name()),
     matrixUpdateBuffer_(),
@@ -83,8 +85,9 @@ monolithicCouplingFvPatchField<Type>::monolithicCouplingFvPatchField
 )
 :
     coupledFvPatchField<Type>(p, iF, dict),
+    interfaceToInterfaceCoupleManager(p, dict),
     regionCouplePatch_(refCast<const regionCoupleFvPatch>(p)),
-    remoteFieldName_(dict.lookupOrDefault<word>("remoteField", iF.name())),
+    remoteFieldName_(dict.lookupOrDefault<word>("neighbourFieldName", iF.name())),
     matrixUpdateBuffer_(),
     originalPatchField_(),
     curTimeIndex_(-1)
@@ -123,6 +126,7 @@ monolithicCouplingFvPatchField<Type>::monolithicCouplingFvPatchField
 )
 :
     coupledFvPatchField<Type>(ptf, p, iF, mapper),
+    interfaceToInterfaceCoupleManager(ptf),
     regionCouplePatch_(refCast<const regionCoupleFvPatch>(p)),
     remoteFieldName_(ptf.remoteFieldName_),
     matrixUpdateBuffer_(),
@@ -158,6 +162,7 @@ monolithicCouplingFvPatchField<Type>::monolithicCouplingFvPatchField
 :
     ggiLduInterfaceField(),
     coupledFvPatchField<Type>(ptf, iF),
+    interfaceToInterfaceCoupleManager(ptf),
     regionCouplePatch_(refCast<const regionCoupleFvPatch>(ptf.patch())),
     remoteFieldName_(ptf.remoteFieldName_),
     matrixUpdateBuffer_(),
@@ -181,21 +186,22 @@ monolithicCouplingFvPatchField<Type>::lookupShadowPatchField
 {
     // Lookup neighbour field
     const LookupField& shadowField =
-        regionCouplePatch_.shadowRegion().
-        objectRegistry::template lookupObject<LookupField>(name);
+        nbrMesh().lookupObject<LookupField>
+        (
+            name
+        );
 
-    return shadowField.boundaryField()[regionCouplePatch_.shadowIndex()];
+    return nbrPatch().patchField<LookupField, LookupType>(shadowField);
 }
-
 
 // Return shadow patch field
 template<class Type>
 const monolithicCouplingFvPatchField<Type>&
 monolithicCouplingFvPatchField<Type>::shadowPatchField() const
 {
-    // Lookup neighbour field
     typedef GeometricField<Type, fvPatchField, volMesh> GeoField;
 
+    // Return neighbouring patch field
     return refCast<const monolithicCouplingFvPatchField<Type> >
     (
         lookupShadowPatchField<GeoField, Type>(remoteFieldName_)
@@ -207,54 +213,31 @@ monolithicCouplingFvPatchField<Type>::shadowPatchField() const
 template<class Type>
 tmp<Field<Type> > monolithicCouplingFvPatchField<Type>::patchNeighbourField() const
 {
-    Field<Type> sField = shadowPatchField().patchInternalField();
-
     tmp<Field<Type> > tpnf
     (
-         regionCouplePatch_.interpolate
-         (
-             shadowPatchField().patchInternalField()
-         )
+        interpolateFromNbrField<Type>
+        (
+            shadowPatchField().patchInternalField()
+        )
     );
 
-    Field<Type>& pnf = tpnf();
+    // Field<Type>& pnf = tpnf();
 
-    if (regionCouplePatch_.bridgeOverlap())
-    {
-        // Symmetry treatment used for overlap
-        vectorField nHat = this->patch().nf();
+    // if (regionCouplePatch_.bridgeOverlap())
+    // {
+    //     // Symmetry treatment used for overlap
+    //     vectorField nHat = this->patch().nf();
 
-        // Use mirrored neighbour field for interpolation
-        // HJ, 21/Jan/2009
-        Field<Type> bridgeField =
-            transform(I - 2.0*sqr(nHat), this->patchInternalField());
+    //     // Use mirrored neighbour field for interpolation
+    //     // HJ, 21/Jan/2009
+    //     Field<Type> bridgeField =
+    //         transform(I - 2.0*sqr(nHat), this->patchInternalField());
 
-        regionCouplePatch_.setUncoveredFaces(bridgeField, pnf);
-    }
+    //     regionCouplePatch_.setUncoveredFaces(bridgeField, pnf);
+    // }
 
     return tpnf;
 }
-
-
-// Return neighbour field given internal cell data
-template<class Type>
-tmp<Field<Type> > monolithicCouplingFvPatchField<Type>::patchNeighbourField
-(
-    const word& name
-) const
-{
-    // Lookup neighbour field
-    typedef GeometricField<Type, fvPatchField, volMesh> GeoField;
-
-    return regionCouplePatch_.interpolate
-    (
-        lookupShadowPatchField<GeoField, Type>(name).patchInternalField()
-    );
-
-    // Note: this field is not bridged because local data does not exist
-    // for named field.  HJ, 27/Sep/2011
-}
-
 
 template<class Type>
 void monolithicCouplingFvPatchField<Type>::initEvaluate
@@ -282,10 +265,10 @@ void monolithicCouplingFvPatchField<Type>::initEvaluate
     // HR, 8/Jun/2012
 
     const Field<Type>& fOwn = this->originalPatchField();
-    const Field<Type> fNei = regionCouplePatch_.interpolate
-    (
-        this->shadowPatchField().originalPatchField()
-    );
+    const Field<Type> fNei = interpolateFromNbrField<Type>
+        (
+            shadowPatchField().originalPatchField()
+        );
 
     // Do interpolation
     harmonic<Type> interp(this->patch().boundaryMesh().mesh());
@@ -294,18 +277,18 @@ void monolithicCouplingFvPatchField<Type>::initEvaluate
 
     Field<Type>::operator=(weights*fOwn + (1.0 - weights)*fNei);
 
-    if (regionCouplePatch_.bridgeOverlap())
-    {
-        // Symmetry treatment used for overlap
-        vectorField nHat = this->patch().nf();
+    // if (regionCouplePatch_.bridgeOverlap())
+    // {
+    //     // Symmetry treatment used for overlap
+    //     vectorField nHat = this->patch().nf();
 
-        Field<Type> pif = this->patchInternalField();
+    //     Field<Type> pif = this->patchInternalField();
 
-        Field<Type> bridgeField =
-            0.5*(pif + transform(I - 2.0*sqr(nHat), pif));
+    //     Field<Type> bridgeField =
+    //         0.5*(pif + transform(I - 2.0*sqr(nHat), pif));
 
-        regionCouplePatch_.setUncoveredFaces(bridgeField, *this);
-    }
+    //     regionCouplePatch_.setUncoveredFaces(bridgeField, *this);
+    // }
 }
 
 
@@ -347,18 +330,18 @@ void monolithicCouplingFvPatchField<Type>::updateCoeffs()
 
     Field<Type>::operator=(weights*fOwn + (1.0 - weights)*fNei);
 
-    if (regionCouplePatch_.bridgeOverlap())
-    {
-        // Symmetry treatment used for overlap
-        vectorField nHat = this->patch().nf();
+    // if (regionCouplePatch_.bridgeOverlap())
+    // {
+    //     // Symmetry treatment used for overlap
+    //     vectorField nHat = this->patch().nf();
 
-        Field<Type> pif = this->patchInternalField();
+    //     Field<Type> pif = this->patchInternalField();
 
-        Field<Type> bridgeField =
-            0.5*(pif + transform(I - 2.0*sqr(nHat), pif));
+    //     Field<Type> bridgeField =
+    //         0.5*(pif + transform(I - 2.0*sqr(nHat), pif));
 
-        regionCouplePatch_.setUncoveredFaces(bridgeField, *this);
-    }
+    //     regionCouplePatch_.setUncoveredFaces(bridgeField, *this);
+    // }
 }
 
 
@@ -398,7 +381,7 @@ void monolithicCouplingFvPatchField<Type>::initInterfaceMatrixUpdate
         // Since interpolation needs to happen on the shadow, and within the
         // init, prepare interpolation for the other side.
         matrixUpdateBuffer_ =
-            this->shadowPatchField().regionCouplePatch().interpolate
+            interpolateToNbrField<scalar>
             (
                 this->patch().patchInternalField(psiInternal)
             );
@@ -469,7 +452,7 @@ template<class Type>
 void monolithicCouplingFvPatchField<Type>::write(Ostream& os) const
 {
     fvPatchField<Type>::write(os);
-    os.writeKeyword("remoteField")
+    os.writeKeyword("neighbourFieldName")
         << remoteFieldName_ << token::END_STATEMENT << nl;
     this->writeEntry("value", os);
 }

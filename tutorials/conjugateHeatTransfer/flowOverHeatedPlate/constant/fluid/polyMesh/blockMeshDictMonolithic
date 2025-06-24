@@ -111,7 +111,7 @@ boundary
         zone            bottomZone;
         master          on;
         bridgeOverlap   off;
-       
+
         faces
         (
             (4 0 1 5)
