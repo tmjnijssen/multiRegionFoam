@@ -81,6 +81,7 @@ $(regions)/region/regionTypeList.C
 
 $(regions)/conductTemperature/conductTemperature.C
 $(regions)/transportTemperature/transportTemperature.C
+$(regions)/turbulentTransportTemperature/turbulentTransportTemperature.C
 $(regions)/icoFluid/icoFluid.C
 $(regions)/pimpleFluid/pimpleFluid.C
 $(regions)/buoyantPimpleFluid/buoyantPimpleFluid.C
