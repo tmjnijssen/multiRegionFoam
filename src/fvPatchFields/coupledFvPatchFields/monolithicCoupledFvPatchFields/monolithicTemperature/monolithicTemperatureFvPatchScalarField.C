@@ -30,6 +30,7 @@ Author
 #include "monolithicBase.H"
 #include "addToRunTimeSelectionTable.H"
 #include "fvPatchFieldMapper.H"
+#include "scalar.H"
 #include "volFields.H"
 #include "fvMatrices.H"
 
@@ -123,10 +124,7 @@ Foam::monolithicTemperatureFvPatchScalarField::shadowPatchField() const
 Foam::tmp<Foam::scalarField>
 Foam::monolithicTemperatureFvPatchScalarField::patchNeighbourField() const
 {
-    return monolithicCouplingFvPatchScalarField::patchNeighbourField
-    (
-        remoteFieldName()
-    );
+    return monolithicCouplingFvPatchScalarField::patchNeighbourField();
 }
 
 
@@ -207,8 +205,10 @@ Foam::monolithicTemperatureFvPatchScalarField::source() const
     const fvPatch& p = patch();
 
     const scalarField TcOwn = Tc();
-    const scalarField TcNei =
-        regionCouplePatch().interpolate(shadowPatchField().Tc());
+    const scalarField TcNei = interpolateFromNbrField<scalar>
+        (
+            shadowPatchField().Tc()
+        );
     const scalarField Tw = this->Tw();
 
     const monolithicBase& K =
