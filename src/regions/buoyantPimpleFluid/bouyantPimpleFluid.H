@@ -109,6 +109,7 @@ class bouyantPimpleFluid
 
         //- Density
         autoPtr<dimensionedScalar> rho_;
+        autoPtr<volScalarField> rhok_;
 
         // Thermal expansion coefficient [1/K]
         autoPtr<dimensionedScalar> beta_;
@@ -119,14 +120,17 @@ class bouyantPimpleFluid
         //- Turbulence model
         autoPtr<incompressible::turbulenceModel> turbulence_;
 
+        //- Laminar Prandtl number
+        autoPtr<dimensionedScalar> Pr_;
+
+        //- Turbulent Prandtl number
+        autoPtr<dimensionedScalar> Prt_;
+
         //- Velocity
         autoPtr<volVectorField> U_;
 
         //- Face flux
         autoPtr<surfaceScalarField> phi_;
-
-        //- Kinematic pressure
-        autoPtr<volScalarField> pKin_;
 
         //- Pressure
         autoPtr<volScalarField> p_;
@@ -233,6 +237,8 @@ public:
         virtual void momentumPredictor();
 
         virtual void pressureCorrector();
+
+        void temperatureEquation();
 
         virtual void meshMotionCorrector();
 

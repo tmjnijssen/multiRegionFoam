@@ -73,14 +73,17 @@ Foam::regionTypes::bouyantPimpleFluid::bouyantPimpleFluid
         )
     ),
     rho_(nullptr),
+    rhok_(nullptr),
     beta_(nullptr),
     TRef_(nullptr),
 
     turbulence_(nullptr),
 
+    Pr_(nullptr),
+    Prt_(nullptr),
+
     U_(nullptr),
     phi_(nullptr),
-    pKin_(nullptr),
     p_(nullptr),
     T_(nullptr),
 
@@ -130,10 +133,10 @@ Foam::regionTypes::bouyantPimpleFluid::bouyantPimpleFluid
         true
     );
 
-    pKin_ = lookupOrRead<volScalarField>
+    p_ = lookupOrRead<volScalarField>
     (
         mesh(),
-        "pKin",
+        "p",
         true,
         true
     );
@@ -152,22 +155,24 @@ Foam::regionTypes::bouyantPimpleFluid::bouyantPimpleFluid
     rho_.set(new dimensionedScalar(laminarTransport_().lookup("rho")));
     beta_.set(new dimensionedScalar(laminarTransport_().lookup("beta")));
     TRef_.set(new dimensionedScalar(laminarTransport_().lookup("TRef")));
+    Pr_.set(new dimensionedScalar(laminarTransport_().lookup("Pr")));
+    Prt_.set(new dimensionedScalar(laminarTransport_().lookup("Prt")));
 
     turbulence_ = incompressible::turbulenceModel::New
     (
         U_(), phi_(), laminarTransport_()
     );
 
-    p_ = lookupOrRead<volScalarField>
+    T_ = lookupOrRead<volScalarField>(mesh(), "T");
+
+    rhok_ = lookupOrRead<volScalarField>
     (
         mesh(),
-        "p",
+        "rhok",
         false,
-        true,
-        rho_().value()*pKin_()
+        false,
+        1.0 - beta_()*(T_() - TRef_())
     );
-
-    T_ = lookupOrRead<volScalarField>(mesh(), "T");
 
     sigma_ = lookupOrRead<volSymmTensorField>
     (
@@ -175,11 +180,7 @@ Foam::regionTypes::bouyantPimpleFluid::bouyantPimpleFluid
         "sigma",
         false,
         true,
-        rho_().value()
-       *(
-            - pKin_()*symmTensor(1,0,0,1,0,1)
-            - turbulence_().devReff()
-        )
+        -p_()*symmTensor(1,0,0,1,0,1) -rho_().value()*turbulence_().devReff()
     );
 
     wordList rAUPatchFieldTypes
@@ -196,8 +197,8 @@ Foam::regionTypes::bouyantPimpleFluid::bouyantPimpleFluid
         true
     );
 
-    setRefCell(pKin_(), pimple_.dict(), pRefCell_, pRefValue_);
-    mesh().schemesDict().setFluxRequired(pKin_().name());
+    setRefCell(p_(), pimple_.dict(), pRefCell_, pRefValue_);
+    mesh().schemesDict().setFluxRequired(p_().name());
 }
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -252,8 +253,10 @@ void Foam::regionTypes::bouyantPimpleFluid::prePredictor()
 
     if (mesh().changing() && correctPhi_)
     {
-#       include "pimpleFluidCorrectPhi.H"
+#       include "buoyantPimpleFluidCorrectPhi.H"
     }
+
+    // rhok_() = 1.0 - beta_()*(T_() - TRef_());
 }
 
 void Foam::regionTypes::bouyantPimpleFluid::momentumPredictor()
@@ -283,7 +286,7 @@ void Foam::regionTypes::bouyantPimpleFluid::momentumPredictor()
             fvc::reconstruct
             (
                 (
-                    fvc::interpolate(1.0 - beta_()*(T_() - TRef_()))*(g_ & mesh().Sf())
+                    fvc::interpolate(rhok_())*(g_ & mesh().Sf())
                   - fvc::snGrad(p_())*mesh().magSf()
                 )
             )
@@ -304,7 +307,7 @@ void Foam::regionTypes::bouyantPimpleFluid::pressureCorrector()
     while (pimple_.correct())
     {
         // Update pressure BCs
-        pKin_().boundaryField().updateCoeffs();
+        p_().boundaryField().updateCoeffs();
 
         // Prepare clean 1/a_p without time derivative and under-relaxation
         // contribution
@@ -322,24 +325,24 @@ void Foam::regionTypes::bouyantPimpleFluid::pressureCorrector()
         );
 
         phi_() = phiU
-                + rAUf*fvc::interpolate(1.0 - beta_()*(T_() - TRef_()))
+                + rAUf*fvc::interpolate(rhok_())
                   *(g_ & mesh().Sf());
 
         // Global flux balance
-        adjustPhi(phi_(), U_(), pKin_());
+        // adjustPhi(phi_(), U_(), p_());
 
         while (pimple_.correctNonOrthogonal())
         {
             fvScalarMatrix pEqn
             (
-                fvm::laplacian(rAUf, pKin_()) == fvc::div(phi_())
+                fvm::laplacian(rAUf, p_()) == fvc::div(phi_())
             );
 
-            pEqn.setReference(pRefCell_, pRefValue_);
+            // pEqn.setReference(pRefCell_, pRefValue_);
             pEqn.solve
             (
                 mesh().solutionDict()
-                .solver(pKin_().select(pimple_.finalInnerIter()))
+                .solver(p_().select(pimple_.finalInnerIter()))
             );
 
             if (pimple_.finalNonOrthogonalIter())
@@ -351,7 +354,7 @@ void Foam::regionTypes::bouyantPimpleFluid::pressureCorrector()
         //- Pressure relaxation except for last corrector
         if (!pimple_.finalIter())
         {
-            pKin_().relax();
+            p_().relax();
         }
 
 #       include "pimpleFluidMovingMeshContinuityErrs.H"
@@ -361,18 +364,17 @@ void Foam::regionTypes::bouyantPimpleFluid::pressureCorrector()
         U_() += rAU_()*fvc::reconstruct((phi_() - phiU)/rAUf);
         U_().correctBoundaryConditions();
 
-        // Update pressure field
-        p_() = rho_().value()*pKin_();
-
         // Update sigma field
         sigma_() = rho_().value()
            *(
-                - pKin_()*symmTensor(1,0,0,1,0,1)
+                - p_()*symmTensor(1,0,0,1,0,1)
                 - turbulence_().devReff()
             );
     }
 
     turbulence_().correct();
+
+    temperatureEquation();
 
     Info<< nl
         << mesh().name() << " Pressure:" << nl
@@ -388,6 +390,32 @@ void Foam::regionTypes::bouyantPimpleFluid::pressureCorrector()
         << endl;
 }
 
+void Foam::regionTypes::bouyantPimpleFluid::temperatureEquation()
+{
+    Info<< nl << "Solving temperature equation for " << this->typeName
+        << " in region " << mesh().name()
+        << nl << endl;
+
+    volScalarField kappaEff
+    (
+        "kappaEff",
+        turbulence_().nu()/Pr_() + turbulence_().nut()/Prt_()
+    );
+
+    fvScalarMatrix TEqn
+    (
+        fvm::ddt(T_())
+      + fvm::div(phi_(), T_())
+      - fvm::laplacian(kappaEff, T_())
+    );
+
+    TEqn.relax();
+
+    TEqn.solve();
+
+    rhok_() = 1.0 - beta_()*(T_() - TRef_());
+}
+
 void Foam::regionTypes::bouyantPimpleFluid::meshMotionCorrector()
 {
     // Make the fluxes absolute
@@ -399,7 +427,7 @@ void Foam::regionTypes::bouyantPimpleFluid::meshMotionCorrector()
 
     if (mesh().changing() && correctPhi_)
     {
-#       include "pimpleFluidCorrectPhi.H"
+#       include "buoyantPimpleFluidCorrectPhi.H"
     }
 
     // Make the fluxes relative to the mesh motion
