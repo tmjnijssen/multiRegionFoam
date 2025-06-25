@@ -283,6 +283,41 @@ void rbfInterfaceToInterfaceMapping::transferPointsZoneToZone
     transferPointsZoneToZone<vector>(fromZone, toZone, fromField, toField);
 }
 
+void rbfInterfaceToInterfaceMapping::transferFacesZoneToZone
+(
+    const standAlonePatch& fromZone, // from zone
+    const standAlonePatch& toZone,   // to zone
+    const Field<VectorN<scalar, 4> >& fromField,  // from field
+    Field<VectorN<scalar, 4> >& toField           // to field
+) const
+{
+    transferFacesZoneToZone<VectorN<scalar, 4> >
+    (
+        fromZone,
+        toZone,
+        fromField,
+        toField
+    );
+}
+
+
+void rbfInterfaceToInterfaceMapping::transferPointsZoneToZone
+(
+    const standAlonePatch& fromZone, // from zone
+    const standAlonePatch& toZone,   // to zone
+    const Field<VectorN<scalar, 4> >& fromField,  // from field
+    Field<VectorN<scalar, 4> >& toField           // to field
+) const
+{
+    transferPointsZoneToZone<VectorN<scalar, 4> >
+    (
+        fromZone,
+        toZone,
+        fromField,
+        toField
+    );
+}
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

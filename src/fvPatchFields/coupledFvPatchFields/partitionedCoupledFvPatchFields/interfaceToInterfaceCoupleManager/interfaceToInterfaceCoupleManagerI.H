@@ -164,4 +164,26 @@ Foam::interfaceToInterfaceCoupleManager::interpolateFromNbrField
     );
 }
 
+template<class Type>
+Foam::tmp<Field<Type> >
+Foam::interfaceToInterfaceCoupleManager::interpolateToNbrField
+(
+    const Field<Type>& toField
+) const
+{
+    // B is neighbour
+    if (refPatch().name() == rgInterface().patchA().name())
+    {
+        return
+        (
+            rgInterface().interpolateFacesFromA<Type>(toField)
+        );
+    }
+    // A is neighbour
+    return
+    (
+        rgInterface().interpolateFacesFromB<Type>(toField)
+    );
+}
+
 // ************************************************************************* //

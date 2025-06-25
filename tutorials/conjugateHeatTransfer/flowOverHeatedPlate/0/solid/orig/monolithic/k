@@ -24,9 +24,12 @@ boundaryField
 {
     top
     {
-        type            monolithicThermalDiffusivitySlave;
-        remoteField     k;
-        value           $internalField;
+        type                    monolithicThermalDiffusivitySlave;
+        interfaceType           heatTransferInterface;
+        neighbourFieldName      k;
+        neighbourRegionName     fluid;
+        neighbourPatchName      interface;
+        value                   $internalField;
     }
     left
     {

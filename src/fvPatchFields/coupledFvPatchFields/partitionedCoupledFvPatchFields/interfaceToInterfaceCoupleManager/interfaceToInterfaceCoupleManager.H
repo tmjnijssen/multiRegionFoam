@@ -188,6 +188,13 @@ public:
                 const Field<Type>& fromField
             ) const;
 
+            //- Interpolate to neighbour patch values
+            template<class Type>
+            tmp<Field<Type> > interpolateToNbrField
+            (
+                const Field<Type>& toField
+            ) const;
+
         // Access
 
             //- Return a reference to the local mesh

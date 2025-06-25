@@ -96,10 +96,10 @@ do
         -P|--parallel)
             no_args=0
 
-            if [ "$monolithic" -eq 1 ]; then
-                echo "\nRunning this case with monolithic coupling in parallel is currently not supported!"
-                exit 1
-            fi
+            # if [ "$monolithic" -eq 1 ]; then
+            #     echo "\nRunning this case with monolithic coupling in parallel is currently not supported!"
+            #     exit 1
+            # fi
 
             runApplication -l log.decomposePar.fluid decomposePar -region fluid
             runApplication -l log.decomposePar.solid  decomposePar -region solid
