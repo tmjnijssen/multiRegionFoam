@@ -1,0 +1,145 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Everything in mm
+convertToMeters 0.001;
+
+// Depth of battery and tabs (in 2d depth of one cell)
+dZ 0.67;
+
+// Geometry for symmetric battery with centered tabs top (positive) and bottom (negative)
+// The whole width of the battery cell is 2*dCellOutX2
+// and the whole width of each tab is dTabsOutX2 - dTabsInX2:
+// Half the distance between inside of the tabs
+dTabsX1  -17.5;
+dTabsX2   17.5;
+// Half the distance between outside of the battery cell
+dCellOutX1 -44;
+dCellOutX2  44;
+
+// Height of the battery cell
+hCellY 149;
+
+vertices
+(
+
+    // Cell tabs
+    ($dTabsX1   0       0)        //0
+    ($dTabsX2   0       0)        //1
+    ($dTabsX2   $hCellY 0)        //2
+    ($dTabsX1   $hCellY 0)        //3
+
+    ($dTabsX1   0       $dZ)      //4
+    ($dTabsX2   0       $dZ)      //5
+    ($dTabsX2   $hCellY $dZ)      //6
+    ($dTabsX1   $hCellY $dZ)      //7
+
+    // Cell left out
+    ($dCellOutX1  0       0)        //8
+    ($dCellOutX1  $hCellY 0)        //9
+    ($dCellOutX1  0       $dZ)      //10
+    ($dCellOutX1  $hCellY $dZ)      //11
+
+    // Cell right out
+    ($dCellOutX2  0       0)        //12
+    ($dCellOutX2  $hCellY 0)        //13
+    ($dCellOutX2  0       $dZ)      //14
+    ($dCellOutX2  $hCellY $dZ)      //15
+
+
+
+);
+
+
+blocks
+(
+    // Cell tabs
+    hex (0 1 2 3 4 5 6 7) (40 195 1) simpleGrading (1 1 1)
+
+    // Cell left out
+    hex (8 0 3 9 10 4 7 11) (30 195 1) simpleGrading (1 1 1)
+
+    // Cell right out
+    hex (1 12 13 2 5 14 15 6) (13 195 1) simpleGrading (1 1 1)
+
+    
+);
+
+
+boundary
+(
+
+    left
+    {
+        type patch;
+        faces
+        (
+            (8 9 11 10)
+        );
+    }
+
+    right
+    {
+        type patch;
+        faces
+        (
+            (12 13 15 14)
+        );
+    }
+
+    top
+    {
+        type patch;
+        faces
+        (
+            
+            (11 7 3 9)
+            (6 15 13 2)
+        );
+    }
+
+    toPosTab
+    {
+        type patch;
+        faces
+        (
+            (7 6 2 3)
+        );
+    }
+
+    toNegTab
+    {
+        type patch;
+        faces
+        (
+            (4 0 1 5)
+        );
+    }
+
+    bottom
+    {
+        type patch;
+        faces
+        (
+            
+            (10 8 0 4)
+            (5 1 12 14)
+        );
+    }
+
+);
+
+// ************************************************************************* //

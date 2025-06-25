@@ -1,0 +1,98 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Everything in mm
+convertToMeters 0.001;
+
+// Depth of cell and tabs (irrelevant for 2D case)
+dZ 0.381;
+
+// The whole width of each tab is dTabsOutX2 - dTabsInX2:
+// Half the distance between inside of the tabs
+dTabsInX1  -20;
+// Half the distance between outside of the tabs
+dTabsOutX1 -50;
+
+// The whole height of each tab is hTabsY - hCellY:
+// Height of the battery cell
+hCellY 195;
+// Height of the tabs
+hTabsY 210;
+
+vertices
+(
+    // negative right tab
+    ($dTabsOutX1 $hCellY   0)        //0
+    ($dTabsInX1  $hCellY   0)        //1
+    ($dTabsInX1  $hTabsY   0)        //2
+    ($dTabsOutX1 $hTabsY   0)        //3
+
+    ($dTabsOutX1 $hCellY   $dZ)      //4
+    ($dTabsInX1  $hCellY   $dZ)      //5
+    ($dTabsInX1  $hTabsY   $dZ)      //6
+    ($dTabsOutX1 $hTabsY   $dZ)      //7
+
+);
+
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (30 15 1) simpleGrading (1 1 1)
+);
+
+
+boundary
+(
+
+    left
+    {
+        type patch;
+        faces
+        (
+            (4 7 3 0)
+        );
+    }
+
+    right
+    {
+        type patch;
+        faces
+        (
+            (1 2 6 5)
+        );
+    }
+
+    top
+    {
+        type patch;
+        faces
+        (
+            (7 6 2 3)
+        );
+    }
+
+    toCell
+    {
+        type patch;
+        faces
+        (
+            (4 0 1 5)
+        );
+    }
+
+);
+
+// ************************************************************************* //

@@ -121,9 +121,6 @@ class regionInterfaceType
         //- interface properties dictionary
         IOdictionary regionInterfaceProperties_;
 
-        //- gravitationalProperties
-        IOdictionary gravitationalProperties_;
-
         //- Reference to time
         const Time& runTime_;
 
@@ -297,12 +294,6 @@ public:
             const IOdictionary& interfaceProperties() const
             {
                 return regionInterfaceProperties_;
-            }
-
-            //- Return reference to gravitation properties
-            const IOdictionary& gravitationalProperties() const
-            {
-                return gravitationalProperties_;
             }
 
 			//- Return reference to DB

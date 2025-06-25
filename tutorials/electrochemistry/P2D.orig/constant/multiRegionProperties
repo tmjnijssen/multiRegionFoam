@@ -1,0 +1,102 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      coupledSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+regions
+(
+    (anode (intercalationAnode) )
+    (sep (separator) )
+    (cathode (intercalationCathode) )
+);
+
+
+partitionedCoupling
+{
+    maxCoupleIter 10;
+}
+
+DNA
+{
+    
+    
+    faiE
+    {
+        maxCoupleIter 3;
+
+        residualControl
+        {
+            maxJumpRes 1e-07;
+            outputJumpResField no;
+            maxFluxRes 1e-07;
+            outputFluxResField no;
+        }
+    }
+    
+    
+    
+    cE
+    {
+        maxCoupleIter 3;
+
+        residualControl
+        {
+            maxJumpRes 1e-07;
+            outputJumpResField no;
+            maxFluxRes 1e-07;
+            outputFluxResField no;
+        }
+    }
+
+    T
+    {
+        maxCoupleIter 3;
+
+        residualControl
+        {
+            maxJumpRes 1e-07;
+            outputJumpResField no;
+            maxFluxRes 1e-07;
+            outputFluxResField no;
+        }
+    }
+
+    /*faiS
+    {
+        maxCoupleIter 3;
+
+        residualControl
+        {
+            maxJumpRes 1e-07;
+            outputJumpResField no;
+            maxFluxRes 1e-07;
+            outputFluxResField no;
+        }
+    }*/
+
+    /*cS
+    {
+        maxCoupleIter 3;
+
+        residualControl
+        {
+            maxJumpRes 1e-07;
+            outputJumpResField no;
+            maxFluxRes 1e-07;
+            outputFluxResField no;
+        }
+    }*/
+}
+
+// ************************************************************************* //

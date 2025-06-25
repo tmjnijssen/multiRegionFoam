@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Source tutorial clean functions
+. $WM_PROJECT_DIR/bin/tools/CleanFunctions
+
+cleanCase
+
+shopt -s extglob
+# remove initial fields
+(
+	cd 0/cell1
+	rm -f !(orig)
+
+	cd ../cell2
+	rm -f !(orig)
+
+	cd ../air
+	rm T
+)
+
+# remove meshes
+(
+	cd constant/cell1/polyMesh
+	rm -f !(blockMeshDict)
+
+	cd ../faMesh
+	rm -f !(faMeshDefinition)
+
+	cd ../../cell2/polyMesh
+	rm -f !(blockMeshDict)
+
+	cd ../faMesh
+	rm -f !(faMeshDefinition)
+
+    cd ../../air/polyMesh
+	rm -f *
+
+	cd ../faMesh
+	rm -f !(faMeshDefinition)
+
+	cd ../../triSurface
+	rm cell1.stl
+	rm cell2.stl
+
+	cd ../
+	rm polyMesh
+)
