@@ -41,6 +41,7 @@ SourceFiles
 #include "coupledFvPatchField.H"
 #include "ggiLduInterfaceField.H"
 #include "regionCoupleFvPatch.H"
+#include "interfaceToInterfaceCoupleManager.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -55,7 +56,8 @@ template<class Type>
 class monolithicCouplingFvPatchField
 :
     public ggiLduInterfaceField,
-    public coupledFvPatchField<Type>
+    public coupledFvPatchField<Type>,
+    public interfaceToInterfaceCoupleManager
 {
     // Private data
 
@@ -182,12 +184,6 @@ public:
                 const LookupType* = nullptr
             ) const;
 
-            //- Return a shadow patch
-            const regionCoupleFvPatch& regionCouplePatch() const
-            {
-                return regionCouplePatch_;
-            }
-
             //- Return shadow patch field
             const monolithicCouplingFvPatchField<Type>& shadowPatchField() const;
 
@@ -196,12 +192,6 @@ public:
 
             //- Return neighbour field given internal cell data
             virtual tmp<Field<Type> > patchNeighbourField() const;
-
-            //- Return named neighbour field given internal cell data
-            virtual tmp<Field<Type> > patchNeighbourField
-            (
-                const word& name
-            ) const;
 
             //- Initialise the evaluation of the patch field
             virtual void initEvaluate(const Pstream::commsTypes commsType);

@@ -235,7 +235,7 @@ Foam::monolithicThermalDiffusivityFvPatchScalarField::calcThermalDiffusivity
         }
 
         const Field<VectorN<scalar, 4> > iData =
-            owner.regionCouplePatch().interpolate(lData);
+            owner.interpolateFromNbrField<VectorN<scalar, 4> >(lData);
 
         forAll (iData, facei)
         {
@@ -348,7 +348,7 @@ Foam::monolithicThermalDiffusivityFvPatchScalarField::calcTemperature
         }
 
         const Field<VectorN<scalar, 4> > iData =
-            TwOwn.regionCouplePatch().interpolate(lData);
+            TwOwn.interpolateFromNbrField<VectorN<scalar, 4> >(lData);
 
         forAll (iData, facei)
         {

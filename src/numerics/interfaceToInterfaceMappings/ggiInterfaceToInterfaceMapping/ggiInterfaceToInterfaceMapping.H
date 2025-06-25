@@ -177,6 +177,26 @@ public:
                 const Field<vector>& fromField,       // from field
                 Field<vector>& toField                // to field
             ) const;
+
+            //- Transfer/map/interpolate from one zone faces to another zone
+            //  faces for vectors of size 4
+            virtual void transferFacesZoneToZone
+            (
+                const standAlonePatch& fromZone,      // from zone
+                const standAlonePatch& toZone,        // to zone
+                const Field<VectorN<scalar, 4> >& fromField,       // from field
+                Field<VectorN<scalar, 4> >& toField                // to field
+            ) const;
+
+            //- Transfer/map/interpolate from one zone points to another zone
+            //  points for vectors of size 4
+            virtual void transferPointsZoneToZone
+            (
+                const standAlonePatch& fromZone,      // from zone
+                const standAlonePatch& toZone,        // to zone
+                const Field<VectorN<scalar, 4> >& fromField,       // from field
+                Field<VectorN<scalar, 4> >& toField                // to field
+            ) const;
 };
 
 
