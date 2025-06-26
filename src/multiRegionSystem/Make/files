@@ -93,7 +93,6 @@ $(regions)/pUCoupledIcoFluid/pUCoupledIcoFluid.C
 $(regions)/interTrackFluid/interTrackFluid.C
 $(regions)/solidStVK/momentumStabilisation/momentumStabilisation.C
 $(regions)/solidStVK/solidStVK.C
-$(regions)/transportSpecie/transportSpecie.C
 
 general = ./../finiteVolume/cfdTools/general
 $(general)/correctClosedVolumePhi/correctClosedVolumePhi.C
