@@ -134,6 +134,12 @@ public:
         //- Calculate pressure flux jump
         virtual tmp<scalarField> fluxJump() const;
 
+        virtual word kName() const
+        {
+            word name = "v";
+            return (name);
+            
+        };
         const regionInterfaces::capillaryInterface& capInterface() const;
 };
 

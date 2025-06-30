@@ -22,7 +22,7 @@ monolithicCoupledPatches
 (
     fluidsolid
     {
-        interfaceType heatTransferInterface;
+        interfaceType (heatTransferInterface);
 
         coupledPatchPair
         (
@@ -50,9 +50,6 @@ interpolatorUpdateFrequency 1;
 interfaceTransferMethod directMap;
 
 directMapCoeffs
-{}
-
-GGICoeffs
 {}
 
 // ************************************************************************* //

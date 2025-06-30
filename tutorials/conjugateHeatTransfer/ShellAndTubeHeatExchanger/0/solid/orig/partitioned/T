@@ -24,7 +24,7 @@ boundaryField
     solid_to_inner
     {
         type                    regionCoupledHeatFlux;
-        interfaceType           heatTransferInterface;
+        interfaceType           (heatTransferInterface);
         k                       "k";
         neighbourRegionName     inner;
         neighbourPatchName      inner_to_solid;
@@ -36,7 +36,7 @@ boundaryField
     solid_to_outer
     {
         type                    regionCoupledHeatFlux;
-        interfaceType           heatTransferInterface;
+        interfaceType           (heatTransferInterface);
         k                       "k";
         neighbourRegionName     outer;
         neighbourPatchName      outer_to_solid;

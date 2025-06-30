@@ -26,7 +26,7 @@ boundaryField
     interface
     {
         type                    monolithicTemperature;
-        interfaceType           heatTransferInterface;
+        interfaceType           (heatTransferInterface);
         radiation               off;
         K                       k;
         neighbourFieldName      T;

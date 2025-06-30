@@ -155,6 +155,18 @@ tmp<scalarField> regionCoupledPressureFlux::fluxJump() const
     //     )
     // ) & patch().nf();
 
+    dimensionedScalar rhoFluid
+    (
+        refMesh().lookupObject<IOdictionary>("transportProperties")
+        .lookup("rho")
+    );
+
+    dimensionedScalar muFluid
+    (
+        refMesh().lookupObject<IOdictionary>("transportProperties")
+        .lookup("mu")
+    );
+
     // Lookup neighbouring patch field
     const volScalarField& nbrPField =
         nbrMesh().lookupObject<volScalarField>
@@ -179,25 +191,20 @@ tmp<scalarField> regionCoupledPressureFlux::fluxJump() const
     // Enforce flux matching
     pfluxNbrToOwn *= -1.0;
 
-    dimensionedScalar rhoFluid
-    (
-        refMesh().lookupObject<IOdictionary>("transportProperties")
-        .lookup("rho")
-    );
-
     vectorField nB = refMesh().boundary()[refPatchID()].nf();
 
     const volVectorField& U =
         refMesh().objectRegistry::lookupObject<volVectorField>("U");
 
+    // volSymmTensorField tau = muFluid.value()/rhoFluid.value() * twoSymm(fvc::grad(U));
+
+    // volVectorField divStress = fvc::div(tau);
+
     return
     (
-      - pfluxNbrToOwn
-      - rhoFluid.value()
-       *(
-            nB&fvc::ddt(U)().boundaryField()[refPatchID()]
-        )
-    );
+    - pfluxNbrToOwn - (nB&fvc::ddt(U)().boundaryField()[refPatchID()]) //+ (nB&divStress.boundaryField()[refPatchID()])    
+    );       
+
 }
 
 const regionInterfaces::capillaryInterface&

@@ -32,11 +32,13 @@ $(regionInterfaces)/regionInterface/regionInterfaceType.C
 $(regionInterfaces)/regionInterface/regionInterfaceTypeTemplates.C
 $(regionInterfaces)/regionInterface/regionInterfaceTypeList.C
 $(regionInterfaces)/regionInterface/newRegionInterfaceType.C
-
 $(regionInterfaces)/capillaryInterface/capillaryInterface.C
+$(regionInterfaces)/massTransferInterface/massTransferInterface.C
 $(regionInterfaces)/defaultInterface/defaultInterface.C
 $(regionInterfaces)/heatTransferInterface/heatTransferInterface.C
 $(regionInterfaces)/fsiInterface/fsiInterface.C
+
+
 
 
 
@@ -55,6 +57,10 @@ $(partitionedCoupled)/regionCoupledVelocityFlux/regionCoupledVelocityFlux.C
 $(partitionedCoupled)/regionCoupledPressureValue/regionCoupledPressureValue.C
 $(partitionedCoupled)/regionCoupledPressureFlux/regionCoupledPressureFlux.C
 $(partitionedCoupled)/regionCoupledTraction/regionCoupledTraction.C
+$(partitionedCoupled)/regionCoupledMassTransferVelocityValue/regionCoupledMassTransferVelocityValue.C
+$(partitionedCoupled)/regionCoupledMassTransferPressureValue/regionCoupledMassTransferPressureValue.C
+$(partitionedCoupled)/regionCoupledPhaseChangeHeatFlux/regionCoupledPhaseChangeHeatFlux.C
+$(partitionedCoupled)/regionCoupledMassTransferVelocityFlux/regionCoupledMassTransferVelocityFlux.C
 
 monolithicCoupled = $(fvPatchFields)/coupledFvPatchFields/monolithicCoupledFvPatchFields
 $(monolithicCoupled)/monolithicCoupling/monolithicCouplingFvPatchFields.C
@@ -104,6 +110,10 @@ $(regions)/conductNegPotentialTemperature/conductNegPotentialTemperature.C
 physicalModels = ./../physicalModels
 $(physicalModels)/thermoPhysicalConstants/thermoPhysicalConstants.C
 
+general = ./../finiteVolume/cfdTools/general
+$(general)/correctClosedVolumePhi/correctClosedVolumePhi.C
+$(general)/correctSpaceVolumePhi/correctSpaceVolumePhi.C
+$(general)/correctClosedVolumePhiPimple/correctClosedVolumePhiPimple.C
 
 
 

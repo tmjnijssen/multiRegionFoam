@@ -22,9 +22,12 @@ boundaryField
 {
     outer_to_solid
     {
-        type            chtRcThermalDiffusivity;
-        remoteField     k;
-        value           $internalField;
+        type                    monolithicThermalDiffusivity;
+        interfaceType           (heatTransferInterface);
+        neighbourFieldName      k;
+        neighbourRegionName     solid;
+        neighbourPatchName      solid_to_outer;
+        value                   $internalField;
     }
     inlet
     {

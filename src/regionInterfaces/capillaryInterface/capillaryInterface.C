@@ -122,6 +122,7 @@ void Foam::regionInterfaces::capillaryInterface::makeUs() const
             patchFieldTypes[patchI] =
                 wedgeFaPatchVectorField::typeName;
         }
+        
         else
         {
             label ngbPolyPatchID =
@@ -199,41 +200,33 @@ void Foam::regionInterfaces::capillaryInterface::correctUsBoundaryConditions()
 
     forAll(Us().boundaryField(), patchI)
     {
-        if
-        (
-            UsPtr_().boundaryField()[patchI].type()
-         == calculatedFaPatchVectorField::typeName
-        )
+        vectorField& pUs = Us().boundaryField()[patchI];
+
+        pUs = Us().boundaryField()[patchI].patchInternalField();
+
+        label ngbPolyPatchID =
+            aMesh().boundary()[patchI].ngbPolyPatchIndex();
+
+        if (ngbPolyPatchID != -1)
         {
-            vectorField& pUs = Us().boundaryField()[patchI];
-
-            pUs = Us().boundaryField()[patchI].patchInternalField();
-
-            label ngbPolyPatchID =
-                aMesh().boundary()[patchI].ngbPolyPatchIndex();
-
-            if (ngbPolyPatchID != -1)
-            {
-                if
+            if
+            (
                 (
-                    (
-                        U.boundaryField()[ngbPolyPatchID].type()
-                     == slipFvPatchVectorField::typeName
-                    )
-                 ||
-                    (
-                        U.boundaryField()[ngbPolyPatchID].type()
-                     == symmetryFvPatchVectorField::typeName
-                    )
+                    U.boundaryField()[ngbPolyPatchID].type()
+                    == slipFvPatchVectorField::typeName
                 )
-                {
-                    vectorField N
-                    (
-                        aMesh().boundary()[patchI].ngbPolyPatchFaceNormals()
-                    );
-
-                    pUs -= N*(N&pUs);
-                }
+                ||
+                (
+                    U.boundaryField()[ngbPolyPatchID].type()
+                    == symmetryFvPatchVectorField::typeName
+                )
+            )
+            {
+                vectorField N
+                (
+                    aMesh().boundary()[patchI].ngbPolyPatchFaceNormals()
+                );
+                pUs = Us().boundaryField()[patchI].internalField();
             }
         }
     }
@@ -250,13 +243,22 @@ void Foam::regionInterfaces::capillaryInterface::updateUs()
 
     const volVectorField& U = meshA().lookupObject<volVectorField>("U");
 
+    scalarField UMesh = fvc::meshPhi(U)().boundaryField()[patchAID()]/meshA().boundary()[patchAID()].magSf();
+
     const fvBoundaryMesh& fvbm = meshA().boundary();
 
     const fvPatch& p = fvbm[patchAID()];
 
-    Us().internalField() = p.lookupPatchField<volVectorField, vector>(U.name());
+    vectorField N
+    (
+        meshA().boundary()[patchAID()].nf()
+    );
+    const vectorField UAInterface = U.boundaryField()[patchAID()];
+
+    Us().internalField() = UAInterface - (UAInterface & N)*N + UMesh*N;
 
     correctUsBoundaryConditions();
+
 }
 
 void Foam::regionInterfaces::capillaryInterface::updatePhis()

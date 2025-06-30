@@ -26,13 +26,15 @@ boundaryField
     top
     {
         type                    regionCoupledHeatFlux;
-        interfaceType           heatTransferInterface;
-        k                       "k";
+        interfaceType           (heatTransferInterface);
         neighbourRegionName     fluid;
         neighbourPatchName      interface;
         neighbourFieldName      T;
+
+        k                       "k";
+
         secondOrder             false;
-        nonOrthCorr             true;
+        nonOrthCorr             false;
         value                   $internalField;
     }
     left

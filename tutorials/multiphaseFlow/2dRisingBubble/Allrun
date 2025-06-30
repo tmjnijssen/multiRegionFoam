@@ -41,8 +41,6 @@ do
             cp -r 0/fluidB/orig/partitioned/. 0/fluidB/.
 
             runApplication makeFaMesh -region fluidA
-
-        ./makeLinks fluidA
         ;;
 
         -m|--monolithic)
@@ -54,7 +52,7 @@ do
 
         -S|--serial)
             no_args=0
-            runApplication multiRegionFoam 2>/dev/null &
+            runApplication multiRegionFoam 2>/dev/null
             ;;
 
         -P|--parallel)

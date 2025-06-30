@@ -150,6 +150,13 @@ public:
         //- Calculate species jump
         virtual tmp<scalarField> valueJump() const;
 
+        virtual word kName() const
+        {
+            word name = "k";
+            return (name);
+            
+        };
+        
         const regionInterfaces::heatTransferInterface& heatTransInterface() const;
 };
 

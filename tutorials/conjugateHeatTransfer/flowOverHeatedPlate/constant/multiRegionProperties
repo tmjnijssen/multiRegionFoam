@@ -20,12 +20,6 @@ regions
     (solid (conductTemperature) )
 );
 
-
-partitionedCoupling
-{
-    maxCoupleIter 6;
-}
-
 DNA
 {
     T

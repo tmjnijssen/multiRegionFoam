@@ -235,6 +235,14 @@ public:
         //- normalised similar to linear system solver residuals
         scalar ofNormResidual() const;
 
+        scalarField diffCoeff() const;
+
+        //- Read name of the diffusion coefficient
+        virtual word kName() const
+        {
+            return ("Null");
+        }
+
         //- Write
         virtual void write(Ostream&) const;
 };

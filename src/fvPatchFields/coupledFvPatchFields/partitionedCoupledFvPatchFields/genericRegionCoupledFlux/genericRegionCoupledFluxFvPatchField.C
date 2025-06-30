@@ -45,7 +45,6 @@ genericRegionCoupledFluxFvPatchField<Type>::genericRegionCoupledFluxFvPatchField
 :
     fixedGradientFvPatchField<Type>(p, iF),
     interfaceToInterfaceCoupleManager(p),
-    kName_("k"),
     accModel_
     (
         accelerationModel<Type>::New
@@ -70,7 +69,6 @@ genericRegionCoupledFluxFvPatchField<Type>::genericRegionCoupledFluxFvPatchField
 :
     fixedGradientFvPatchField<Type>(grcf, p, iF, mapper),
     interfaceToInterfaceCoupleManager(grcf),
-    kName_(grcf.kName_),
     accModel_(grcf.accModel_, false),
     nonOrthCorr_(grcf.nonOrthCorr_),
     secondOrder_(grcf.secondOrder_)
@@ -86,7 +84,6 @@ genericRegionCoupledFluxFvPatchField<Type>::genericRegionCoupledFluxFvPatchField
 :
     fixedGradientFvPatchField<Type>(p, iF),
     interfaceToInterfaceCoupleManager(p, dict),
-    kName_(dict.lookupOrDefault<word>("k", "k")),
     accModel_
     (
         accelerationModel<Type>::New
@@ -152,7 +149,6 @@ genericRegionCoupledFluxFvPatchField<Type>::genericRegionCoupledFluxFvPatchField
 :
     fixedGradientFvPatchField<Type>(grcf, iF),
     interfaceToInterfaceCoupleManager(grcf),
-    kName_(grcf.kName_),
     accModel_(grcf.accModel_, false),
     nonOrthCorr_(grcf.nonOrthCorr_),
     secondOrder_(grcf.secondOrder_)
@@ -213,22 +209,7 @@ void genericRegionCoupledFluxFvPatchField<Type>::updateCoeffs()
         fluxNbrToOwn *= -1.0;
         fluxNbrToOwn += fluxJump();
 
-        // Get the diffusivity
-        scalarField k(this->patch().size(), pTraits<scalar>::zero);
-
-        if ( this->db().objectRegistry::foundObject<volScalarField>(kName_) )
-        {
-            k = this->patch().template lookupPatchField<volScalarField, scalar>(kName_);
-        }
-        else
-        {
-            k = dimensionedScalar
-            (
-                refPatch().boundaryMesh().mesh().objectRegistry::
-                lookupObject<IOdictionary>("transportProperties")
-                .lookup(kName_)
-            ).value();
-        }
+        const scalarField k = diffCoeff();
 
         // Add interfacial flux
         this->gradient() = fluxNbrToOwn/k;
@@ -278,21 +259,7 @@ scalarField genericRegionCoupledFluxFvPatchField<Type>::rawResidual() const
     Field<Type> fluxNbrToOwn = interpolateFromNbrField<Type>(nbrFlux);
 
     // Get the diffusivity
-    scalarField k(this->patch().size(), pTraits<scalar>::zero);
-
-    if ( this->db().objectRegistry::foundObject<volScalarField>(kName_) )
-    {
-        k = this->patch().template lookupPatchField<volScalarField, scalar>(kName_);
-    }
-    else
-    {
-        k = dimensionedScalar
-        (
-            refPatch().boundaryMesh().mesh().objectRegistry::
-            lookupObject<IOdictionary>("transportProperties")
-            .lookup(kName_)
-        ).value();
-    }
+    const scalarField k = diffCoeff();
 
     const Field<Type> fluxOwn = this->snGrad()*k;
 
@@ -335,6 +302,49 @@ scalarField genericRegionCoupledFluxFvPatchField<Type>::rawResidual() const
 }
 
 template<class Type>
+scalarField genericRegionCoupledFluxFvPatchField<Type>::diffCoeff() const
+{
+    word kNameSpecific = kName();
+    // Get the diffusivity
+    scalarField k(this->patch().size(), pTraits<scalar>::zero);
+
+    // [MP] if dissusivity is specific volume read density and use the reciproc
+    if (kNameSpecific == "v")
+    {
+        kNameSpecific = "rho";
+    }
+
+    if ( this->db().objectRegistry::foundObject<volScalarField>(kNameSpecific) )
+    {
+        k = this->patch().template lookupPatchField<volScalarField, scalar>(kNameSpecific);
+    }
+    else
+    {
+        k = dimensionedScalar
+        (
+            refPatch().boundaryMesh().mesh().objectRegistry::
+            lookupObject<IOdictionary>("transportProperties")
+            .lookup(kNameSpecific)
+        ).value();
+    }
+
+    if (kNameSpecific == "v")
+    {
+        k = 1.0/k;
+    }
+
+    if (this->dimensionedInternalField().name() == "pKin")
+    {
+        k = 1.0;
+    }
+    
+    return
+    (
+        k
+    );
+}
+
+template<class Type>
 scalar genericRegionCoupledFluxFvPatchField<Type>::normResidual() const
 {
     if (useDirectFlux())
@@ -371,22 +381,7 @@ scalar genericRegionCoupledFluxFvPatchField<Type>::normResidual() const
     // Calculate interpolated patch field
     Field<Type> fluxNbrToOwn = interpolateFromNbrField<Type>(nbrFlux);
 
-    // Get the diffusivity
-    scalarField k(this->patch().size(), pTraits<scalar>::zero);
-
-    if ( this->db().objectRegistry::foundObject<volScalarField>(kName_) )
-    {
-        k = this->patch().template lookupPatchField<volScalarField, scalar>(kName_);
-    }
-    else
-    {
-        k = dimensionedScalar
-        (
-            refPatch().boundaryMesh().mesh().objectRegistry::
-            lookupObject<IOdictionary>("transportProperties")
-            .lookup(kName_)
-        ).value();
-    }
+    const scalarField k = diffCoeff();
 
     const Field<Type> fluxOwn = this->snGrad()*k;
 
@@ -448,22 +443,7 @@ scalar genericRegionCoupledFluxFvPatchField<Type>::ofNormResidual() const
     // Calculate interpolated patch field
     Field<Type> fluxNbrToOwn = interpolateFromNbrField<Type>(nbrFlux);
 
-    // Get the diffusivity
-    scalarField k(this->patch().size(), pTraits<scalar>::zero);
-
-    if ( this->db().objectRegistry::foundObject<volScalarField>(kName_) )
-    {
-        k = this->patch().template lookupPatchField<volScalarField, scalar>(kName_);
-    }
-    else
-    {
-        k = dimensionedScalar
-        (
-            refPatch().boundaryMesh().mesh().objectRegistry::
-            lookupObject<IOdictionary>("transportProperties")
-            .lookup(kName_)
-        ).value();
-    }
+    const scalarField k = diffCoeff();
 
     const Field<Type> fluxOwn = this->snGrad()*k;
 
@@ -500,7 +480,7 @@ void genericRegionCoupledFluxFvPatchField<Type>::write
 {
     fvPatchField<Type>::write(os);
     interfaceToInterfaceCoupleManager::writeEntries(os);
-    os.writeKeyword("k") << kName_ << token::END_STATEMENT << nl;
+    os.writeKeyword("k") << kName() << token::END_STATEMENT << nl;
     accModel_->write(os);
     os.writeKeyword("nonOrthCorr") << nonOrthCorr_
         << token::END_STATEMENT << nl;

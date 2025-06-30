@@ -138,6 +138,13 @@ public:
         //- Calculate pressure jump
         virtual tmp<scalarField> valueJump() const;
 
+        virtual word kName() const
+        {
+            word name = "v";
+            return (name);
+            
+        };
+
         const regionInterfaces::capillaryInterface& capInterface() const;
 };
 

@@ -44,13 +44,20 @@ Foam::regionInterfaceTypeList::regionInterfaceTypeList
     pcFldNames_(),
     mcFldNames_()
 {
+    label interfaceSize = 0;
+    forAll (partitionedTypeInterfaces_, cpldPatchI)
+    {
+        const dictionary& dict = partitionedTypeInterfaces_[cpldPatchI].dict();
+        wordList interfaceTypes(dict.lookup("interfaceType"));
+        interfaceSize += interfaceTypes.size();
+    }
     this->setSize
     (
-        partitionedTypeInterfaces_.size()
+        interfaceSize
       + monolithicTypeInterfaces_.size()
     );
 
-    if (partitionedTypeInterfaces_.size() > 0)
+    if (interfaceSize > 0)
     {
         reset(partitionedTypeInterfaces_);
 
@@ -92,7 +99,7 @@ void Foam::regionInterfaceTypeList::reset(const regionInterfaceProperties& rip)
     {
         const dictionary& dict = rip[cpldPatchI].dict();
 
-        word interfaceType(dict.lookup("interfaceType"));
+        wordList interfaceTypes(dict.lookup("interfaceType"));
         coupledFields fields(dict.lookup("coupledFields"));
         coupledPatchPair patchPair(dict.lookup("coupledPatchPair"));
 
@@ -137,19 +144,22 @@ void Foam::regionInterfaceTypeList::reset(const regionInterfaceProperties& rip)
 
         const fvPatch& secondPatch = 
             secondRegion.boundary()[secondPatchID];
-
-        this->set
-        (
-            index_++,
-            regionInterfaceType::New
+        forAll (interfaceTypes, interfaceI)
+        {   
+            this->set
             (
-                interfaceType,
-                dict,
-                runTime_,
-                firstPatch,
-                secondPatch
-            )
-        );
+                index_++,
+                regionInterfaceType::New
+                (
+                    interfaceTypes[interfaceI],
+                    dict,
+                    runTime_,
+                    firstPatch,
+                    secondPatch
+                )
+            );
+            
+        }
     }
 }
 
@@ -165,7 +175,6 @@ void Foam::regionInterfaceTypeList::setFieldNamesPartitionedCoupling
 
         coupledPatchPair patchPair(dict.lookup("coupledPatchPair"));
         coupledFields fields(dict.lookup("coupledFields"));
-
         const interfaceKey key
         (
             patchPair[0].first() + patchPair[0].second(),
@@ -178,7 +187,6 @@ void Foam::regionInterfaceTypeList::setFieldNamesPartitionedCoupling
             fields
         );
     }
-
     //- get unique list of coupled field names (partitioned)
     forAllConstIter(fieldsTable, partitionedCoupledFields(), iter)
     {

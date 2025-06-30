@@ -44,7 +44,6 @@ genericRegionCoupledJumpFvPatchField<Type>::genericRegionCoupledJumpFvPatchField
 :
     fixedValueFvPatchField<Type>(p, iF),
     interfaceToInterfaceCoupleManager(p),
-    kName_("k"),
     KName_("K"),
     accModel_
     (
@@ -70,7 +69,6 @@ genericRegionCoupledJumpFvPatchField<Type>::genericRegionCoupledJumpFvPatchField
 :
     fixedValueFvPatchField<Type>(grcj, p, iF, mapper),
     interfaceToInterfaceCoupleManager(grcj),
-    kName_(grcj.kName_),
     KName_(grcj.KName_),
     accModel_(grcj.accModel_, false),
     nonOrthCorr_(grcj.nonOrthCorr_),
@@ -87,7 +85,6 @@ genericRegionCoupledJumpFvPatchField<Type>::genericRegionCoupledJumpFvPatchField
 :
     fixedValueFvPatchField<Type>(p, iF),
     interfaceToInterfaceCoupleManager(p, dict),
-    kName_(dict.lookup("k")),
     KName_(dict.lookupOrDefault<word>("K", word::null)),
     accModel_
     (
@@ -124,7 +121,6 @@ genericRegionCoupledJumpFvPatchField<Type>::genericRegionCoupledJumpFvPatchField
 :
     fixedValueFvPatchField<Type>(grcj, iF),
     interfaceToInterfaceCoupleManager(grcj),
-    kName_(grcj.kName_),
     KName_(grcj.KName_),
     accModel_(grcj.accModel_, false),
     nonOrthCorr_(grcj.nonOrthCorr_),
@@ -211,7 +207,7 @@ void genericRegionCoupledJumpFvPatchField<Type>::updateCoeffs()
     // Relax fixed value condition
     accModel_->relax(*this);
 
-    updatePhi();
+    //updatePhi();
 
     fixedValueFvPatchField<Type>::updateCoeffs();
 }
@@ -222,21 +218,7 @@ template<class Type>
 tmp<Field<Type> > genericRegionCoupledJumpFvPatchField<Type>::flux() const
 {
     // Get the diffusivity
-    scalarField k(this->patch().size(), pTraits<scalar>::zero);
-
-    if ( this->db().objectRegistry::foundObject<volScalarField>(kName_) )
-    {
-        k = this->patch().template lookupPatchField<volScalarField, scalar>(kName_);
-    }
-    else
-    {
-        k = dimensionedScalar
-        (
-            this->db().objectRegistry::
-            lookupObject<IOdictionary>("transportProperties")
-            .lookup(kName_)
-        ).value();
-    }
+    scalarField k = diffCoeff();
 
     return (this->snGrad()*k);
 }
@@ -427,6 +409,49 @@ scalar genericRegionCoupledJumpFvPatchField<Type>::ofNormResidual() const
 }
 
 template<class Type>
+scalarField genericRegionCoupledJumpFvPatchField<Type>::diffCoeff() const
+{
+    word kNameSpecific = kName();
+    // Get the diffusivity
+    scalarField k(this->patch().size(), pTraits<scalar>::zero);
+
+    // [MP] if dissusivity is specific volume read density and use the reciproc
+    if (kNameSpecific == "v")
+    {
+        kNameSpecific = "rho";
+    }
+
+    if ( this->db().objectRegistry::foundObject<volScalarField>(kNameSpecific) )
+    {
+        k = this->patch().template lookupPatchField<volScalarField, scalar>(kNameSpecific);
+    }
+    else
+    {
+        k = dimensionedScalar
+        (
+            refPatch().boundaryMesh().mesh().objectRegistry::
+            lookupObject<IOdictionary>("transportProperties")
+            .lookup(kNameSpecific)
+        ).value();
+    }
+
+    if (kNameSpecific == "v")
+    {
+        k = 1.0/k;
+    }
+
+    if (this->dimensionedInternalField().name() == "pKin")
+    {
+        k = 1.0;
+    }
+    
+    return
+    (
+        k
+    );
+}
+
+template<class Type>
 void genericRegionCoupledJumpFvPatchField<Type>::write
 (
     Ostream& os
@@ -434,7 +459,7 @@ void genericRegionCoupledJumpFvPatchField<Type>::write
 {
     fvPatchField<Type>::write(os);
     interfaceToInterfaceCoupleManager::writeEntries(os);
-    os.writeKeyword("k") << kName_ << token::END_STATEMENT << nl;
+    os.writeKeyword("k") << kName() << token::END_STATEMENT << nl;
     accModel_->write(os);
     os.writeKeyword("nonOrthCorr") << nonOrthCorr_
         << token::END_STATEMENT << nl;

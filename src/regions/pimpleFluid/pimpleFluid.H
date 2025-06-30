@@ -119,6 +119,9 @@ class pimpleFluid
         //- Kinematic pressure
         autoPtr<volScalarField> pKin_;
 
+        //- correct pressure
+        autoPtr<volScalarField> pcorr_;
+        
         //- Pressure
         autoPtr<volScalarField> p_;
 
@@ -128,6 +131,10 @@ class pimpleFluid
         //- Reziprocal diagonal elements of convection-diffusion matrix
         autoPtr<volScalarField> rAU_;
 
+        word patchToAdjust_;
+
+        Switch closedVolume_;
+        Switch hasSpacePatch_;
         //- Reference pressure cell
         label pRefCell_;
 
@@ -229,6 +236,8 @@ public:
         virtual void meshMotionCorrector();
 
         virtual void postSolve();
+
+
 };
 
 

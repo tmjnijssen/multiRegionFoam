@@ -75,17 +75,26 @@ Foam::word Foam::interfaceToInterfaceCoupleManager::assembleName
 }
 
 const Foam::regionInterfaceType&
-Foam::interfaceToInterfaceCoupleManager::rgInterface() const
+Foam::interfaceToInterfaceCoupleManager::rgInterface(word type) const
 {
     const fvMesh& mesh = refPatch().boundaryMesh().mesh();
     const objectRegistry& obr = mesh.objectRegistry::parent();
 
+    /*if( type )
+    {
+        FatalErrorInFunction
+            << this->typeName << " BC can only "
+            << "be used in combination with a "
+            << regionInterfaces::massTransferInterface::typeName
+            << endl
+            << exit(FatalError);
+    }*/
     word rgIntName = assembleName
     (
         refPatch(),
         neighbourRegionName_,
         neighbourPatchName_,
-        typeName_
+        type
     );
 
     word rgIntNameRev = assembleName
@@ -93,7 +102,7 @@ Foam::interfaceToInterfaceCoupleManager::rgInterface() const
         refPatch(),
         neighbourRegionName_,
         neighbourPatchName_,
-        typeName_,
+        type,
         true //reverse order
     );
 
@@ -171,12 +180,12 @@ void Foam::interfaceToInterfaceCoupleManager::updateRegionInterface()
 Foam::interfaceToInterfaceCoupleManager::interfaceToInterfaceCoupleManager
 (
     const fvPatch& patch,
-    const word type
+    const wordList types
 )
 :
     patch_(patch),
     localRegion_(patch_.boundaryMesh().mesh()),
-    typeName_(type),
+    typeNames_(types),
     neighbourRegionName_(),
     neighbourPatchName_(),
     neighbourFieldName_()
@@ -187,12 +196,12 @@ Foam::interfaceToInterfaceCoupleManager::interfaceToInterfaceCoupleManager
 (
     const fvPatch& patch,
     const dictionary& dict,
-    const word type
+    const wordList types
 )
 :
     patch_(patch),
     localRegion_(patch_.boundaryMesh().mesh()),
-    typeName_(dict.lookup("interfaceType")),
+    typeNames_(dict.lookup("interfaceType")),
     neighbourRegionName_(dict.lookup("neighbourRegionName")),
     neighbourPatchName_(dict.lookup("neighbourPatchName")),
     neighbourFieldName_(dict.lookup("neighbourFieldName"))
@@ -206,7 +215,7 @@ Foam::interfaceToInterfaceCoupleManager::interfaceToInterfaceCoupleManager
 :
     patch_(pcm.refPatch()),
     localRegion_(patch_.boundaryMesh().mesh()),
-    typeName_(pcm.typeName_),
+    typeNames_(pcm.typeNames_),
     neighbourRegionName_(pcm.neighbourRegionName()),
     neighbourPatchName_(pcm.neighbourPatchName()),
     neighbourFieldName_(pcm.neighbourFieldName())
@@ -222,7 +231,7 @@ Foam::interfaceToInterfaceCoupleManager::~interfaceToInterfaceCoupleManager()
 void Foam::interfaceToInterfaceCoupleManager::writeEntries(Ostream& os) const
 {
     os.writeKeyword("interfaceType");
-    os << typeName_ << token::END_STATEMENT << nl;
+    os << typeNames_ << token::END_STATEMENT << nl;
     os.writeKeyword("neighbourRegionName");
     os << neighbourRegionName_ << token::END_STATEMENT << nl;
     os.writeKeyword("neighbourPatchName");

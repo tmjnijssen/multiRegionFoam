@@ -46,6 +46,8 @@ License
 #include "coordinateSystem.H"
 #include "scalarMatrices.H"
 
+#include"regionCoupledMassTransferVelocityValue.H"
+
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -1140,20 +1142,67 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
         scalarField sweptVolCorr =
             phi.boundaryField()[patchID()];
 
-        Info<< "phi boundary field BEFORE mesh motion :"
-            << " sum local = " << gSum(mag(sweptVolCorr))
-            << ", global = " << gSum(sweptVolCorr)
-            << endl;
-
         const volVectorField& U =
             mesh().objectRegistry::lookupObject<volVectorField>("U");
 
-        const volScalarField& rho =
-            mesh().objectRegistry::lookupObject<volScalarField>("rho");
+        // scalarField sweptVolCorr = U.boundaryField()[patchID()] & mesh().boundary()[patchID()].Sf();
+        
+        Info<< "phi boundary field BEFORE mesh motion :"
+        << " sum local = " << gSum(mag(sweptVolCorr))
+        << ", global = " << gSum(sweptVolCorr)
+        << endl;
 
-        sweptVolCorr -=
-            fvc::meshPhi(rho, U)().boundaryField()[patchID()];
+        scalarField meshPhi = sweptVolCorr;
 
+        if (mesh().objectRegistry::foundObject<volScalarField>("rho"))
+        {
+            const volScalarField& rho =
+                mesh().objectRegistry::lookupObject<volScalarField>("rho");
+
+            meshPhi = fvc::meshPhi(rho, U)().boundaryField()[patchID()];
+        }
+        else
+        {
+            meshPhi = fvc::meshPhi(U)().boundaryField()[patchID()];
+        }
+
+        sweptVolCorr -= meshPhi;
+
+         // MP - Mesh Motion due to mass Transfer
+        if (aMesh().mesh().objectRegistry::found("mDotInterface"))
+        {
+            const areaScalarField& mDot =
+                aMesh().mesh().objectRegistry::lookupObject<areaScalarField>("mDotInterface");
+
+            scalarField volTransfer = sweptVolCorr*0.0;
+
+            const scalarField& Sf = aMesh().S();    
+
+            volTransfer = mDot.internalField()*Sf;
+
+            if (mesh().objectRegistry::foundObject<volScalarField>("rho"))
+            {
+                const volScalarField& rho =
+                    mesh().objectRegistry::lookupObject<volScalarField>("rho");
+
+                const scalarField& rhoS = rho.boundaryField()[patchID()];
+
+                volTransfer /= rhoS;
+            }
+            else
+            {
+                dimensionedScalar rhoFluid
+                (
+                    mesh().lookupObject<IOdictionary>("transportProperties")
+                    .lookup("rho")
+                );
+                
+                volTransfer /= rhoFluid.value();
+            }
+            
+            sweptVolCorr -= volTransfer;             
+
+        }
         Info<< "mesh.phi boundary field BEFORE mesh motion :"
             << " sum local = " << gSum(mag(mesh().phi().boundaryField()[patchID()]))
             << ", global = " << gSum(mesh().phi().boundaryField()[patchID()])
@@ -1165,8 +1214,8 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
             << endl;
 
         Info<< "fvc::meshPhi boundary field BEFORE mesh motion :"
-            << " sum local = " << gSum(mag(fvc::meshPhi(rho, U)().boundaryField()[patchID()]))
-            << ", global = " << gSum(fvc::meshPhi(rho, U)().boundaryField()[patchID()])
+            << " sum local = " << gSum(mag(meshPhi))
+            << ", global = " << gSum(meshPhi)
             << endl;
 
         newMeshPoints_ = mesh().allPoints();

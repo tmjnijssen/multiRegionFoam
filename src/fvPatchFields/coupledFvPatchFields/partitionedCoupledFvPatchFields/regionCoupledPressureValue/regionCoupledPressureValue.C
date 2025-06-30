@@ -104,6 +104,25 @@ tmp<scalarField> regionCoupledPressureValue::valueJump() const
 
     dimensionedVector g (mesh.lookupObject<uniformDimensionedVectorField>("g"));
 
+    const volVectorField& U =
+    refMesh().objectRegistry::lookupObject<volVectorField>("U");
+
+    scalarField meshPhi = 0.0*fvc::meshPhi(U)().boundaryField()[refPatchID()];
+    
+    if (refMesh().objectRegistry::foundObject<volScalarField>("rho"))
+    {
+        const volScalarField& rho =
+            refMesh().objectRegistry::lookupObject<volScalarField>("rho");
+            
+        meshPhi = fvc::meshPhi(rho, U)().boundaryField()[refPatchID()];
+    }
+    else
+    {
+        meshPhi = fvc::meshPhi(U)().boundaryField()[refPatchID()];      
+    }
+
+    vectorField nB = refMesh().boundary()[refPatchID()].nf();
+
     dimensionedScalar muFluidNbr
     (
         nbrMesh().lookupObject<IOdictionary>("transportProperties")
@@ -128,19 +147,70 @@ tmp<scalarField> regionCoupledPressureValue::valueJump() const
         .lookup("rho")
     );
 
-    return
-    (
-        2.0*(muFluidNbr.value() - muFluid.value())*divUs.internalField()
-      - sigma.internalField()*K.internalField()
-      + (rhoFluidNbr.value() - rhoFluid.value())
-        *(
+    if (this->dimensionedInternalField().name() == "pKin")
+    {
+        // Lookup neighbouring patch field
+        const volScalarField& nbrKinPressure =
+            nbrMesh().lookupObject<volScalarField>
             (
-                mesh.Cf().boundaryField()[this->patch().index()]
-              - pRefPoint
-            ) & g.value()
-        )
-   );
+                // same field name as on this side
+                this->dimensionedInternalField().name()
+            );
+
+        // Calculate interpolated patch field
+        scalarField kinPressureNbrToOwn = interpolateFromNbrField<scalar>
+        (
+            nbrPatch()
+            .patchField<volScalarField, scalar>(nbrKinPressure)
+        );
+
+        tmp<scalarField> pressureJump =  
+        (
+                (
+                kinPressureNbrToOwn * rhoFluidNbr.value()
+            + 2.0*(muFluidNbr.value() - muFluid.value())*divUs.internalField()
+            - sigma.internalField()*K.internalField()
+            + (rhoFluidNbr.value() - rhoFluid.value())
+                *(
+                    (
+                        mesh.Cf().boundaryField()[this->patch().index()]
+                    - pRefPoint
+                    ) & g.value()
+                )
+            )/rhoFluid.value()
+            - kinPressureNbrToOwn
+        );
+
+        return
+        (
+            pressureJump
+        );
+    }
+
+    else
+    {
+        tmp<scalarField> pressureJump = 
+        (         
+            2.0*(muFluidNbr.value() - muFluid.value())*divUs.internalField()
+            - sigma.internalField()*K.internalField()
+            + (rhoFluidNbr.value() - rhoFluid.value())
+                *(
+                    (
+                        mesh.Cf().boundaryField()[this->patch().index()]
+                    - pRefPoint
+                    ) & g.value()
+                )
+        );
+        
+        return
+        (
+            pressureJump
+        );
+    }
+
 }
+
+
 
 const regionInterfaces::capillaryInterface&
 regionCoupledPressureValue::capInterface() const
@@ -161,7 +231,6 @@ regionCoupledPressureValue::capInterface() const
             rgInterface()
         );
 }
-
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
