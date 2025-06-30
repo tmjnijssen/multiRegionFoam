@@ -103,7 +103,7 @@ tmp<scalarField> regionCoupledMassTransferPressureValue::valueJump() const
     // gravity term
     vector pRefPoint(mesh.solutionDict().subDict("PISO").lookup("pRefPoint"));
 
-    dimensionedVector g (capInterface().gravitationalProperties().lookup("g"));
+    dimensionedVector g (mesh.lookupObject<uniformDimensionedVectorField>("g"));
 
     const volVectorField& U =
     refMesh().objectRegistry::lookupObject<volVectorField>("U");

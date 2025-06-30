@@ -101,6 +101,9 @@ class interTrackFluid
         //- PIMPLE control
         pimpleControl pimple_;
 
+        //- Gravitational acceleration
+        uniformDimensionedVectorField g_;
+
         //- density
         autoPtr<volScalarField> rho_;
 

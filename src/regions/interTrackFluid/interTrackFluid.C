@@ -71,6 +71,16 @@ Foam::regionTypes::interTrackFluid::interTrackFluid
     ),
     pimple_(mesh()),
 
+    g_(
+        IOobject
+        (
+            "g",
+            runTime.constant(),
+            mesh(),
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE
+        )
+    ),
     rho_(nullptr),
     mu_(nullptr),
     U_(nullptr),

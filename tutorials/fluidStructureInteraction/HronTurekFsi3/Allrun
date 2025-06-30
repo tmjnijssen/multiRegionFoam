@@ -58,7 +58,7 @@ do
 
         -S|--serial)
             no_args=0
-            runApplication multiRegionFoam 2>/dev/nul
+            runApplication multiRegionFoam 2>/dev/null
             ;;
 
         -P|--parallel)
