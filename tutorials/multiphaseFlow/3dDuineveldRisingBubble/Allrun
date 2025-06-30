@@ -79,8 +79,6 @@ do
             runApplication -l log.transformPoints.fluidB transformPoints -scale "(0.00075 0.00075 0.00075)" -region fluidB
 
             runApplication makeFaMesh -region fluidA
-
-            ./makeLinks fluidA
             ;;
 
         -m|--monolithic)
@@ -92,7 +90,7 @@ do
 
         -S|--serial)
             no_args=0
-            runApplication multiRegionFoam 2>/dev/null &
+            runApplication multiRegionFoam 2>/dev/null
             ;;
 
         -P|--parallel)
@@ -100,7 +98,7 @@ do
             runApplication decomposePar -region fluidA
             runApplication -l log.decomposePar.fluidB decomposePar -region fluidB
 
-            mpirun -np 8 multiRegionFoam -noFunctionObjects -parallel 2>&1 > log.multiRegionFoam &
+            mpirun -np 8 multiRegionFoam -noFunctionObjects -parallel 2>&1 > log.multiRegionFoam
             ;;
 
         --)
