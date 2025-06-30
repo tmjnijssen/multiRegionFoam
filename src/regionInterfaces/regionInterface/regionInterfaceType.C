@@ -366,8 +366,9 @@ Foam::regionInterfaceType::regionInterfaceType
         regionInterfaceProperties_
         .lookupOrDefault<int>("interpolatorUpdateFrequency", 1)
     ),
-    aMeshPtr_(), //new faMesh(meshA_)
-//    areaMesh_(faMesh(meshA_)),
+
+    aMeshPtr_(),
+
     curvatureCorrectedSurfacePatches_
     (
         regionInterfaceProperties_.lookup("curvatureCorrectedSurfacePatches")
@@ -636,7 +637,12 @@ void Foam::regionInterfaceType::update()
         makeGlobalPatches();
     }
 
-    updateK();
+    // Update curvature only if faMesh is present
+    if (!aMeshPtr_.empty())
+    {
+        updateK();
+    }
+
     this->correct();
 }
 
