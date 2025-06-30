@@ -52,7 +52,4 @@ interfaceTransferMethod directMap;
 directMapCoeffs
 {}
 
-GGICoeffs
-{}
-
 // ************************************************************************* //

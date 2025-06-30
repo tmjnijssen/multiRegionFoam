@@ -58,7 +58,7 @@ FoamFile
         attached        off;
         master          on;
         isWall          on;
-        bridgeOverlap   on;
+        bridgeOverlap   off;
     }
     defaultFaces
     {

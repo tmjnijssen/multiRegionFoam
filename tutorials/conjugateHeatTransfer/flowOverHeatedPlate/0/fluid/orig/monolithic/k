@@ -23,7 +23,7 @@ boundaryField
     interface
     {
         type                    monolithicThermalDiffusivity;
-        interfaceType           heatTransferInterface;
+        interfaceType           (heatTransferInterface);
         neighbourFieldName      k;
         neighbourRegionName     solid;
         neighbourPatchName      top;

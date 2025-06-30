@@ -27,24 +27,17 @@ boundaryField
     {
         type                    regionCoupledTemperatureJump;
         interfaceType           (heatTransferInterface);
-        k                       "k";
-
-        accType               fixed;
-        relax                   1.0;
-
-        // accType               aitken;
-        // relax                   0.75;
-
-        // accType               IQN-ILS;
-        // relax                   0.75;
-        // couplingReuse           0; //2;
-
-
         neighbourRegionName     solid;
         neighbourPatchName      top;
         neighbourFieldName      T;
+
+        k                       "k";
+
+        accType                 aitken;
+        relax                   0.75;
+
         secondOrder             false;
-        nonOrthCorr             true;
+        nonOrthCorr             false;
         value                   $internalField;
     }
     inlet
