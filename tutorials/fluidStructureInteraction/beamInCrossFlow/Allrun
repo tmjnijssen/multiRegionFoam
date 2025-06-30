@@ -46,7 +46,6 @@ do
 
             runApplication -l log.makeFaMesh.fluid makeFaMesh -region fluid
 
-            ./makeLinks fluid
             ;;
 
         -m|--monolithic)
@@ -59,7 +58,7 @@ do
 
         -S|--serial)
             no_args=0
-            runApplication multiRegionFoam 2>/dev/null &
+            runApplication multiRegionFoam 2>/dev/null
             ;;
 
         -P|--parallel)
@@ -67,7 +66,7 @@ do
             runApplication -l log.decomposePar.fluid decomposePar -region fluid
             runApplication -l log.decomposePar.solid decomposePar -region solid
 
-            mpirun -np 4 multiRegionFoam -noFunctionObjects -parallel 2>&1 > log.multiRegionFoam &
+            mpirun -np 4 multiRegionFoam -noFunctionObjects -parallel 2>&1 > log.multiRegionFoam
             ;;
 
         --)

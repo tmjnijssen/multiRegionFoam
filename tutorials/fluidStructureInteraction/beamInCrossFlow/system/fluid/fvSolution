@@ -70,4 +70,6 @@ PIMPLE
     nNonOrthogonalCorrectors 1;
 }
 
+closedVolume        false;
+
 // ************************************************************************* //
