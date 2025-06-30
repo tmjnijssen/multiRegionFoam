@@ -32,10 +32,13 @@ boundaryField
     }
     outer_to_solid
     {
-        type                    chtRcTemperature;
+        type                    monolithicTemperature;
+        interfaceType           (heatTransferInterface);
         radiation               off;
         K                       k;
-        remoteField             T;
+        neighbourFieldName      T;
+        neighbourRegionName     solid;
+        neighbourPatchName      solid_to_outer;
         value                   $internalField;      
     }
     outer_to_domain1

@@ -48,12 +48,6 @@ do
             cp -r ./baseMeshes/partitioned/constant/outer/polyMesh/ ./constant/outer
             cp -r ./baseMeshes/partitioned/constant/solid/polyMesh/ ./constant/solid
 
-            cp -r ./baseMeshes/partitioned/constant/inner/faMesh/ ./constant/inner
-            cp -r ./baseMeshes/partitioned/constant/outer/faMesh/ ./constant/outer
-
-            runApplication -l log.makeFaMesh.inner makeFaMesh -region inner 2>/dev/null
-            runApplication -l log.makeFaMesh.outer makeFaMesh -region outer 2>/dev/null
-
             ;;
 
         -m|--monolithic)
@@ -69,12 +63,8 @@ do
             cp constant/regionInterfacePropertiesMonolithic constant/regionInterfaceProperties
 
             cp -r ./baseMeshes/monolithic/constant/inner/polyMesh/ ./constant/inner
-            cp -r ./baseMeshes/monolithic/constant/inner/faMesh/ ./constant/inner
             cp -r ./baseMeshes/monolithic/constant/outer/polyMesh/ ./constant/outer
             cp -r ./baseMeshes/monolithic/constant/solid/polyMesh/ ./constant/solid
-
-            cp -r ./baseMeshes/monolithic/constant/inner/faMesh/ ./constant/inner
-            cp -r ./baseMeshes/monolithic/constant/outer/faMesh/ ./constant/outer
 
             runApplication -l log.setSet.solid setSet -region solid -batch solid.setSet 2>/dev/null
             runApplication -l log.setsToZones.solid setsToZones -region solid -noFlipMap 2>/dev/null
@@ -84,9 +74,6 @@ do
 
             runApplication -l log.setSet.outer setSet -region outer -batch outer.setSet 2>/dev/null
             runApplication -l log.setsToZones.outer setsToZones -region outer -noFlipMap 2>/dev/null
-
-            runApplication -l log.makeFaMesh.inner makeFaMesh -region inner 2>/dev/null
-            runApplication -l log.makeFaMesh.outer makeFaMesh -region outer 2>/dev/null
 
             ;;
 
