@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Fork:     foam-extend
-    \\  /    A nd           | Version:  4.1                                 
+    \\  /    A nd           | Version:  4.1
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -240,7 +240,7 @@ public:
         //- Read name of the diffusion coefficient
         virtual word kName() const
         {
-            return ("Null");
+            return kName_;
         }
 
         //- Write

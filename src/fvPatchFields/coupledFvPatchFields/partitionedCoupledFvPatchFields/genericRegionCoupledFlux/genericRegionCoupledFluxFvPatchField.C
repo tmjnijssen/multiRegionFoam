@@ -45,6 +45,7 @@ genericRegionCoupledFluxFvPatchField<Type>::genericRegionCoupledFluxFvPatchField
 :
     fixedGradientFvPatchField<Type>(p, iF),
     interfaceToInterfaceCoupleManager(p),
+    kName_("Null"),
     accModel_
     (
         accelerationModel<Type>::New
@@ -69,6 +70,7 @@ genericRegionCoupledFluxFvPatchField<Type>::genericRegionCoupledFluxFvPatchField
 :
     fixedGradientFvPatchField<Type>(grcf, p, iF, mapper),
     interfaceToInterfaceCoupleManager(grcf),
+    kName_(grcf.kName_),
     accModel_(grcf.accModel_, false),
     nonOrthCorr_(grcf.nonOrthCorr_),
     secondOrder_(grcf.secondOrder_)
@@ -84,6 +86,7 @@ genericRegionCoupledFluxFvPatchField<Type>::genericRegionCoupledFluxFvPatchField
 :
     fixedGradientFvPatchField<Type>(p, iF),
     interfaceToInterfaceCoupleManager(p, dict),
+    kName_(dict.lookupOrDefault<word>("k", word::null)),
     accModel_
     (
         accelerationModel<Type>::New
@@ -149,6 +152,7 @@ genericRegionCoupledFluxFvPatchField<Type>::genericRegionCoupledFluxFvPatchField
 :
     fixedGradientFvPatchField<Type>(grcf, iF),
     interfaceToInterfaceCoupleManager(grcf),
+    kName_(grcf.kName_),
     accModel_(grcf.accModel_, false),
     nonOrthCorr_(grcf.nonOrthCorr_),
     secondOrder_(grcf.secondOrder_)
@@ -337,7 +341,7 @@ scalarField genericRegionCoupledFluxFvPatchField<Type>::diffCoeff() const
     {
         k = 1.0;
     }
-    
+
     return
     (
         k

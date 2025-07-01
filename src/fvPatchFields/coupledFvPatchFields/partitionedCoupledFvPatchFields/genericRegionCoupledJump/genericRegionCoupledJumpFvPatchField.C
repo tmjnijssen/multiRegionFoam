@@ -44,7 +44,8 @@ genericRegionCoupledJumpFvPatchField<Type>::genericRegionCoupledJumpFvPatchField
 :
     fixedValueFvPatchField<Type>(p, iF),
     interfaceToInterfaceCoupleManager(p),
-    KName_("K"),
+    kName_("Null"),
+    KName_("Null"),
     accModel_
     (
         accelerationModel<Type>::New
@@ -69,6 +70,7 @@ genericRegionCoupledJumpFvPatchField<Type>::genericRegionCoupledJumpFvPatchField
 :
     fixedValueFvPatchField<Type>(grcj, p, iF, mapper),
     interfaceToInterfaceCoupleManager(grcj),
+    kName_(grcj.kName_),
     KName_(grcj.KName_),
     accModel_(grcj.accModel_, false),
     nonOrthCorr_(grcj.nonOrthCorr_),
@@ -85,6 +87,7 @@ genericRegionCoupledJumpFvPatchField<Type>::genericRegionCoupledJumpFvPatchField
 :
     fixedValueFvPatchField<Type>(p, iF),
     interfaceToInterfaceCoupleManager(p, dict),
+    kName_(dict.lookupOrDefault<word>("k", word::null)),
     KName_(dict.lookupOrDefault<word>("K", word::null)),
     accModel_
     (
@@ -121,6 +124,7 @@ genericRegionCoupledJumpFvPatchField<Type>::genericRegionCoupledJumpFvPatchField
 :
     fixedValueFvPatchField<Type>(grcj, iF),
     interfaceToInterfaceCoupleManager(grcj),
+    kName_(grcj.kName_),
     KName_(grcj.KName_),
     accModel_(grcj.accModel_, false),
     nonOrthCorr_(grcj.nonOrthCorr_),
@@ -444,7 +448,7 @@ scalarField genericRegionCoupledJumpFvPatchField<Type>::diffCoeff() const
     {
         k = 1.0;
     }
-    
+
     return
     (
         k

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Fork:     foam-extend
-    \\  /    A nd           | Version:  4.1                                 
+    \\  /    A nd           | Version:  4.1
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -93,6 +93,9 @@ class genericRegionCoupledFluxFvPatchField
 protected:
 
     // Protected data
+
+        //- Diffusivity coefficient
+        word kName_;
 
         //- Acceleration model for BC update
         autoPtr<accelerationModel<Type>> accModel_;
@@ -202,7 +205,7 @@ public:
         //- Read name of the diffusion coefficient
         virtual word kName() const
         {
-            return ("Null");
+            return kName_;
         }
 
         //- Update the patch field coefficients
