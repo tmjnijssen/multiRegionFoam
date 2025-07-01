@@ -1,0 +1,130 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.5                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    faiPos
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-8;
+        relTol          0;
+        minIter         2;
+        maxIter         1000;
+    };
+
+    faiNeg
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-8;
+        relTol          0;
+        minIter         2;
+        maxIter         250;
+
+        // solver          GAMG;
+        // tolerance       1e-06;
+        // relTol          0;
+        // smoother        GaussSeidel;
+        // cacheAgglomeration true;
+        // nCellsInCoarsestLevel 10;
+        // agglomerator    faceAreaPair;
+        // mergeLevels     1;
+    };
+
+    cSEI
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-15;
+        relTol          0;
+        minIter         2;
+        maxIter         250;
+    };
+
+    cNE
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-15;
+        relTol          0;
+        minIter         2;
+        maxIter         250;
+    };
+
+    tSEI
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-15;
+        relTol          0;
+        minIter         2;
+        maxIter         250;
+    };
+
+    alpha
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-15;
+        relTol          0;
+        minIter         2;
+        maxIter         250;
+    };
+
+    cELE
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-15;
+        relTol          0;
+        minIter         2;
+        maxIter         250;
+    };
+
+    T
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-8;
+        relTol          0;
+        minIter         2;
+        maxIter         250;
+    };
+}
+
+SIMPLE
+{
+}
+
+PISO
+{
+}
+
+PIMPLE
+{
+}
+
+relaxationFactors
+{
+    // T   1;
+    // faiPos   1;
+    // faiNeg   1;
+}
+
+
+
+// ************************************************************************* //

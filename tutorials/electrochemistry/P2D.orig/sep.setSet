@@ -1,3 +1,0 @@
-faceSet leftZone new patchToFace left;
-faceSet rightZone new patchToFace right;
-quit;
