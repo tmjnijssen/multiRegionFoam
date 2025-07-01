@@ -57,10 +57,10 @@ class ionomer
         //- name
         word regionName_;
 
-        //- transport properties dictionary 
+        //- transport properties dictionary
         IOdictionary transportProperties_;
 
-        //- material properties dictionary 
+        //- material properties dictionary
         IOdictionary materialProperties_;
 
         //- operating conditions
@@ -70,7 +70,7 @@ class ionomer
         dimensionedScalar cv_;
 
         //- density
-        dimensionedScalar rho_;	
+        dimensionedScalar rho_;
 
         //- thermal conductivity
         autoPtr<volScalarField> k_;
@@ -84,7 +84,7 @@ class ionomer
         //- molar volume of membrane
         dimensionedScalar VM_;
 
-        //- relative humidity 
+        //- relative humidity
         dimensionedScalar RH_;
 
         //- diffusion coefficient of water in ionomer
@@ -128,11 +128,11 @@ protected:
         autoPtr<volScalarField> T_;
 
         //- electrolyte potential
-        autoPtr<volScalarField> phiP_;	
+        autoPtr<volScalarField> phiP_;
 
         //- water content in ionomer
         autoPtr<volScalarField> lambda_;
-	
+
 
 public:
 

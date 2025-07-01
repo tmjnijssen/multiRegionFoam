@@ -26,7 +26,7 @@ InNamespace
 
 Description
     For cloded volume cases adjust the balance of
-    fluxes to obey continuity. 
+    fluxes to obey continuity.
 
 SourceFiles
     correctClosedVolumePhi.C

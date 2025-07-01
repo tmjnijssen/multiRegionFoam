@@ -81,7 +81,7 @@ regionCoupledScalarJump
 tmp<scalarField> regionCoupledScalarJump::valueJump() const
 {
     // Lookup neighbouring patch field
-    const GeometricField<scalar, fvPatchField, volMesh>& nbrField = 
+    const GeometricField<scalar, fvPatchField, volMesh>& nbrField =
         nbrMesh().lookupObject<GeometricField<scalar, fvPatchField, volMesh>>
         (
             // same field name as on this side
@@ -114,7 +114,7 @@ tmp<scalarField> regionCoupledScalarJump::valueJump() const
 
     return (fieldNbrToOwn * (K - 1));
 }
-    
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam

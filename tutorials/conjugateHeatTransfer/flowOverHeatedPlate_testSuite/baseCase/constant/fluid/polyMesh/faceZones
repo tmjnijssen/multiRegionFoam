@@ -20,7 +20,7 @@ FoamFile
 bottomZone
 {
     type faceZone;
-    faceLabels      List<label> 
+    faceLabels      List<label>
 200
 (
 27397
@@ -231,7 +231,7 @@ bottomZone
 bottomZoneFluid
 {
     type faceZone;
-    faceLabels      List<label> 
+    faceLabels      List<label>
 150
 (
 7475

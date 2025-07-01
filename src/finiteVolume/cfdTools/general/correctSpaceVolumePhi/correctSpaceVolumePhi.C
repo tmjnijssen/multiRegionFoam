@@ -56,7 +56,7 @@ void Foam::correctSpaceVolumePhi
     scalar outflowScaling = -inletFlux/outletFlux;
 
     phip += pos(phip)*phip*(outflowScaling - 1.0);
-    
+
     scalar correctPhi = gSum(phip);
 
     if (fvMesh::debug)

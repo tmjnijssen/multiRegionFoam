@@ -18,7 +18,7 @@ forAll (eNei, edgeI)
     const vector& s = edgeL[edgeI];
 
     scalar dDotS = (d & s)/(mag(d)*mag(s) + VSMALL);
-    
+
     nonOrtho[edgeI] = Foam::acos(dDotS-SMALL)/mathematicalConstant::pi*180.0;
 
     if (dDotS < severeNonorthogonalityThreshold)
@@ -56,13 +56,13 @@ forAll(eNei, edgeI)
     // Skewness vector
     vector sv =
         Cpe - ((edgeL[edgeI] & Cpe)/((edgeL[edgeI] & d) + SMALL))*d;
-    
+
     skew[edgeI] = mag(sv);
-    vector eN = aMesh.points()[faEdges[edgeI].end()] 
+    vector eN = aMesh.points()[faEdges[edgeI].end()]
               - aMesh.points()[faEdges[edgeI].start()];
     edgeSv[edgeI] = (sv & eN)*eN;
     curvSv[edgeI] = sv - edgeSv[edgeI];
-    
+
     // UNSURE:
     vector svHat = sv/(mag(sv) + VSMALL);
     // Normalisation distance calculated as the approximate distance
@@ -88,9 +88,9 @@ forAll(eNei, edgeI)
     }
 }
 
-//------         
+//------
 // VTK output file with edge fields: nonOrthogonality and skewness
-// only for faMeshes without boundaries        
+// only for faMeshes without boundaries
 //------
 if ( aMesh.boundary().size() == 0 )
 {
@@ -122,7 +122,7 @@ if ( aMesh.boundary().size() == 0 )
     }
 
     outputFile  << "CELL_DATA " << faEdges.size() << endl
-                << "SCALARS nonOrtho float 1" << endl 
+                << "SCALARS nonOrtho float 1" << endl
                 << "LOOKUP_TABLE default" << endl;
     forAll(faEdges, eI)
     {
@@ -130,21 +130,21 @@ if ( aMesh.boundary().size() == 0 )
         outputFile << nOrtho << endl;
     }
 
-    outputFile  << "SCALARS skewness float 1" << endl 
+    outputFile  << "SCALARS skewness float 1" << endl
                 << "LOOKUP_TABLE default" << endl;
     forAll(faEdges, eI)
     {
         scalar skn = skew[eI];
         outputFile << skn << endl;
     }
-    outputFile  << "SCALARS edgeSkewness float 1" << endl 
+    outputFile  << "SCALARS edgeSkewness float 1" << endl
                 << "LOOKUP_TABLE default" << endl;
     forAll(faEdges, eI)
     {
         scalar ske = mag(edgeSv[eI]);
         outputFile << ske << endl;
     }
-    outputFile  << "SCALARS curvSkewness float 1" << endl 
+    outputFile  << "SCALARS curvSkewness float 1" << endl
                 << "LOOKUP_TABLE default" << endl;
     forAll(faEdges, eI)
     {

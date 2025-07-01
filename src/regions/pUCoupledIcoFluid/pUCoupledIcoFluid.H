@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Fork:     foam-extend
-    \\  /    A nd           | Version:  4.1                                 
+    \\  /    A nd           | Version:  4.1
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -50,7 +50,7 @@ Acknowledgement
     Science (NHR4CES)
 
 Description
-    
+
     This file is part of the multiRegionFoam library.
 
     You may refer to this software as :
@@ -61,8 +61,8 @@ Description
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef pUCoupledIcoFluid_H 
-#define pUCoupledIcoFluid_H 
+#ifndef pUCoupledIcoFluid_H
+#define pUCoupledIcoFluid_H
 
 #include "regionType.H"
 #include "dimensionedScalar.H"
@@ -90,10 +90,10 @@ namespace regionTypes
 class pUCoupledIcoFluid
 :
     public regionType
-{       
+{
 
         //- name
-        word regionName_;      
+        word regionName_;
 
         //- transport
         autoPtr<volVectorField> U_;
@@ -128,7 +128,7 @@ class pUCoupledIcoFluid
         dimensionedScalar UMax_;
         dimensionedScalar smallU_;
 
-        //- transport properties dictionary 
+        //- transport properties dictionary
         IOdictionary transportProperties_;
 
         //- density
@@ -153,7 +153,7 @@ class pUCoupledIcoFluid
 
         //- List of lable indicating if proc holds pRefCell
         labelList whichProcHasRef_;
-        
+
         //- block solver residual
         // BlockSolverPerformance<vector4> residual_;
         // scalar maxResidual;
@@ -205,7 +205,7 @@ public:
         const volScalarField& p() const
         {
             return p_();
-        }        
+        }
 
         volVectorField& U()
         {
@@ -261,7 +261,7 @@ public:
         virtual void pressureCorrector();
 
         virtual void meshMotionCorrector();
-        
+
         virtual void postSolve();
 };
 

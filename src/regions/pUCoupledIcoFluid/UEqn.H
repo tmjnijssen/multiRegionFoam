@@ -2,7 +2,7 @@
     fvVectorMatrix ddtUEqn(fvm::ddt(rho_(), U_()));
 
     mrfZones_.translationalMRFs().addFrameAcceleration(ddtUEqn, rho_());
-    
+
     // Momentum equation
     fvVectorMatrix UEqn
     (

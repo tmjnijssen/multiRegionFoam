@@ -281,7 +281,7 @@ Foam::regionTypes::anodicCL::anodicCL
         mesh(),
         dimensionedScalar("c0", dimensionSet(0, -3, 0, 0, 1, 0, 0), 52)
     ),
-    DEffH2_(nullptr), 
+    DEffH2_(nullptr),
     DEffV_(nullptr),
     xVSat_
     (
@@ -619,7 +619,7 @@ Foam::regionTypes::anodicCL::anodicCL
         )
     );
 
- 	
+
     // thermal conductivity
     k_() = dimensionedScalar(transportProperties_.lookup("k"));
     // electric conductivity
@@ -662,7 +662,7 @@ void Foam::regionTypes::anodicCL::correct()
 
 void Foam::regionTypes::anodicCL::setCoupledEqns()
 {
-    
+
     // set anodic Eqns
     // fourier heat conduction
     TEqn =
@@ -716,7 +716,7 @@ void Foam::regionTypes::anodicCL::setCoupledEqns()
         ==
           sV_
     );
-  
+
     fvScalarMatrices.set
     (
         T_().name()
@@ -760,8 +760,8 @@ void Foam::regionTypes::anodicCL::setCoupledEqns()
       + anodicCL::typeName + "Type"
       + "Eqn",
         &xVEqn()
-    );  
-      
+    );
+
     fvScalarMatrices.set
     (
         xH2_().name()

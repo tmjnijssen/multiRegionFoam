@@ -202,8 +202,8 @@ tmp<scalarField> regionCoupledPressureFlux::fluxJump() const
 
     return
     (
-    - pfluxNbrToOwn - (nB&fvc::ddt(U)().boundaryField()[refPatchID()]) //+ (nB&divStress.boundaryField()[refPatchID()])    
-    );       
+    - pfluxNbrToOwn - (nB&fvc::ddt(U)().boundaryField()[refPatchID()]) //+ (nB&divStress.boundaryField()[refPatchID()])
+    );
 
 }
 

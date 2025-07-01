@@ -1146,7 +1146,7 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
             mesh().objectRegistry::lookupObject<volVectorField>("U");
 
         // scalarField sweptVolCorr = U.boundaryField()[patchID()] & mesh().boundary()[patchID()].Sf();
-        
+
         Info<< "phi boundary field BEFORE mesh motion :"
         << " sum local = " << gSum(mag(sweptVolCorr))
         << ", global = " << gSum(sweptVolCorr)
@@ -1176,7 +1176,7 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
 
             scalarField volTransfer = sweptVolCorr*0.0;
 
-            const scalarField& Sf = aMesh().S();    
+            const scalarField& Sf = aMesh().S();
 
             volTransfer = mDot.internalField()*Sf;
 
@@ -1196,11 +1196,11 @@ Foam::movingInterfacePatches::pointDisplacementCorrector()
                     mesh().lookupObject<IOdictionary>("transportProperties")
                     .lookup("rho")
                 );
-                
+
                 volTransfer /= rhoFluid.value();
             }
-            
-            sweptVolCorr -= volTransfer;             
+
+            sweptVolCorr -= volTransfer;
 
         }
         Info<< "mesh.phi boundary field BEFORE mesh motion :"

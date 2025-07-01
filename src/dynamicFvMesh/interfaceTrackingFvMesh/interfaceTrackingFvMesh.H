@@ -28,14 +28,14 @@ Class
     Foam::interfaceTrackingFvMesh
 
 Description
-    Dynamic mesh class for ALE interface-tracking supporting multiple 
-    moving interface patches, where interface refers to calculated patch motion 
+    Dynamic mesh class for ALE interface-tracking supporting multiple
+    moving interface patches, where interface refers to calculated patch motion
     and consistent neigbouring mesh patch motion (shadow motion)
 
     Contact line support still to be implemented.
 
 Author
-    Holger Marschall <holger.marschall@tu-darmstadt.de> 
+    Holger Marschall <holger.marschall@tu-darmstadt.de>
 
 SourceFiles
     interfaceTrackingFvMesh.C
@@ -152,7 +152,7 @@ public:
             return active_;
         }
 
-        void doMeshMotion(bool meshMotionTrigger) const 
+        void doMeshMotion(bool meshMotionTrigger) const
         {
             doMeshMotion_ = meshMotionTrigger;
         }

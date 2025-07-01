@@ -122,7 +122,7 @@ void Foam::regionInterfaces::capillaryInterface::makeUs() const
             patchFieldTypes[patchI] =
                 wedgeFaPatchVectorField::typeName;
         }
-        
+
         else
         {
             label ngbPolyPatchID =

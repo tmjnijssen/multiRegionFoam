@@ -20,7 +20,7 @@ FoamFile
     undefined
     {
         type            patch;
-        edgeLabels      List<label> 
+        edgeLabels      List<label>
 720
 (
 368072

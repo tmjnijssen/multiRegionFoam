@@ -139,7 +139,7 @@ Foam::regionTypes::pimpleFluid::pimpleFluid
         true,
         true
     );
-    
+
     if (correctPhi_)
     {
         wordList pcorrTypes
@@ -225,10 +225,10 @@ Foam::regionTypes::pimpleFluid::pimpleFluid
         {
             if (U_().boundaryField()[i].type() == zeroGradientFvPatchScalarField::typeName)
             {
-                FatalError << "Region" << mesh().name() 
+                FatalError << "Region" << mesh().name()
                 << " is set as closedVolume" << nl
                 << " but " << mesh().boundaryMesh()[i].name() << nl
-                << " is a zeroGradient velocity BC is found" 
+                << " is a zeroGradient velocity BC is found"
                 << endl;
             }
         };
@@ -304,7 +304,7 @@ void Foam::regionTypes::pimpleFluid::momentumPredictor()
     Info << "U BC Pimple before momentum matrix ";
     forAll(U_().boundaryField(), patchi)
     {
-        Info << " " << mesh().boundaryMesh()[patchi].name() << " " 
+        Info << " " << mesh().boundaryMesh()[patchi].name() << " "
             << gSum(mesh().time().deltaT().value()*((U_().boundaryField()[patchi] & mesh().boundary()[patchi].Sf()))) << ", ";
     }
     Info << endl;
@@ -324,7 +324,7 @@ void Foam::regionTypes::pimpleFluid::momentumPredictor()
     Info << "U BC Pimple after momentum matrix ";
     forAll(U_().boundaryField(), patchi)
     {
-        Info << " " << mesh().boundaryMesh()[patchi].name() << " " 
+        Info << " " << mesh().boundaryMesh()[patchi].name() << " "
             << gSum(mesh().time().deltaT().value()*((U_().boundaryField()[patchi] & mesh().boundary()[patchi].Sf()))) << ", ";
     }
     Info << endl;
@@ -354,7 +354,7 @@ void Foam::regionTypes::pimpleFluid::pressureCorrector()
     {
         // Update pressure BCs
         pKin_().boundaryField().updateCoeffs();
-        
+
         // Prepare clean 1/a_p without time derivative and under-relaxation
         // contribution
         rAU_() = 1.0/HUEqn.A();
@@ -365,7 +365,7 @@ void Foam::regionTypes::pimpleFluid::pressureCorrector()
         // Consistently calculate flux
         // Fluxes made absolute inside
         pimple_.calcTransientConsistentFlux(phi_(), U_(), rAU_(), ddtUEqn);
-       
+
         // Global flux balance
 
         if (closedVolume_ && pKin_().needReference())
@@ -400,7 +400,7 @@ void Foam::regionTypes::pimpleFluid::pressureCorrector()
         {
             //adjustPhi(phi_(), U_(), pKin_());
         }
-       
+
         while (pimple_.correctNonOrthogonal())
         {
             fvScalarMatrix pEqn
@@ -443,7 +443,7 @@ void Foam::regionTypes::pimpleFluid::pressureCorrector()
         Info << "U BC Pimple after reconstructTransientVelocity ";
         forAll(U_().boundaryField(), patchi)
         {
-            Info << " " << mesh().boundaryMesh()[patchi].name() << " " 
+            Info << " " << mesh().boundaryMesh()[patchi].name() << " "
                 << gSum(mesh().time().deltaT().value()*((U_().boundaryField()[patchi] & mesh().boundary()[patchi].Sf()))) << ", ";
         }
         Info << endl;
@@ -466,7 +466,7 @@ void Foam::regionTypes::pimpleFluid::pressureCorrector()
     Info <<  "Time " << mesh().time().value() << " " << mesh().name() << " Volume Transfer:";
     forAll(U_().boundaryField(), patchi)
     {
-        Info << " " << mesh().boundaryMesh()[patchi].name() << " " 
+        Info << " " << mesh().boundaryMesh()[patchi].name() << " "
         << gSum(mesh().time().deltaT().value()*((U_().boundaryField()[patchi] & mesh().boundary()[patchi].Sf()))) << ", "
         << gSum(phi_().boundaryField()[patchi]*mesh().time().deltaT().value()) << ", "
         << gSum(mesh().time().deltaT().value()*((U_().boundaryField()[patchi] & mesh().boundary()[patchi].Sf()) - fvc::meshPhi(U_())().boundaryField()[patchi])) << ", " <<

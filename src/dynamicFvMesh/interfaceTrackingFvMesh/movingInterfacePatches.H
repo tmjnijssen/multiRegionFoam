@@ -28,12 +28,12 @@ Description
     Move surface patches for ALE interface-tracking
 
     TODO:
-    Trigger mesh motion if threshold for surface patch motion is hit. These 
-    should then be collected over all surfaces. If one of the surfaces triggers, 
+    Trigger mesh motion if threshold for surface patch motion is hit. These
+    should then be collected over all surfaces. If one of the surfaces triggers,
     do mesh motion.
 
 Author
-    Holger Marschall <holger.marschall@tu-darmstadt.de> 
+    Holger Marschall <holger.marschall@tu-darmstadt.de>
 
 SourceFiles
     movingInterfacePatches.C

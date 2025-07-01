@@ -114,38 +114,38 @@ void Foam::regionInterfaceTypeList::reset(const regionInterfaceProperties& rip)
         }
 
         // first patch
-        const fvMesh& firstRegion = 
+        const fvMesh& firstRegion =
             runTime_.lookupObject<fvMesh>
             (
                 patchPair[0].first()
             );
 
-        label firstPatchID = 
+        label firstPatchID =
             firstRegion.boundaryMesh().findPatchID
             (
                 patchPair[0].second()
             );
 
-        const fvPatch& firstPatch = 
+        const fvPatch& firstPatch =
             firstRegion.boundary()[firstPatchID];
 
         // second patch
-        const fvMesh& secondRegion = 
+        const fvMesh& secondRegion =
             runTime_.lookupObject<fvMesh>
             (
                 patchPair[1].first()
             );
 
-        label secondPatchID = 
+        label secondPatchID =
             secondRegion.boundaryMesh().findPatchID
             (
                 patchPair[1].second()
             );
 
-        const fvPatch& secondPatch = 
+        const fvPatch& secondPatch =
             secondRegion.boundary()[secondPatchID];
         forAll (interfaceTypes, interfaceI)
-        {   
+        {
             this->set
             (
                 index_++,
@@ -158,7 +158,7 @@ void Foam::regionInterfaceTypeList::reset(const regionInterfaceProperties& rip)
                     secondPatch
                 )
             );
-            
+
         }
     }
 }

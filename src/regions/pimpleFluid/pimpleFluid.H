@@ -121,7 +121,7 @@ class pimpleFluid
 
         //- correct pressure
         autoPtr<volScalarField> pcorr_;
-        
+
         //- Pressure
         autoPtr<volScalarField> p_;
 

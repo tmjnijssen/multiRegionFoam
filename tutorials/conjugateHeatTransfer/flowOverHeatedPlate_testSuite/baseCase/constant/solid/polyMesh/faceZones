@@ -20,7 +20,7 @@ FoamFile
 bottomZone
 {
     type faceZone;
-    faceLabels      List<label> 
+    faceLabels      List<label>
 150
 (
 7475
@@ -181,7 +181,7 @@ bottomZone
 topZone
 {
     type faceZone;
-    faceLabels      List<label> 
+    faceLabels      List<label>
 200
 (
 16241
@@ -392,7 +392,7 @@ topZone
 topZoneSolid
 {
     type faceZone;
-    faceLabels      List<label> 
+    faceLabels      List<label>
 150
 (
 7325
@@ -553,7 +553,7 @@ topZoneSolid
 bottomZoneSolid
 {
     type faceZone;
-    faceLabels      List<label> 
+    faceLabels      List<label>
 150
 (
 7475

@@ -39,7 +39,7 @@ boundaryField
         neighbourFieldName      T;
         neighbourRegionName     solid;
         neighbourPatchName      solid_to_outer;
-        value                   $internalField;      
+        value                   $internalField;
     }
     outer_to_domain1
     {

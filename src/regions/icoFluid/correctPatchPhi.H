@@ -1,6 +1,6 @@
         if (closedVolume_)
         {
-            label intPatchID_ = 
+            label intPatchID_ =
                 mesh().boundaryMesh().findPatchID("interfaceShadow");
 
             forAll(phi_().boundaryField(), patchI)

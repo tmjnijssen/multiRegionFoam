@@ -50,9 +50,9 @@ const Foam::dimensionedScalar Foam::thermoPhysicalConstant::F
 const Foam::dimensionedScalar Foam::thermoPhysicalConstant::R
 (
     "R",
-    dimensionSet(1, 2, -2, -1, -1, 0, 0), 
+    dimensionSet(1, 2, -2, -1, -1, 0, 0),
     8.314
-); 
+);
 
 
 // ************************************************************************* //

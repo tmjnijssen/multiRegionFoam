@@ -18,7 +18,7 @@
                 // Fluxes updated in the BC
                 U_().boundaryField()[patchi].evaluate();
                 phi_().boundaryField()[patchi] =
-                    U_().boundaryField()[patchi] 
+                    U_().boundaryField()[patchi]
                     & mesh().Sf().boundaryField()[patchi];
             }
         }
@@ -27,13 +27,13 @@
     Info << "U BC Pimple PrePredictor ";
     forAll(U_().boundaryField(), patchi)
     {
-        Info << " " << mesh().boundaryMesh()[patchi].name() << " " 
+        Info << " " << mesh().boundaryMesh()[patchi].name() << " "
             << gSum(mesh().time().deltaT().value()*((U_().boundaryField()[patchi] & mesh().boundary()[patchi].Sf()))) << ", ";
     }
     Info << endl;
 
     // Initialise flux with interpolated velocity
-    // [MP] Old Phi formulation taken 
+    // [MP] Old Phi formulation taken
 
     //phi_() = fvc::interpolate(U_()) & mesh().Sf();
 

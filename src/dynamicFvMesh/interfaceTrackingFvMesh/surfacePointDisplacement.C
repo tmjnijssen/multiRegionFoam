@@ -44,7 +44,7 @@ License
 //    const pointField& points = aMesh().patch().localPoints();
 //    const labelListList& pointFaces = aMesh().patch().pointFaces();
 
-//    const labelList faceCells = 
+//    const labelList faceCells =
 //        mesh().boundary()[patchID()].patch().faceCells();
 
 //    controlPoints() += facesDisplacementDir()*deltaH;
@@ -122,7 +122,7 @@ License
 //            const labelListList& fFaces = aMesh().patch().faceFaces();
 //            const vectorField& fCentres =
 //                aMesh().areaCentres().internalField();
-//            
+//
 //            forAll(eFaces, edgeI)
 //            {
 //                const label& curFace = eFaces[edgeI];
@@ -134,7 +134,7 @@ License
 //                forAll(curFaceFaces, faceI)
 //                {
 //                    label index = findIndex(eFaces, curFaceFaces[faceI]);
-//                    
+//
 //                    if (index == -1)
 //                    {
 //                        H +=
@@ -147,7 +147,7 @@ License
 //                        counter++;
 //                    }
 //                }
-//                
+//
 //                H /= counter;
 
 //                controlPoints()[curFace] =
@@ -233,7 +233,7 @@ License
 //}
 
 
-//tmp<vectorField> movingInterfacePatches::pointDisplacement(const scalarField& deltaH) 
+//tmp<vectorField> movingInterfacePatches::pointDisplacement(const scalarField& deltaH)
 //{
 //    const pointField& points = aMesh().patch().localPoints();
 //    const labelListList& pointFaces = aMesh().patch().pointFaces();
@@ -795,7 +795,7 @@ License
 tmp<vectorField> movingInterfacePatches::pointDisplacement(const scalarField& deltaH)
 {
     Info<< "deltaHf:"
-        << " sum local = " << gSum(mag(deltaH)) 
+        << " sum local = " << gSum(mag(deltaH))
         << ", global = " << gSum(deltaH)
         << endl;
 
@@ -813,7 +813,7 @@ tmp<vectorField> movingInterfacePatches::pointDisplacement(const scalarField& de
             {
                 const labelList& eFaces =
                     aMesh().boundary()[patchID].edgeFaces();
-                
+
     //            const labelList& eFaces =
     //                aMesh().boundary()[fixedPatchID].edgeFaces();
 
@@ -1271,7 +1271,7 @@ tmp<vectorField> movingInterfacePatches::pointDisplacement(const scalarField& de
     }
 
     Info<< "displacement:"
-        << " sum local = " << gSum(mag(displacement)) 
+        << " sum local = " << gSum(mag(displacement))
         << ", global = " << gSum(displacement)
         << endl;
 

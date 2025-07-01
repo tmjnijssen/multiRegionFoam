@@ -21,6 +21,6 @@ runApplication -l log.makeFaMesh.solid makeFaMesh -region solid 2>/dev/null
 
 ./makeLinks fluid
 
-runApplication multiRegionFoam 2>/dev/null 
+runApplication multiRegionFoam 2>/dev/null
 
-runApplication sample -region fluid -latestTime 2>/dev/null 
+runApplication sample -region fluid -latestTime 2>/dev/null

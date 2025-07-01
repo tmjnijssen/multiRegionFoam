@@ -53,18 +53,18 @@ namespace regionTypes
 void Foam::regionTypes::intercalationCathode::calculateOCV()
 {
     // TO-DO: Exclude empirical models for reversible electrode potential calculation to sub classes (need: SoC, IApp as input variables!)
-    
+
     SoC_() = cSE_() / cSMax_();
     dimensionedScalar dimensionVolt = dimensionedScalar("dimensionVolt", dimensionSet(1, 2, -3, 0, 0, -1, 0), 1);
     dimensionedScalar dimensionKelvin = dimensionedScalar("dimensionKelvin", dimensionSet(0, 0, 0, 1, 0, 0, 0), 1);
-    
-    
+
+
     if(electrodeMaterial_ == "LFP" || "lfp")
     {
         //equilibrium potential of cathode material-LFP
         //data source: https://www.dandeliion.com/simulation
         EEqRev_() = (3.114559
-                + 4.438792*Foam::atan(-71.7352*SoC_() + 70.85337) 
+                + 4.438792*Foam::atan(-71.7352*SoC_() + 70.85337)
                 - 4.240252*Foam::atan(-68.5605*SoC_() + 67.730082))
                 *dimensionVolt;
     }
@@ -73,11 +73,11 @@ void Foam::regionTypes::intercalationCathode::calculateOCV()
         //equilibrium potential of cathode material-NCA
         //data source: https://www.dandeliion.com/simulation
         EEqRev_() = (-1.30202*SoC_()
-                - 0.214712*Foam::tanh(23.01*(SoC_() + 0.00350287)) 
-                + 2.45808*Foam::tanh(2.90232*(SoC_() - 0.215657)) 
-                - 1.26644*Foam::tanh(4.30574*(SoC_() - 0.329193)) 
-                - 0.40112*Foam::tanh(9.07273*(SoC_() - 0.148644)) 
-                - 0.0532656*Foam::exp(47.0417*(SoC_() - 0.95703)) 
+                - 0.214712*Foam::tanh(23.01*(SoC_() + 0.00350287))
+                + 2.45808*Foam::tanh(2.90232*(SoC_() - 0.215657))
+                - 1.26644*Foam::tanh(4.30574*(SoC_() - 0.329193))
+                - 0.40112*Foam::tanh(9.07273*(SoC_() - 0.148644))
+                - 0.0532656*Foam::exp(47.0417*(SoC_() - 0.95703))
                 + 4.17032)*dimensionVolt;
     }
     if(electrodeMaterial_ == "LiIonSimBa" || "liionsimba" || "lionsimba" || "Lionsimba" || "LionSimba")
@@ -90,11 +90,11 @@ void Foam::regionTypes::intercalationCathode::calculateOCV()
                   + 342.909*Foam::pow(SoC_(),6)
                   - 462.471*Foam::pow(SoC_(),8)
                   + 433.434*Foam::pow(SoC_(),10))
-                  /(-1 
+                  /(-1
                   + 18.933*Foam::pow(SoC_(),2)
                   - 79.532*Foam::pow(SoC_(),4)
                   + 37.311*Foam::pow(SoC_(),6)
-                  - 73.083*Foam::pow(SoC_(),8) 
+                  - 73.083*Foam::pow(SoC_(),8)
                   + 95.96*Foam::pow(SoC_(),10))
                   *dimensionVolt;
 
@@ -124,17 +124,17 @@ void Foam::regionTypes::intercalationCathode::calculateButlerVolmer()
     // this version is from P2D Han et al.
 
     //dimensionedScalar spArea = epsS_/r_;
-    
+
     eta_() = faiS_() - faiE_() - EEqRev_();
-    
+
     // this version is from P2D Han et al.
     /*volScalarField iRef = kRct_*F*Foam::pow(cE_(), alphaA_)
                                  *Foam::pow(cSMax_() - cSE_(), alphaA_)
                                  *Foam::pow(cSE_(), alphaC_);
-    
+
     volScalarField i = iRef*(Foam::exp(alphaA_*F/R/T_()*eta)
                            - Foam::exp(-alphaC_*F/R/T_()*eta));
-                           
+
     j_() = spArea*i;*/
 
 
@@ -142,7 +142,7 @@ void Foam::regionTypes::intercalationCathode::calculateButlerVolmer()
     volScalarField keff = kRct_*Foam::exp(-EARct_/R*(1/T_()-1/TRef_));
 
     j_() = 2*keff*Foam::sqrt(cE_()*(cSMax_()- cSE_())*cSE_())*Foam::sinh(0.5*F/R/T_()*eta_());
-    
+
     //Info << "max(j." << mesh().name() << " = " << max(j_()) << endl;
     //Info << "min(j." << mesh().name() << " = " << min(j_()) << endl;
 }
@@ -153,25 +153,25 @@ void Foam::regionTypes::intercalationCathode::calculateTransportCoeffs()
 {
 	dimensionedScalar dimKappa =
 	    dimensionedScalar("dimKappa", dimensionSet(-1, -3, 3, 0, 0, 2, 0), 1);
-	
-	dimensionedScalar dimT = 
+
+	dimensionedScalar dimT =
 	    dimensionedScalar("dimT", dimensionSet(0, 0, 0, 1, 0, 0, 0), 1);
 
-    dimensionedScalar dimD =   
+    dimensionedScalar dimD =
         dimensionedScalar("dimDE", dimensionSet(0, 2, -1, 0, 0, 0, 0), 1);
 
 
-    volScalarField powKappa = -10.5 
+    volScalarField powKappa = -10.5
                     + 0.668e-3*cE_()/dimC_
                     + 0.494e-6*Foam::pow(cE_()/dimC_, 2)
                     + (0.074 - 1.78e-5*cE_()/dimC_
                     - 8.86e-10*Foam::pow(cE_()/dimC_, 2))*T_()/dimT
                     + (-6.96e-5 + 2.8e-8*cE_()/dimC_)*Foam::pow(T_()/dimT, 2);
-    
-    
+
+
 	kappa_() = Foam::pow(epsE_, brugg_)*1.0e-4*cE_()/dimC_
 	          *Foam::pow(powKappa, 2)*dimKappa;
-	          
+
 	Gamma_ = 2*(1-tNo_)*R/F;
 
     volScalarField powDE = -4.43 - (54/(T_()/dimT - 229 - 5e-3*cE_()/dimC_)) - 2.2e-4*cE_()/dimC_;
@@ -184,9 +184,9 @@ void Foam::regionTypes::intercalationCathode::calculateTransportCoeffs()
 void Foam::regionTypes::intercalationCathode::calculateInterfaceConcentration()
 {
     //dimensionedScalar spArea = epsS_/r_;
-    
+
     cSE_() = cS_() - j_()*r_/5/DS_();
-    
+
     if(cSE_() <= 0.427*cSMax_())
     {
         cSE_() = 0.427*cSMax_();
@@ -201,7 +201,7 @@ void Foam::regionTypes::intercalationCathode::calculateInterfaceConcentration()
 }
 
 void Foam::regionTypes::intercalationCathode::calculateHeatSourceTerms()
-{ 
+{
     volScalarField Qohm = sigma_()*(fvc::grad(faiS_())&fvc::grad(faiS_()))
         + kappa_()*(fvc::grad(faiE_())&fvc::grad(faiE_()))
         + kappa_()*Gamma_*T_()*(fvc::grad(Foam::log(cE_()/dimC_))&fvc::grad(faiE_()));
@@ -236,7 +236,7 @@ Foam::regionTypes::intercalationCathode::intercalationCathode
             IOobject::NO_WRITE
         )
     ),
-    
+
     electrochemicalProperties_
     (
         IOobject
@@ -248,7 +248,7 @@ Foam::regionTypes::intercalationCathode::intercalationCathode
             IOobject::NO_WRITE
         )
     ),
-    
+
     electrodeMaterial_(electrochemicalProperties_.lookup("electrodeMaterial")),
     epsE_(transportProperties_.lookup("epsE")),
     epsF_(transportProperties_.lookup("epsF")),
@@ -289,7 +289,7 @@ Foam::regionTypes::intercalationCathode::intercalationCathode
     cSE_(nullptr),
     T_(nullptr)
 {
-    
+
     // set electrolyte conductivity field
     kappa_ = lookupOrRead<volScalarField>
     (
@@ -298,7 +298,7 @@ Foam::regionTypes::intercalationCathode::intercalationCathode
         dimensionedScalar("kappa0", dimensionSet(-1, -3, 3, 0, 0, 2, 0), 1),
         true
     );
-    
+
     // set electrolyte diffusion coefficient field
     DE_ = lookupOrRead<volScalarField>
     (
@@ -325,7 +325,7 @@ Foam::regionTypes::intercalationCathode::intercalationCathode
         dimensionedScalar(transportProperties_.lookup("cSMax")),
         true
     );
-    
+
     // set maximum lithium solid surface concentration
     cSMin_ = lookupOrRead<volScalarField>
     (
@@ -343,7 +343,7 @@ Foam::regionTypes::intercalationCathode::intercalationCathode
         dimensionedScalar(transportProperties_.lookup("sigmaInt"))*(1 - epsE_ - epsF_),
         true
     );
-    
+
     // set state of charge field
     SoC_ = lookupOrRead<volScalarField>
     (
@@ -352,7 +352,7 @@ Foam::regionTypes::intercalationCathode::intercalationCathode
         dimensionedScalar(electrochemicalProperties_.lookup("SoCInit")),
         true
     );
-    
+
     // set reversible voltage field
     EEqRev_ = lookupOrRead<volScalarField>
     (
@@ -400,19 +400,19 @@ Foam::regionTypes::intercalationCathode::intercalationCathode
 
     // set electric potential field
     faiS_ = lookupOrRead<volScalarField>(mesh(), "faiS");
-    
+
     // set electrolyte potential field
     faiE_ = lookupOrRead<volScalarField>(mesh(), "faiE");
-    
+
     // set solid surface lithium concentratio field
     cS_ = lookupOrRead<volScalarField>(mesh(), "cS");
-    
+
     // set lithium electrolyte concentration field
     cE_ = lookupOrRead<volScalarField>(mesh(), "cE");
-    
+
     // set lithium interface concentration field
     cSE_ = lookupOrRead<volScalarField>(mesh(), "cSE");
-    
+
     // set temperature field
     T_ = lookupOrRead<volScalarField>(mesh(), "T");
 
@@ -429,7 +429,7 @@ Foam::regionTypes::intercalationCathode::~intercalationCathode()
 
 void Foam::regionTypes::intercalationCathode::correct()
 {
-    
+
 }
 
 
@@ -446,7 +446,7 @@ void Foam::regionTypes::intercalationCathode::setCoupledEqns()
     calculateTransportCoeffs();
     calculateInterfaceConcentration();
     calculateHeatSourceTerms();
-    	
+
 	faiSEqn =
     (
        - fvm::laplacian(sigma_(), faiS(), "laplacian(sigma,faiS)")
@@ -484,7 +484,7 @@ void Foam::regionTypes::intercalationCathode::setCoupledEqns()
        ==
          ST_()
     );
-    
+
     fvScalarMatrices.set
     (
         faiS_().name()
@@ -511,7 +511,7 @@ void Foam::regionTypes::intercalationCathode::setCoupledEqns()
       + "Eqn",
         &cSEqn()
     );
-    
+
     fvScalarMatrices.set
     (
         cE_().name()
@@ -529,7 +529,7 @@ void Foam::regionTypes::intercalationCathode::setCoupledEqns()
       + "Eqn",
         &TEqn()
     );
-    
+
 }
 
 void Foam::regionTypes::intercalationCathode::postSolve()

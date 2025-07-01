@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Fork:     foam-extend
-    \\  /    A nd           | Version:  4.1                                 
+    \\  /    A nd           | Version:  4.1
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -44,7 +44,7 @@ Affiliations
     Darmstadt, Germany
 
 Description
-    
+
     This file is part of the multiRegionFoam library.
 
     You may refer to this software as :
@@ -86,22 +86,22 @@ class separator
 
         //- transport properties dictionary
         IOdictionary transportProperties_;
-        
+
         //- electrochemical properties dictionary
         IOdictionary electrochemicalProperties_;
-        
+
         //- volume fraction electrolyte phase
         dimensionedScalar epsE_;
-        
+
         //- Bruggeman coefficient for porous media
         dimensionedScalar brugg_;
-        
+
         //- transference number
         dimensionedScalar tNo_;
-        
+
         //- diffusional electrolyte conductivity field
         dimensionedScalar Gamma_;
-        
+
         //- dimensions of concentration
         dimensionedScalar dimC_;
 
@@ -116,37 +116,37 @@ class separator
 
         //- electrolyte conductivity field
         autoPtr<volScalarField> kappa_;
-         
+
         //- diffusion coefficient ion in electrolyte
         autoPtr<volScalarField> DE_;
 
         //- heat source term
         autoPtr<volScalarField> ST_;
-        
+
         //- Cached electrolyte potential matrix
         tmp<fvScalarMatrix> faiEEqn;
-        
+
         //- Cached ion concentration matrix
         tmp<fvScalarMatrix> cEEqn;
 
         //- Cached temperature matrix
         tmp<fvScalarMatrix> TEqn;
-        
+
     //private member functions
         // calculate transport coefficients
         void calculateTransportCoeffs();
-         
-        //- calculate heat sources and temperature dependency of open circuit potential 
+
+        //- calculate heat sources and temperature dependency of open circuit potential
         void calculateHeatSourceTerms();
 
 protected:
 
         //- electrolyte potential
         autoPtr<volScalarField> faiE_;
-        
+
         //- ion concentration
         autoPtr<volScalarField> cE_;
-        
+
         //- temperature
         autoPtr<volScalarField> T_;
 
@@ -177,7 +177,7 @@ public:
         {
             return faiE_();
         }
-        
+
         const volScalarField& cE() const
         {
             return cE_();

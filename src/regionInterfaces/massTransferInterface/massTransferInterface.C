@@ -189,19 +189,19 @@ void Foam::regionInterfaces::massTransferInterface::updateMDotS()
     label curTimeIndex = meshA().time().timeIndex();
 
     scalarField sF = saturatedFlux();
-    
+
     fluxMTJump().internalField() = sF;
-    
+
     if(curTimeIndex == 1)
     {
         mDotS().internalField() = 0.0*sF/hlv_;
     }
-    
+
     else
     {
         mDotS().internalField() = -sF/hlv_;
     }
-    
+
     mDotInterface = mDotS();
     Info << meshA().time().value() << " mDot Inteface: " << sum(mDotInterface*aMesh().S()*meshA().time().deltaT().value()).value() << " " << sum(mDotInterface*aMesh().S()).value() << " " << gSum(meshA().V()) << " " << gSum(meshB().V()) << endl;
 }
@@ -256,12 +256,12 @@ Foam::scalarField Foam::regionInterfaces::massTransferInterface::saturatedFlux()
     );
 
     // Change BC values to saturation temperature
-    forAll (meshA().boundaryMesh()[patchA().index()],facei) 
+    forAll (meshA().boundaryMesh()[patchA().index()],facei)
     {
          TA.boundaryField()[patchA().index()][facei] = TSat0_.value();
     }
 
-    forAll (meshB().boundaryMesh()[patchB().index()],facei) 
+    forAll (meshB().boundaryMesh()[patchB().index()],facei)
     {
          TB.boundaryField()[patchB().index()][facei] = TSat0_.value();
     }
@@ -269,9 +269,9 @@ Foam::scalarField Foam::regionInterfaces::massTransferInterface::saturatedFlux()
     // Compute gradients
     surfaceScalarField snGradTA = fvc::snGrad(TA);
     surfaceScalarField snGradTB = fvc::snGrad(TB);
-   
+
     // Compute Saturated Heat Flux
-    scalarField saturateFlux = kA.value()*snGradTA.boundaryField()[patchA().index()] + kB.value()*snGradTB.boundaryField()[patchB().index()]; 
+    scalarField saturateFlux = kA.value()*snGradTA.boundaryField()[patchA().index()] + kB.value()*snGradTB.boundaryField()[patchB().index()];
     return saturateFlux;
 }
 

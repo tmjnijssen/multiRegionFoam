@@ -30,8 +30,8 @@ Author
 
 Description
     Dirichlet boundary condition for pressure within the ALE interface tracking.
-    Pressure jump across the interface is accounted for by adding the jump to 
-    the neighbour patch value. Normal pressure flux is calculated and divided 
+    Pressure jump across the interface is accounted for by adding the jump to
+    the neighbour patch value. Normal pressure flux is calculated and divided
     by the density.
 
     Example usage:
@@ -142,7 +142,7 @@ public:
         {
             word name = "v";
             return (name);
-            
+
         };
 
         const regionInterfaces::capillaryInterface& capInterface() const;

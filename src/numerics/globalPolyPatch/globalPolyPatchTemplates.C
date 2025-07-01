@@ -84,7 +84,7 @@ Foam::tmp<Foam::Field<Type> > Foam::globalPolyPatch::patchPointToGlobal
     {
         gField = pField;
     }
- 
+
     return tgField;
 }
 

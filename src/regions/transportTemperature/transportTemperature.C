@@ -97,7 +97,7 @@ Foam::regionTypes::transportTemperature::transportTemperature
     kappa_ = lookupOrRead<volScalarField>
     (
         mesh(),
-        "k", 
+        "k",
         k_,
         true
     );

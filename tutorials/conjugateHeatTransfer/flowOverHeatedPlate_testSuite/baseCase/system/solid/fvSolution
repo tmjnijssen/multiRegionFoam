@@ -29,9 +29,9 @@ solvers
     Tcoupled
     {
         solver           BiCGStab;
-        
-        preconditioner      
-        {                   
+
+        preconditioner
+        {
             preconditioner  Cholesky;
         }
 
@@ -55,7 +55,7 @@ SIMPLE
 
 PISO
 {
-    pRefPoint (0 0 0); 
+    pRefPoint (0 0 0);
     pRefValue 0;
 }
 

@@ -100,7 +100,7 @@ void Foam::regionCoupledMassTransferVelocityValue::updatePhi()
     (
         nbrMesh().lookupObject<IOdictionary>("transportProperties")
         .lookup("rho")
-    ); 
+    );
     const scalarField mDots = interpolateFromNbrField<scalar>(massTrInterface().mDotS());
 
     // //- Impose interpolated flux field
@@ -114,7 +114,7 @@ void Foam::regionCoupledMassTransferVelocityValue::updatePhi()
     patchPhiField = interpolateFromNbrField<scalar>
         (
             nbrPatch().patchField<surfaceScalarField, scalar>(nbrPhi)
-        )*(-1.) 
+        )*(-1.)
         +nInterfaceDir*(-1.0/rhoFluidNbr.value() + 1.0/rhoFluid.value())*mDots*refMesh().boundary()[refPatchID()].magSf(); // consider outer normals pointing in opposite directions
     //patchPhiField = -1.0/rhoFluid.value()*mDots*refMesh().boundary()[refPatchID()].magSf();
 }
@@ -149,30 +149,30 @@ tmp<vectorField> Foam::regionCoupledMassTransferVelocityValue::valueJump() const
         );
 
     const vectorField& nbrU = tnbrU();
-    
+
 
     vectorField UsNbrToOwn = interpolateFromNbrField<vector>(nbrU);
 
     const volVectorField& U =
         refMesh().objectRegistry::lookupObject<volVectorField>("U");
-        
+
     // MP-Start
     //const volScalarField& rho =
         //refMesh().objectRegistry::lookupObject<volScalarField>("rho");
 
 
     scalarField meshPhi = 0.0*fvc::meshPhi(U)().boundaryField()[refPatchID()];
-    
+
     if (refMesh().objectRegistry::foundObject<volScalarField>("rho"))
     {
         const volScalarField& rho =
             refMesh().objectRegistry::lookupObject<volScalarField>("rho");
-            
+
         meshPhi = fvc::meshPhi(rho, U)().boundaryField()[refPatchID()];
     }
     else
     {
-        meshPhi = fvc::meshPhi(U)().boundaryField()[refPatchID()];      
+        meshPhi = fvc::meshPhi(U)().boundaryField()[refPatchID()];
     }
 
     dimensionedScalar rhoFluid
@@ -184,11 +184,11 @@ tmp<vectorField> Foam::regionCoupledMassTransferVelocityValue::valueJump() const
     (
         nbrMesh().lookupObject<IOdictionary>("transportProperties")
         .lookup("rho")
-    ); 
+    );
     const scalarField mDots = interpolateFromNbrField<scalar>(massTrInterface().mDotS());
 
     Info << "U Dirichlet boundary contributions: "
-         << sum((UsNbrToOwn & refMesh().boundary()[refPatchID()].Sf()) * refMesh().time().deltaT().value()) 
+         << sum((UsNbrToOwn & refMesh().boundary()[refPatchID()].Sf()) * refMesh().time().deltaT().value())
          << " "
          << sum
             (
@@ -210,7 +210,7 @@ tmp<vectorField> Foam::regionCoupledMassTransferVelocityValue::valueJump() const
                 )
             ) * refMesh().time().deltaT().value()
          << endl;
-    
+
     // return
     // (
     //     nf*
@@ -262,7 +262,7 @@ void Foam::regionCoupledMassTransferVelocityValue::correctClosedVolumePhi
     }
 
     scalar uncorrectPhi = gSum(phi.boundaryField()[refPatchID()]);
-    
+
     phi.boundaryField()[refPatchID()] -=
         weights*gSum(phi.boundaryField()[refPatchID()] - netVolumeFlux);
 
@@ -273,9 +273,9 @@ void Foam::regionCoupledMassTransferVelocityValue::correctClosedVolumePhi
 
 
     phi.boundaryField()[refPatchID()] -= netVolumeFlux;
-       
+
     scalar correctPhi = gSum(phi.boundaryField()[refPatchID()]);
-    
+
     if (fvMesh::debug)
     {
     Info<< "bool Foam::correctClosedVolumePhi(...) integral uncorrectPhi: " << uncorrectPhi

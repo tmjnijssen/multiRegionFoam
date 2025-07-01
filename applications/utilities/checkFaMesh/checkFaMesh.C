@@ -26,7 +26,7 @@ Application
 
 Description
     Check finiteArea mesh in terms of face non-orthogonality and skewness.
-     
+
 Author
     Chiara Pesci <pesci@mma.tu-darmstadt.de>
     All rights reserved.
@@ -50,15 +50,15 @@ int main(int argc, char *argv[])
 #   include "createTime.H"
 
     instantList timeDirs = timeSelector::select0(runTime, args);
-    
+
     forAll(timeDirs, timeI)
     {
         runTime.setTime(timeDirs[timeI], timeI);
 
         Info<< "Time = " << runTime.timeName() << endl;
-        
+
 #       include "createMesh.H"
-        
+
 #       include "createFields.H"
 
         Info<< "Checking faMesh topology" << nl
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 
 
         Info<< "Checking faMesh geometry..." << nl;
-        
+
         // Mesh addressing and data
         const edgeList& faEdges = aMesh.edges();
         const pointField& faPoints = aMesh.points();
@@ -80,11 +80,11 @@ int main(int argc, char *argv[])
         const labelList& eOwn = aMesh.edgeOwner();
         const labelList& eNei = aMesh.edgeNeighbour();
         const edgeVectorField& edgeCtrs = aMesh.edgeCentres();
-        
+
         // Face area
         scalar minFaArea = min(aMesh.S()).value();
         scalar maxFaArea = max(aMesh.S()).value();
-        
+
         // Edge length
         scalarField magLe(faEdges.size(), 0.0);
         forAll (faEdges, edgeI)
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
         }
         scalar minLe = min(magLe);
         scalar maxLe = max(magLe);
-        
+
         // Face aspect ratio
         scalarField faceAR(faFaces.size(), 0.0);
         forAll ( faFaces, faceI )
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
         {
             Info<< "   *Number of severely non-orthogonal faces: "
                 << severeNonOrth << "." << endl;
-        }            
+        }
         if (nWarnSkew > 0)
         {
             Info<< " ***Max skewness = " << maxSkew
@@ -145,17 +145,17 @@ int main(int argc, char *argv[])
         else
         {
             Info<< "    Max skewness = " << maxSkew << " OK." << endl;
-        }            
+        }
         Info<< "    Mesh skewness vector Max: " << max(skew.internalField()) << nl
             << "    Mesh skewness edge dir Max: " << max(mag(edgeSv.internalField())) << nl
             << "    Mesh skewness curvature Max: " << max(mag(curvSv.internalField())) << nl;
             //<< "    Planarity: " << tp << nl;
-        
+
         Info<< endl;
-        
-        //------         
-        // CSV output file with error statistics        
-        //------ 
+
+        //------
+        // CSV output file with error statistics
+        //------
         // Open the error file for measurement output..
         OFstream errorFile("faMeshQuality.csv");
         // Nf : number of faces of the surface mesh
@@ -176,12 +176,12 @@ int main(int argc, char *argv[])
         errorFile << aMesh.patch().faceCentres().size() << ","
                 << aMesh.patch().nEdges() << ","
                 << aMesh.patch().nPoints() << ","
-                << max(faceAR) << "," << minFaArea << "," << maxFaArea << "," 
+                << max(faceAR) << "," << minFaArea << "," << maxFaArea << ","
                 << minLe << "," << maxLe << ","
                 << ::acos(minDDotS)/mathematicalConstant::pi*180.0 << ","
                 << ::acos(sumDDotS/neiSize)/mathematicalConstant::pi*180.0 << ","
                 << maxSkew << "," << max(skew.internalField()) << nl;
-    
+
     } //-End time loop
 
     Info << "End\n" << endl;

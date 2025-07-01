@@ -22,7 +22,7 @@ ddtSchemes
 
 gradSchemes
 {
-    default         Gauss linear; 
+    default         Gauss linear;
 }
 
 divSchemes
@@ -37,7 +37,7 @@ laplacianSchemes
 
 interpolationSchemes
 {
-    default         linear; 
+    default         linear;
 }
 
 snGradSchemes

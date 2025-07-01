@@ -36,16 +36,16 @@ scalar bdf2DdtScheme<Type>::deltaT0_( const GeoField & vf ) const
 
     // Bug fix, Zeljko Tukovic: solver with outer iterations over a time-step
     // HJ, 12/Feb/2010
-    // Bug fix, Thijs Gillebaart: in first time step -> solve backwardEuler 
-    // instead of BDF2. Especially for meshPhi. Because mesh.phi.oldtime is 
-    // zero when not yet defined. Constant velocity causes different wall 
-    // velocity at first time step otherwise. Solved by using 
+    // Bug fix, Thijs Gillebaart: in first time step -> solve backwardEuler
+    // instead of BDF2. Especially for meshPhi. Because mesh.phi.oldtime is
+    // zero when not yet defined. Constant velocity causes different wall
+    // velocity at first time step otherwise. Solved by using
     // vf.oldTime().oldTime().timeIndex() < 0
     // TG, 22/Feb/2013
-    if 
+    if
     (
         vf.oldTime().timeIndex() == vf.oldTime().oldTime().timeIndex()
-     || vf.oldTime().oldTime().timeIndex() < 0 
+     || vf.oldTime().oldTime().timeIndex() < 0
     )
     {
         return GREAT;

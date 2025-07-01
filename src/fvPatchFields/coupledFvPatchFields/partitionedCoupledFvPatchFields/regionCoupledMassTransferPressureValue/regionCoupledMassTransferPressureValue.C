@@ -109,17 +109,17 @@ tmp<scalarField> regionCoupledMassTransferPressureValue::valueJump() const
     refMesh().objectRegistry::lookupObject<volVectorField>("U");
 
     scalarField meshPhi = 0.0*fvc::meshPhi(U)().boundaryField()[refPatchID()];
-    
+
     if (refMesh().objectRegistry::foundObject<volScalarField>("rho"))
     {
         const volScalarField& rho =
             refMesh().objectRegistry::lookupObject<volScalarField>("rho");
-            
+
         meshPhi = fvc::meshPhi(rho, U)().boundaryField()[refPatchID()];
     }
     else
     {
-        meshPhi = fvc::meshPhi(U)().boundaryField()[refPatchID()];      
+        meshPhi = fvc::meshPhi(U)().boundaryField()[refPatchID()];
     }
 
     vectorField nB = refMesh().boundary()[refPatchID()].nf();
@@ -167,7 +167,7 @@ tmp<scalarField> regionCoupledMassTransferPressureValue::valueJump() const
             .patchField<volScalarField, scalar>(nbrKinPressure)
         );
 
-        tmp<scalarField> pressureJump =  
+        tmp<scalarField> pressureJump =
         (
                 (
                 kinPressureNbrToOwn * rhoFluidNbr.value()
@@ -194,8 +194,8 @@ tmp<scalarField> regionCoupledMassTransferPressureValue::valueJump() const
 
     else
     {
-        tmp<scalarField> pressureJump = 
-        (         
+        tmp<scalarField> pressureJump =
+        (
             2.0*(muFluidNbr.value() - muFluid.value())*divUs.internalField()
             - sigma.internalField()*K.internalField()
             + (rhoFluidNbr.value() - rhoFluid.value())
@@ -208,7 +208,7 @@ tmp<scalarField> regionCoupledMassTransferPressureValue::valueJump() const
             - (1.0/rhoFluid.value() - 1.0/rhoFluidNbr.value())
                 * Foam::pow(mDots,2)
         );
-        
+
         return
         (
             pressureJump

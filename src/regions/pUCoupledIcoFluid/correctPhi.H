@@ -14,7 +14,7 @@
             mesh().boundaryMesh().findPatchID("space");
 
         //- Non-const access to flux on patch
-        fvsPatchField<scalar>& phip = 
+        fvsPatchField<scalar>& phip =
             const_cast<fvsPatchField<scalar>& >
             (
                 mesh().lookupObject<surfaceScalarField>("phi")

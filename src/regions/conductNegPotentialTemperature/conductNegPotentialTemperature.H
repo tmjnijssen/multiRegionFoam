@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Fork:     foam-extend
-    \\  /    A nd           | Version:  4.1                                 
+    \\  /    A nd           | Version:  4.1
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -44,7 +44,7 @@ Affiliations
     Darmstadt, Germany
 
 Description
-    
+
     This file is part of the multiRegionFoam library.
 
     You may refer to this software as :
@@ -58,7 +58,7 @@ Description
 
     Kwon, Ki Hyun, et al. "A two-dimensional modeling of a lithium-polymer
     battery." Journal of Power Sources 163.1 (2006): 151-157.
-    
+
     Kim, Gi-Heon, Ahmad Pesaran, and Robert Spotnitz. "A three-dimensional
     thermal abuse model for lithium-ion cells."
     Journal of power sources 170.2 (2007): 476-489.
@@ -97,7 +97,7 @@ class conductNegPotentialTemperature
 
         //- transport properties dictionary
         IOdictionary transportProperties_;
-        
+
         //- electric conductivity negative electrode material
         dimensionedScalar sigmaNeg_;
 
@@ -121,7 +121,7 @@ class conductNegPotentialTemperature
 
         //- Cached temperature matrix
         tmp<fvScalarMatrix> TEqn;
-        
+
     //private member functions
         //- calculate thermal behavior variables
         void calculateJouleHeating();
@@ -161,7 +161,7 @@ public:
         {
             return faiNeg_();
         }
-        
+
         const volScalarField& T() const
         {
             return T_();

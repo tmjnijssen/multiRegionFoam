@@ -309,8 +309,8 @@ Foam::regionTypes::anodicGDL::anodicGDL
     k_() = dimensionedScalar(transportProperties_.lookup("k"));
     // electric conducivity
     sigma_() = dimensionedScalar(transportProperties_.lookup("sigma"));
-    
-    
+
+
 }
 
 
@@ -328,7 +328,7 @@ void Foam::regionTypes::anodicGDL::correct()
         // update fields
         // gas species transport
         updateGasSpeciesTransportProperties();
-    
+
         // source terms
         updateSourceTerms();
 
@@ -339,7 +339,7 @@ void Foam::regionTypes::anodicGDL::correct()
 
 void Foam::regionTypes::anodicGDL::setCoupledEqns()
 {
-    
+
     // set Eqns
     // fourier heat conduction
     TEqn =

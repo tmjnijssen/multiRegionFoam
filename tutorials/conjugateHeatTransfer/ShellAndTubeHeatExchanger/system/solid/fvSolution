@@ -38,9 +38,9 @@ solvers
     Tcoupled
     {
         solver           BiCGStab;
-        
-        preconditioner      
-        {                   
+
+        preconditioner
+        {
             preconditioner  Cholesky;
         }
 
@@ -54,7 +54,7 @@ solvers
 
 PISO
 {
-    pRefPoint (0 0 0); 
+    pRefPoint (0 0 0);
     pRefValue 0;
 }
 
@@ -84,7 +84,7 @@ PIMPLE
 relaxationFactors
 {
 	T	0.7; //1.0;
-	U	0.7; 
+	U	0.7;
 	p   0.3;
 }
 

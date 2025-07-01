@@ -86,7 +86,7 @@ regionCoupledPhaseChangeHeatFlux
 tmp<scalarField> regionCoupledPhaseChangeHeatFlux::fluxJump() const
 {
     const areaScalarField& fluxMTJump = massTransInterface().fluxMTJump();
-    
+
     return ( fluxMTJump.internalField());
 }
 

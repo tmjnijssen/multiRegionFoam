@@ -55,7 +55,7 @@ class correctedFvPatchField
 {
     // Private data
 
-        //- Name of the volume field 
+        //- Name of the volume field
         //  to which this patch field belongs
         word volFieldName_;
 

@@ -31,8 +31,8 @@ Author
 Description
     Dirichlet boundary condition for velocity within the ALE interface tracking.
     The no-jump condition of the velocity at the interface is taken into
-    account by copying the value from the neighbour patch. Flux continuity is 
-    enforced likewise. The momentum flux is calculated as the normal gradient 
+    account by copying the value from the neighbour patch. Flux continuity is
+    enforced likewise. The momentum flux is calculated as the normal gradient
     multiplied by mu.
 
     Example usage:
@@ -76,7 +76,7 @@ class regionCoupledVelocityValue
 
 protected:
 
-    //- Update phi 
+    //- Update phi
     virtual void updatePhi();
 
 public:
@@ -150,7 +150,7 @@ public:
         {
             word name = "mu";
             return (name);
-            
+
         };
 
         const regionInterfaces::capillaryInterface& capInterface() const;

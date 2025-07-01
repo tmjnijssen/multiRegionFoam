@@ -58,10 +58,10 @@ class cathodicGDL
         //- name
         word regionName_;
 
-        //- transport properties dictionary 
+        //- transport properties dictionary
         IOdictionary transportProperties_;
 
-        //- material properties dictionary 
+        //- material properties dictionary
         IOdictionary materialProperties_;
 
         //- operating conditions dictionary
@@ -166,9 +166,9 @@ class cathodicGDL
         //- cached saturation matrix
         tmp<fvScalarMatrix> sEqn;
 
-        
 
-    // Private member functions	
+
+    // Private member functions
 
         //- update gas species transport parameters
         void updateGasSpeciesTransportProperties();
@@ -188,7 +188,7 @@ protected:
         autoPtr<volScalarField> T_;
 
         //- electric Potential
-        autoPtr<volScalarField> phiE_;	
+        autoPtr<volScalarField> phiE_;
 
         //- oxygen mole fraction
         autoPtr<volScalarField> xO2_;

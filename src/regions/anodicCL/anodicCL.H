@@ -58,10 +58,10 @@ class anodicCL
         //- name
         word regionName_;
 
-        //- transport properties dictionary 
+        //- transport properties dictionary
         IOdictionary transportProperties_;
 
-        //- material properties dictionary 
+        //- material properties dictionary
         IOdictionary materialProperties_;
 
         //- electrochemical properties dictionary
@@ -234,7 +234,7 @@ protected:
         autoPtr<volScalarField> T_;
 
         //- electric Potential
-        autoPtr<volScalarField> phiE_;	
+        autoPtr<volScalarField> phiE_;
 
         //- electrolyte Potential
         autoPtr<volScalarField> phiP_;
@@ -357,7 +357,7 @@ public:
         virtual void meshMotionCorrector();
 
         virtual void setCoupledEqns();
-        
+
         virtual void postSolve();
 };
 

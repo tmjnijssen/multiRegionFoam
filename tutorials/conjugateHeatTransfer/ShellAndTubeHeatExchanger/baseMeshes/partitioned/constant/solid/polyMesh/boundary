@@ -20,7 +20,7 @@ FoamFile
     solid_to_inner
     {
         type            patch; //mappedPatch; //mappedWall;
-        inGroups        
+        inGroups
 2
 (
 patch //wall
@@ -36,7 +36,7 @@ mappedPatch
     solid_to_outer
     {
         type            patch; //mappedPatch; //mappedWall;
-        inGroups        
+        inGroups
 2
 (
 patch //wall
@@ -52,7 +52,7 @@ mappedPatch
     solid_to_domain1
     {
         type            patch; //mappedPatch; //mappedWall;
-        inGroups        
+        inGroups
 2
 (
 patch //wall

@@ -21,7 +21,7 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM; if not, write to the Free Software Foundation,
     Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-    
+
 \*---------------------------------------------------------------------------*/
 
 #include "EulerDdtScheme.H"
@@ -61,19 +61,19 @@ EulerDdtScheme<vector>::fvcDdt
 
     if (mesh().moving())
     {
-        if 
+        if
         (
             mesh().objectRegistry::found("grad(" + vf.name() + ")")
          && mesh().objectRegistry::found("meshU")
         )
         {
-            const volTensorField& gradVf = 
+            const volTensorField& gradVf =
                 mesh().objectRegistry::lookupObject<volTensorField>
                 (
                     "grad(" + vf.name() + ")"
                 );
 
-            const volVectorField& meshU = 
+            const volVectorField& meshU =
                 mesh().objectRegistry::lookupObject<volVectorField>
                 (
                     "meshU"
@@ -197,7 +197,7 @@ tmp<surfaceScalarField> EulerDdtScheme<vector>::fvcDdtPhiCorr
         V0oV.internalField() = mesh().V0()/mesh().V();
         V0oV.correctBoundaryConditions();
 
-        const surfaceVectorField& Sf = 
+        const surfaceVectorField& Sf =
             mesh().objectRegistry::lookupObject<surfaceVectorField>("Sf");
 
         // Non-conservative cell-face velocity
@@ -206,7 +206,7 @@ tmp<surfaceScalarField> EulerDdtScheme<vector>::fvcDdtPhiCorr
         {
             if (!U.boundaryField()[patchI].coupled())
             {
-                U0.boundaryField()[patchI] = 
+                U0.boundaryField()[patchI] =
                     U.oldTime().boundaryField()[patchI]
                    .patchInternalField()
                    *V0oV.boundaryField()[patchI];
@@ -237,7 +237,7 @@ tmp<surfaceScalarField> EulerDdtScheme<vector>::fvcDdtPhiCorr
         {
             if (!U.boundaryField()[patchI].coupled())
             {
-                U0.boundaryField()[patchI] = 
+                U0.boundaryField()[patchI] =
                     U.oldTime().boundaryField()[patchI]
                    .patchInternalField();
             }
@@ -312,14 +312,14 @@ tmp<surfaceScalarField> EulerDdtScheme<vector>::fvcDdtPhiCorr
 
 //         forAll (U.boundaryField(), patchI)
 //         {
-//             if 
+//             if
 //             (
 //                 U.boundaryField()[patchI].fixesValue()
 //             )
 //             {
 //                 ddtPhiCoeff.boundaryField()[patchI] = 0.0;
 //             }
-//             else if 
+//             else if
 //             (
 //                 U.boundaryField()[patchI].type()
 //              == slipFvPatchVectorField::typeName
@@ -327,7 +327,7 @@ tmp<surfaceScalarField> EulerDdtScheme<vector>::fvcDdtPhiCorr
 //             {
 //                 ddtPhiCoeff.boundaryField()[patchI] = 0.0;
 //             }
-//             else if 
+//             else if
 //             (
 //                 U.boundaryField()[patchI].type()
 //              == symmetryFvPatchVectorField::typeName
@@ -368,7 +368,7 @@ tmp<surfaceScalarField> EulerDdtScheme<vector>::fvcDdtPhiCorr
             {
                 if (!U.boundaryField()[patchI].coupled())
                 {
-                    dU0.boundaryField()[patchI] = 
+                    dU0.boundaryField()[patchI] =
                         U.oldTime().boundaryField()[patchI]
                        .patchInternalField();
                 }
@@ -378,7 +378,7 @@ tmp<surfaceScalarField> EulerDdtScheme<vector>::fvcDdtPhiCorr
             {
                 Info << "ZT, EulerDdtPhiCorr" << endl;
 
-                const surfaceVectorField& Sf = 
+                const surfaceVectorField& Sf =
                     mesh().objectRegistry::lookupObject<surfaceVectorField>
                     (
                         "Sf"
@@ -401,11 +401,11 @@ tmp<surfaceScalarField> EulerDdtScheme<vector>::fvcDdtPhiCorr
                     rDeltaT*ddtPhiCoeff
                    *fvc::interpolate(rho.oldTime()*V0oV)
                    *(mesh().Sf()&dU0)
-                   /fvc::interpolate(1.0/rA) 
+                   /fvc::interpolate(1.0/rA)
                 )
             );
         }
-        else if 
+        else if
         (
             U.dimensions() == dimVelocity
          && phi.dimensions() == rho.dimensions()*dimVelocity*dimArea
@@ -413,7 +413,7 @@ tmp<surfaceScalarField> EulerDdtScheme<vector>::fvcDdtPhiCorr
         {
             if(mesh().objectRegistry::foundObject<surfaceVectorField>("Sf"))
             {
-                const surfaceVectorField& Sf = 
+                const surfaceVectorField& Sf =
                     mesh().objectRegistry::lookupObject<surfaceVectorField>
                     (
                         "Sf"
@@ -462,7 +462,7 @@ tmp<surfaceScalarField> EulerDdtScheme<vector>::fvcDdtPhiCorr
                 )
             );
         }
-        else if 
+        else if
         (
             U.dimensions() == rho.dimensions()*dimVelocity
          && phi.dimensions() == rho.dimensions()*dimVelocity*dimArea
@@ -470,7 +470,7 @@ tmp<surfaceScalarField> EulerDdtScheme<vector>::fvcDdtPhiCorr
         {
             if(mesh().objectRegistry::foundObject<surfaceVectorField>("Sf"))
             {
-                const surfaceVectorField& Sf = 
+                const surfaceVectorField& Sf =
                     mesh().objectRegistry::lookupObject<surfaceVectorField>
                     (
                         "Sf"
@@ -489,7 +489,7 @@ tmp<surfaceScalarField> EulerDdtScheme<vector>::fvcDdtPhiCorr
                        *(
                             fvc::interpolate(rA*V0oV)*(mesh().Sf()&U0)
                           - (
-                                fvc::interpolate(rA*U.oldTime()*V0oV) 
+                                fvc::interpolate(rA*U.oldTime()*V0oV)
                               & mesh().Sf()
                             )
                         )
@@ -506,7 +506,7 @@ tmp<surfaceScalarField> EulerDdtScheme<vector>::fvcDdtPhiCorr
                    *(
                        fvc::interpolate(rA*V0oV)*phi.oldTime()
                      - (
-                           fvc::interpolate(rA*U.oldTime()*V0oV) 
+                           fvc::interpolate(rA*U.oldTime()*V0oV)
                          & mesh().Sf()
                        )
                     )
@@ -547,7 +547,7 @@ tmp<surfaceScalarField> EulerDdtScheme<vector>::fvcDdtPhiCorr
                 )
             );
         }
-        else if 
+        else if
         (
             U.dimensions() == dimVelocity
          && phi.dimensions() == rho.dimensions()*dimVelocity*dimArea
@@ -573,7 +573,7 @@ tmp<surfaceScalarField> EulerDdtScheme<vector>::fvcDdtPhiCorr
                 )
             );
         }
-        else if 
+        else if
         (
             U.dimensions() == rho.dimensions()*dimVelocity
          && phi.dimensions() == rho.dimensions()*dimVelocity*dimArea

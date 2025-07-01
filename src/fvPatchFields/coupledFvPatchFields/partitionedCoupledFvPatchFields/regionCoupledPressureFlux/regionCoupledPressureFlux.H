@@ -138,7 +138,7 @@ public:
         {
             word name = "v";
             return (name);
-            
+
         };
         const regionInterfaces::capillaryInterface& capInterface() const;
 };

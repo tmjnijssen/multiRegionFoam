@@ -82,19 +82,19 @@ void Foam::regionTypes::cathodicCL::updateLiquidWaterTransportProperties()
 {
     // reduced liquid water saturation
     sRed_ = (s_() - sIm_)/(1 - sIm_);
-    
+
     // saturation vapor fraction
     xVSat_ = (exp(23.1963 - (TRefP1_/(T_() - TRefP2_)))*pDim_)/p_;
-    
+
     // dynamic viscosity water
     mu_ = exp(-3.63148+(TRefMu1_/(T_() + TRefMu2_)))*muDim_;
-    
+
     // derivate of capillary pressure with respect to liquid water saturation
     dpCds_ = (4.8422e-3*exp(-44.02*(s_() - 0.496)) + 2255.0649*exp(8.103*(s_() - 0.496)))*pDim_;
-    
+
     // reduced liquid water permeability
     K_() = (1e-6 + pow(sRed_,3))*K0_;
-    
+
     // evaporation/condensation rate
     gamma_ = (pos(xV_() - xVSat_)*6e-3*(1-sRed_) + (1 - pos(xV_() - xVSat_))*5e-4*sRed_)*aLG_*sqrt(Foam::mag(RGas_*T_()/(2*pi_*MW_)));
 }
@@ -348,7 +348,7 @@ Foam::regionTypes::cathodicCL::cathodicCL
         ),
         mesh(),
         dimensionedScalar("mu", dimensionSet(1, -1, -1, 0, 0, 0, 0), 4E-04)
-    ), 
+    ),
     dpCds_
     (
         IOobject
@@ -745,7 +745,7 @@ Foam::regionTypes::cathodicCL::cathodicCL
     );
 
 
-	
+
     // thermal conductivity
     k_() = dimensionedScalar(transportProperties_.lookup("k"));
     // electric conductivity
@@ -783,14 +783,14 @@ void Foam::regionTypes::cathodicCL::correct()
 
         // source terms
         updateSourceTerms();
-    }    
+    }
     Info << mesh().name() << " variables updated!" << endl;
 }
 
 void Foam::regionTypes::cathodicCL::setCoupledEqns()
 {
-    
-    
+
+
 
     // set cathodic Eqns
     // fourier heat conduction
@@ -844,7 +844,7 @@ void Foam::regionTypes::cathodicCL::setCoupledEqns()
         - c_*fvm::laplacian(DEffV_(), xV_(), "laplacian(D,x)")
         ==
           sV_
-    );    
+    );
 
     // liquid water transport (derived from Darcy's Law)
     sEqn =
@@ -853,8 +853,8 @@ void Foam::regionTypes::cathodicCL::setCoupledEqns()
         - fvm::laplacian(K_()*dpCds_/(mu_*VW_), s_(), "laplacian(K,s)")
         ==
           ss_
-    );       
-  
+    );
+
     fvScalarMatrices.set
     (
         T_().name()
@@ -898,7 +898,7 @@ void Foam::regionTypes::cathodicCL::setCoupledEqns()
       + cathodicCL::typeName + "Type"
       + "Eqn",
         &xO2Eqn()
-    ); 
+    );
 
     fvScalarMatrices.set
     (
@@ -907,7 +907,7 @@ void Foam::regionTypes::cathodicCL::setCoupledEqns()
       + cathodicCL::typeName + "Type"
       + "Eqn",
         &xVEqn()
-    );   
+    );
 
     fvScalarMatrices.set
     (
@@ -918,7 +918,7 @@ void Foam::regionTypes::cathodicCL::setCoupledEqns()
         &sEqn()
     );
 }
-    
+
 void Foam::regionTypes::cathodicCL::solveRegion()
 {
     // do nothing, add as required

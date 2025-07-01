@@ -70,7 +70,7 @@ namespace Foam
 
 class regionCoupledMassTransferVelocityFlux
 :
-    public genericRegionCoupledFluxFvPatchField<vector> 
+    public genericRegionCoupledFluxFvPatchField<vector>
 {
 
 public:

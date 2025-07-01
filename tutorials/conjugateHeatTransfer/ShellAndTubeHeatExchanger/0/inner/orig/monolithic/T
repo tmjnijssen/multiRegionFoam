@@ -28,7 +28,7 @@ boundaryField
     inlet
     {
         type            fixedValue;
-        value           $internalField; 
+        value           $internalField;
     }
     inner_to_solid
     {
@@ -39,7 +39,7 @@ boundaryField
         neighbourFieldName      T;
         neighbourRegionName     solid;
         neighbourPatchName      solid_to_inner;
-        value                   $internalField;       
+        value                   $internalField;
     }
     inner_to_domain1
     {

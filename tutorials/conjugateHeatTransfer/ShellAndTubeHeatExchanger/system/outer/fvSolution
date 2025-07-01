@@ -16,7 +16,7 @@ FoamFile
 
 solvers
 {
-//partitioned 
+//partitioned
     T
     {
 /*        solver              GAMG;
@@ -39,9 +39,9 @@ solvers
     Tcoupled
     {
         solver           BiCGStab;
-        
-        preconditioner      
-        {                   
+
+        preconditioner
+        {
             preconditioner  Cholesky;
         }
 
@@ -51,7 +51,7 @@ solvers
         minIter          0;
         maxIter          200;
     };
-    U 
+    U
     {
         relTol 0.0;
         smoother GaussSeidel;
@@ -72,7 +72,7 @@ solvers
         nCellsInCoarsestLevel   10;
         agglomerator    	faceAreaPair;
         mergeLevels     	1;
-*/        
+*/
         relTol 0.0;
         cacheAgglomeration on;
         nPreSweeps 0;
@@ -99,7 +99,7 @@ solvers
         nCellsInCoarsestLevel   10;
         agglomerator    	faceAreaPair;
         mergeLevels     	1;
-*/        
+*/
         relTol 0.0;
         cacheAgglomeration on;
         nPreSweeps 0;
@@ -115,7 +115,7 @@ solvers
 
 PISO
 {
-    pRefPoint (0 0 0); 
+    pRefPoint (0 0 0);
     pRefValue 0;
 }
 
@@ -145,8 +145,8 @@ PIMPLE
 relaxationFactors
 {
 	T	0.7; //1.0;
-	U	0.7; 	
-	p	0.3; 
+	U	0.7;
+	p	0.3;
 }
 
 

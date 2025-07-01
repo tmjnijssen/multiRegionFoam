@@ -58,10 +58,10 @@ class anodicGDL
         //- name
         word regionName_;
 
-        //- transport properties dictionary 
+        //- transport properties dictionary
         IOdictionary transportProperties_;
 
-        //- material properties dictionary 
+        //- material properties dictionary
         IOdictionary materialProperties_;
 
         //- operating conditions dictionary
@@ -121,7 +121,7 @@ class anodicGDL
         //- cached vapor mole fraction matrix
         tmp<fvScalarMatrix> xVEqn;
 
-    // Private member functions	
+    // Private member functions
 
         //- update gas species transport parameters
         void updateGasSpeciesTransportProperties();
@@ -138,7 +138,7 @@ protected:
         autoPtr<volScalarField> T_;
 
         //- electric Potential
-        autoPtr<volScalarField> phiE_;	
+        autoPtr<volScalarField> phiE_;
 
         //- hydrogen mole fraction
         autoPtr<volScalarField> xH2_;

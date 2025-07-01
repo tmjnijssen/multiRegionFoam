@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Fork:     foam-extend
-    \\  /    A nd           | Version:  4.1                                 
+    \\  /    A nd           | Version:  4.1
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -44,7 +44,7 @@ Affiliations
     Darmstadt, Germany
 
 Description
-    
+
     This file is part of the multiRegionFoam library.
 
     You may refer to this software as :
@@ -86,37 +86,37 @@ class intercalationAnode
 
         //- transport properties dictionary
         IOdictionary transportProperties_;
-        
+
         //- electrochemical properties dictionary
         IOdictionary electrochemicalProperties_;
-        
+
         //- electrode material
         word electrodeMaterial_;
-        
+
         //- volume fraction fluid phase (porosity)
         dimensionedScalar epsE_;
-        
+
         //- volume fraction filler material
         dimensionedScalar epsF_;
-        
+
         //- volume fraction solid phase
         dimensionedScalar epsS_;
 
         //- particle radius
         dimensionedScalar r_;
-                
+
         //- Bruggeman coefficient for porous media
         dimensionedScalar brugg_;
 
         //- specific particle surface area
         dimensionedScalar spArea_;
-        
+
         //- transference number
         dimensionedScalar tNo_;
-        
+
         //- diffusional electrolyte conductivity field
         dimensionedScalar Gamma_;
-        
+
         //- dimensions of concentration
         dimensionedScalar dimC_;
 
@@ -131,7 +131,7 @@ class intercalationAnode
 
         //- electrolyte conductivity field
         autoPtr<volScalarField> kappa_;
-         
+
         //- diffusion coefficient ion in electrolyte
         autoPtr<volScalarField> DE_;
 
@@ -143,37 +143,37 @@ class intercalationAnode
 
         //- activation energy solid state diffusion
         dimensionedScalar EADiff_;
-        
+
         //- applied current density
-        dimensionedScalar IApp_;     
-        
+        dimensionedScalar IApp_;
+
         //- anodic transfer coefficient
         dimensionedScalar alphaA_;
-        
+
         //- cathodic transfer coefficient
         dimensionedScalar alphaC_;
 
         //-  activation energy reaction
         dimensionedScalar EARct_;
-        
+
         //- reaction rate constant
         dimensionedScalar kRct_;
 
         //- reference temperature for electrochemistry
         dimensionedScalar TRef_;
-        
+
         //- maximum lithium concentration at the solid surface
         autoPtr<volScalarField> cSMax_;
-        
+
         //- minimum lithium concentration at the solid surface
         autoPtr<volScalarField> cSMin_;
 
         //- electric conductivity field
         autoPtr<volScalarField> sigma_;
-        
+
         //- state of charge
         autoPtr<volScalarField> SoC_;
-        
+
         //- reversible voltage
         autoPtr<volScalarField> EEqRev_;
 
@@ -182,7 +182,7 @@ class intercalationAnode
 
         //- electrode overpotential
         autoPtr<volScalarField> eta_;
-        
+
         //- volumetric exchange current density
         autoPtr<volScalarField> j_;
 
@@ -194,7 +194,7 @@ class intercalationAnode
 
         //- Cached electrolyte potential matrix
         tmp<fvScalarMatrix> faiEEqn;
-        
+
         //- Cached solid surface lithium concentration matrix
         tmp<fvScalarMatrix> cSEqn;
 
@@ -203,11 +203,11 @@ class intercalationAnode
 
         //- Cached temperature matrix
         tmp<fvScalarMatrix> TEqn;
-        
+
     //private member functions
         //- calculate open circuit voltage of electrode and reversible voltage
         void calculateOCV();
-        
+
         //- calculate Butler-Volmer kinetics and vol. current density
         void calculateButlerVolmer();
 
@@ -227,7 +227,7 @@ protected:
 
         //- electrolyte potential
         autoPtr<volScalarField> faiE_;
-        
+
         //- solid surface lithium concentration
         autoPtr<volScalarField> cS_;
 
@@ -267,7 +267,7 @@ public:
         {
             return faiS_();
         }
-        
+
         const volScalarField& faiE() const
         {
             return faiE_();
@@ -277,7 +277,7 @@ public:
         {
             return faiE_();
         }
-        
+
         const volScalarField& cE() const
         {
             return cE_();

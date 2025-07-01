@@ -22,7 +22,7 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
-        
+
 #include "fvCFD.H"
 #include "pUCoupledIcoFluid.H"
 #include "zeroGradientFvPatchFields.H"
@@ -54,7 +54,7 @@ Foam::regionTypes::pUCoupledIcoFluid::pUCoupledIcoFluid
 )
 :
     regionType(runTime, regionName),
-    
+
     regionName_(regionName),
     U_(nullptr),
     phi_(nullptr),
@@ -62,13 +62,13 @@ Foam::regionTypes::pUCoupledIcoFluid::pUCoupledIcoFluid
     presSource_(nullptr),
     Up_(nullptr),
     rAU_(nullptr),
-    gradp_(nullptr), 
-    gradU_(nullptr), 
-    pcorrTypes_(),   
+    gradp_(nullptr),
+    gradU_(nullptr),
+    pcorrTypes_(),
     pcorr_(nullptr),
     pMin_
     (
-        "pMin", 
+        "pMin",
         dimPressure,
         0
     ),
@@ -96,7 +96,7 @@ Foam::regionTypes::pUCoupledIcoFluid::pUCoupledIcoFluid
         (
             "transportProperties",
             runTime.constant(),
-            runTime, 
+            runTime,
             IOobject::MUST_READ,
             IOobject::NO_WRITE
         )
@@ -361,7 +361,7 @@ Foam::regionTypes::pUCoupledIcoFluid::pUCoupledIcoFluid
                     IOobject::NO_READ,
                     IOobject::NO_WRITE
                 ),
-                fvc::grad(p_())   
+                fvc::grad(p_())
             )
         );
     }
@@ -397,7 +397,7 @@ Foam::regionTypes::pUCoupledIcoFluid::pUCoupledIcoFluid
                     IOobject::NO_READ,
                     IOobject::NO_WRITE
                 ),
-                fvc::grad(U_()) 
+                fvc::grad(U_())
             )
         );
     }
@@ -452,7 +452,7 @@ Foam::regionTypes::pUCoupledIcoFluid::pUCoupledIcoFluid
         {
             pcorrTypes_[i] = fixedValueFvPatchScalarField::typeName;
         }
-    }; 
+    };
 
     // look up desity field from object registry
     if (mesh().foundObject<volScalarField>("rho"))
@@ -582,7 +582,7 @@ Foam::scalar Foam::regionTypes::pUCoupledIcoFluid::getMinDeltaT()
 
 
 void Foam::regionTypes::pUCoupledIcoFluid::setCoupledEqns()
-{   
+{
     // Store p field for outer correction loop
     p_().storePrevIter();
 
@@ -617,7 +617,7 @@ void Foam::regionTypes::pUCoupledIcoFluid::setCoupledEqns()
     );
 
     myTimeIndex_ = mesh().time().timeIndex();
-        
+
 }
 
 
@@ -643,14 +643,14 @@ void Foam::regionTypes::pUCoupledIcoFluid::postSolve()
     p_().correctBoundaryConditions();
 
     word pEqnName = p_().name() + mesh().name() + "Eqn";
-    phi_() = (fvc::interpolate(U_()) & mesh().Sf()) 
-        + fvScalarMatrices[pEqnName]->flux() 
+    phi_() = (fvc::interpolate(U_()) & mesh().Sf())
+        + fvScalarMatrices[pEqnName]->flux()
         + presSource_();
 
     #include "boundPU.H"
 
     gradp_() = fvc::grad(p_());
-    gradU_() = fvc::grad(U_()); 
+    gradU_() = fvc::grad(U_());
 
     mrfZones_.translationalMRFs().correctBoundaryVelocity(U_(), phi_());
 

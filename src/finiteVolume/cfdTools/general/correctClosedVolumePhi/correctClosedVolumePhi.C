@@ -72,7 +72,7 @@ void Foam::correctClosedVolumePhi
     }
 
     scalar uncorrectPhi = gSum(phi.boundaryField()[intPatchID_]);
-    
+
     phi.boundaryField()[intPatchID_] -=
         weights*gSum(phi.boundaryField()[intPatchID_]);
 
@@ -80,9 +80,9 @@ void Foam::correctClosedVolumePhi
     //     p.boundaryField()[intPatchID_].snGrad()
     //    *phi.mesh().magSf().boundaryField()[intPatchID_]
     //    *rAU.boundaryField()[intPatchID_];
-       
+
     scalar correctPhi = gSum(phi.boundaryField()[intPatchID_]);
-    
+
     if (fvMesh::debug)
     {
     Info<< "bool Foam::correctClosedVolumePhi(...) integral uncorrectPhi: " << uncorrectPhi
