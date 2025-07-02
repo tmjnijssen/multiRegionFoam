@@ -11,7 +11,7 @@ FoamFile
     version         2.0;
     format          ascii;
     class           volScalarField;
-    object          faiPos;
+    object          phiNeg;
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -19,25 +19,25 @@ FoamFile
 
 dimensions      [1 2 -3 0 0 -1 0];
 
-internalField   uniform 4.125;
+internalField   uniform 0;
 
 boundaryField
 {
     toPosTab
     {
-        type                    regionCoupledScalarFlux;
-        interfaceType           (defaultInterface);
-        k                       "sigmaPos";
-        neighbourRegionName     posTabRegion;
-        neighbourPatchName      toCell;
-        neighbourFieldName      faiPos;
-        secondOrder             false;
-        nonOrthCorr             false;
-        gradient                uniform 0.1266;
+        type            zeroGradient;
     }
     toNegTab
     {
-        type            zeroGradient;
+        type                    regionCoupledScalarJump;
+        interfaceType           (defaultInterface);
+        k                       "sigmaNeg";
+        neighbourRegionName     negTabRegion;
+        neighbourPatchName      toCell;
+        neighbourFieldName      phiNeg;
+        secondOrder             false;
+        nonOrthCorr             false;
+        value                   $internalField;
     }
     top
     {

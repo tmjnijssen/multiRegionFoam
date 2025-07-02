@@ -11,7 +11,7 @@ FoamFile
     version         2.0;
     format          ascii;
     class           volScalarField;
-    object          faiPos;
+    object          phiPos;
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -43,7 +43,7 @@ boundaryField
         k                       "sigmaPos";
         neighbourRegionName     batteryRegion;
         neighbourPatchName      toPosTab;
-        neighbourFieldName      faiPos;
+        neighbourFieldName      phiPos;
         accType                 aitken;
         relax                   0.1;
         secondOrder             false;

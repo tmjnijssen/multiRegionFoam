@@ -53,7 +53,7 @@ namespace regionTypes
 void Foam::regionTypes::conductNegPotentialTemperature::calculateJouleHeating()
 {
 
-    volScalarField Qohm = sigmaNeg_*(fvc::grad(faiNeg_())&fvc::grad(faiNeg_()));
+    volScalarField Qohm = sigmaNeg_*(fvc::grad(phiNeg_())&fvc::grad(phiNeg_()));
 
     ST_() = Qohm;
 }
@@ -88,7 +88,7 @@ Foam::regionTypes::conductNegPotentialTemperature::conductNegPotentialTemperatur
     k_(transportProperties_.lookup("k")),
     C_(dimensionedScalar("C", dimensionSet(-1, -5, 4, 0, 0, 2, 0), 1)),
     ST_(nullptr),
-    faiNeg_(nullptr),
+    phiNeg_(nullptr),
     T_(nullptr)
 {
 
@@ -102,7 +102,7 @@ Foam::regionTypes::conductNegPotentialTemperature::conductNegPotentialTemperatur
     );
 
     // set negative electrode potential field
-    faiNeg_ = lookupOrRead<volScalarField>(mesh(), "faiNeg");
+    phiNeg_ = lookupOrRead<volScalarField>(mesh(), "phiNeg");
 
     // set temperature field
     T_ = lookupOrRead<volScalarField>(mesh(), "T");
@@ -131,10 +131,10 @@ Foam::scalar Foam::regionTypes::conductNegPotentialTemperature::getMinDeltaT()
 
 void Foam::regionTypes::conductNegPotentialTemperature::setCoupledEqns()
 {
-	faiNegEqn =
+	phiNegEqn =
     (
-         C_*fvm::ddt(faiNeg(), "fai")
-       - fvm::laplacian(sigmaNeg_, faiNeg(), "laplacian(sigma,fai)")
+         C_*fvm::ddt(phiNeg(), "fai")
+       - fvm::laplacian(sigmaNeg_, phiNeg(), "laplacian(sigma,fai)")
     );
 
     TEqn =
@@ -147,11 +147,11 @@ void Foam::regionTypes::conductNegPotentialTemperature::setCoupledEqns()
 
     fvScalarMatrices.set
     (
-        faiNeg_().name()
+        phiNeg_().name()
       + mesh().name() + "Mesh"
       + conductNegPotentialTemperature::typeName + "Type"
       + "Eqn",
-        &faiNegEqn()
+        &phiNegEqn()
     );
 
     fvScalarMatrices.set

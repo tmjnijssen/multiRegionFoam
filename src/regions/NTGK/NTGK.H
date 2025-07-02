@@ -286,10 +286,10 @@ class NTGK
         autoPtr<volScalarField> ST_;
 
         //- Cached positive electrode potential matrix
-        tmp<fvScalarMatrix> faiPosEqn;
+        tmp<fvScalarMatrix> phiPosEqn;
 
         //- Cached negative electrode potential matrix
-        tmp<fvScalarMatrix> faiNegEqn;
+        tmp<fvScalarMatrix> phiNegEqn;
 
         //- Cached temperature matrix
         tmp<fvScalarMatrix> TEqn;
@@ -311,10 +311,10 @@ class NTGK
 protected:
 
         //- positive electrode potential
-        autoPtr<volScalarField> faiPos_;
+        autoPtr<volScalarField> phiPos_;
 
         //- negative electrode potential
-        autoPtr<volScalarField> faiNeg_;
+        autoPtr<volScalarField> phiNeg_;
 
         //- dimensionless amount of Li-containg meta-stabel species in SEI
         autoPtr<volScalarField> cSEI_;
@@ -352,24 +352,24 @@ public:
     // Member Functions
 
         // Access
-        const volScalarField& faiPos() const
+        const volScalarField& phiPos() const
         {
-            return faiPos_();
+            return phiPos_();
         }
 
-        volScalarField& faiPos()
+        volScalarField& phiPos()
         {
-            return faiPos_();
+            return phiPos_();
         }
 
-        const volScalarField& faiNeg() const
+        const volScalarField& phiNeg() const
         {
-            return faiNeg_();
+            return phiNeg_();
         }
 
-        volScalarField& faiNeg()
+        volScalarField& phiNeg()
         {
-            return faiNeg_();
+            return phiNeg_();
         }
 
         const volScalarField& cSEI() const

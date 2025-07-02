@@ -16,7 +16,7 @@ FoamFile
 
 solvers
 {
-    faiPos
+    phiPos
     {
         solver          PCG;
         preconditioner  DIC;
@@ -26,7 +26,7 @@ solvers
         maxIter         1000;
     };
 
-    faiNeg
+    phiNeg
     {
         solver          PCG;
         preconditioner  DIC;
@@ -121,8 +121,8 @@ PIMPLE
 relaxationFactors
 {
     // T   1;
-    // faiPos   1;
-    // faiNeg   1;
+    // phiPos   1;
+    // phiNeg   1;
 }
 
 

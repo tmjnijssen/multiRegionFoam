@@ -117,7 +117,7 @@ class conductNegPotentialTemperature
         autoPtr<volScalarField> ST_;
 
         //- Cached negative electrode potential matrix
-        tmp<fvScalarMatrix> faiNegEqn;
+        tmp<fvScalarMatrix> phiNegEqn;
 
         //- Cached temperature matrix
         tmp<fvScalarMatrix> TEqn;
@@ -129,7 +129,7 @@ class conductNegPotentialTemperature
 protected:
 
         //- negative electrode potential
-        autoPtr<volScalarField> faiNeg_;
+        autoPtr<volScalarField> phiNeg_;
 
         //- temperature
         autoPtr<volScalarField> T_;
@@ -152,14 +152,14 @@ public:
     // Member Functions
 
         // Access
-        const volScalarField& faiNeg() const
+        const volScalarField& phiNeg() const
         {
-            return faiNeg_();
+            return phiNeg_();
         }
 
-        volScalarField& faiNeg()
+        volScalarField& phiNeg()
         {
-            return faiNeg_();
+            return phiNeg_();
         }
 
         const volScalarField& T() const

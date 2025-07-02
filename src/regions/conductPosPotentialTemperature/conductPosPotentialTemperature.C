@@ -53,7 +53,7 @@ namespace regionTypes
 void Foam::regionTypes::conductPosPotentialTemperature::calculateJouleHeating()
 {
 
-    volScalarField Qohm = sigmaPos_*(fvc::grad(faiPos_())&fvc::grad(faiPos_()));
+    volScalarField Qohm = sigmaPos_*(fvc::grad(phiPos_())&fvc::grad(phiPos_()));
 
     ST_() = Qohm;
 }
@@ -88,7 +88,7 @@ Foam::regionTypes::conductPosPotentialTemperature::conductPosPotentialTemperatur
     k_(transportProperties_.lookup("k")),
     C_(dimensionedScalar("C", dimensionSet(-1, -5, 4, 0, 0, 2, 0), 1)),
     ST_(nullptr),
-    faiPos_(nullptr),
+    phiPos_(nullptr),
     T_(nullptr)
 {
 
@@ -102,7 +102,7 @@ Foam::regionTypes::conductPosPotentialTemperature::conductPosPotentialTemperatur
     );
 
     // set positive electrode potential field
-    faiPos_ = lookupOrRead<volScalarField>(mesh(), "faiPos");
+    phiPos_ = lookupOrRead<volScalarField>(mesh(), "phiPos");
 
     // set temperature field
     T_ = lookupOrRead<volScalarField>(mesh(), "T");
@@ -131,9 +131,9 @@ Foam::scalar Foam::regionTypes::conductPosPotentialTemperature::getMinDeltaT()
 
 void Foam::regionTypes::conductPosPotentialTemperature::setCoupledEqns()
 {
-	faiPosEqn =
+	phiPosEqn =
     (
-       fvm::laplacian(sigmaPos_, faiPos(), "laplacian(sigma,fai)")
+       fvm::laplacian(sigmaPos_, phiPos(), "laplacian(sigma,fai)")
     );
 
     TEqn =
@@ -146,11 +146,11 @@ void Foam::regionTypes::conductPosPotentialTemperature::setCoupledEqns()
 
     fvScalarMatrices.set
     (
-        faiPos_().name()
+        phiPos_().name()
       + mesh().name() + "Mesh"
       + conductPosPotentialTemperature::typeName + "Type"
       + "Eqn",
-        &faiPosEqn()
+        &phiPosEqn()
     );
 
     fvScalarMatrices.set

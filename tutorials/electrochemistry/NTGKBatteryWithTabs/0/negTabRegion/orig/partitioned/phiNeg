@@ -11,7 +11,7 @@ FoamFile
     version         2.0;
     format          ascii;
     class           volScalarField;
-    object          faiNeg;
+    object          phiNeg;
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -43,7 +43,7 @@ boundaryField
         k                       "sigmaNeg";
         neighbourRegionName     batteryRegion;
         neighbourPatchName      toNegTab;
-        neighbourFieldName      faiNeg;
+        neighbourFieldName      phiNeg;
         secondOrder             false;
         nonOrthCorr             false;
         value                   $internalField;

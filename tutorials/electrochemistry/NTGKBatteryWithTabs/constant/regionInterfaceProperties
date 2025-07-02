@@ -28,8 +28,8 @@ partitionedCoupledPatches
 
         coupledFields
         (
-            faiPos
-            faiNeg
+            phiPos
+            phiNeg
             T
         );
 
@@ -49,8 +49,8 @@ partitionedCoupledPatches
 
         coupledFields
         (
-            faiPos
-            faiNeg
+            phiPos
+            phiNeg
             T
         );
 

@@ -117,7 +117,7 @@ class conductPosPotentialTemperature
         autoPtr<volScalarField> ST_;
 
         //- Cached positive electrode potential matrix
-        tmp<fvScalarMatrix> faiPosEqn;
+        tmp<fvScalarMatrix> phiPosEqn;
 
         //- Cached temperature matrix
         tmp<fvScalarMatrix> TEqn;
@@ -129,7 +129,7 @@ class conductPosPotentialTemperature
 protected:
 
         //- positive electrode potential
-        autoPtr<volScalarField> faiPos_;
+        autoPtr<volScalarField> phiPos_;
 
         //- temperature
         autoPtr<volScalarField> T_;
@@ -152,14 +152,14 @@ public:
     // Member Functions
 
         // Access
-        const volScalarField& faiPos() const
+        const volScalarField& phiPos() const
         {
-            return faiPos_();
+            return phiPos_();
         }
 
-        volScalarField& faiPos()
+        volScalarField& phiPos()
         {
-            return faiPos_();
+            return phiPos_();
         }
 
         const volScalarField& T() const

@@ -112,13 +112,13 @@ void Foam::regionTypes::NTGK::calculateElectrochemicalParameters()
 
     U_() += C2_*(T_() - TRef_);
 
-    j_() = Y_()*(faiPos_() - faiNeg_() - U_());
+    j_() = Y_()*(phiPos_() - phiNeg_() - U_());
 
     Info << "DOD: " << DOD_.value() << endl;
     Info << "DOD field sum: " << gSum(DODField_.internalField()*mesh().V()/gSum(mesh().V())) << endl;
 
-    Info << "minMax faiPos: " << gMin(faiPos_()) << " , " << gMax(faiPos_()) << endl;
-    Info << "minMax faiNeg: " << gMin(faiNeg_()) << " , " << gMax(faiNeg_()) << endl;
+    Info << "minMax phiPos: " << gMin(phiPos_()) << " , " << gMax(phiPos_()) << endl;
+    Info << "minMax phiNeg: " << gMin(phiNeg_()) << " , " << gMax(phiNeg_()) << endl;
     Info << "minMax U: " << gMin(U_()) << " , " << gMax(U_()) << endl;
 
     Info << "minMax Y: " << gMin(Y_()) << " , " << gMax(Y_()) << endl;
@@ -131,10 +131,10 @@ void Foam::regionTypes::NTGK::calculateElectrochemicalParameters()
 void Foam::regionTypes::NTGK::calculateThermalBehavior()
 {
 
-    volScalarField QEch = (1/D_)*j_()*(faiPos_() - faiNeg_() - U_() + C2_*T_());
+    volScalarField QEch = (1/D_)*j_()*(phiPos_() - phiNeg_() - U_() + C2_*T_());
 
-    volScalarField Qohm = sigmaPos_*(fvc::grad(faiPos_())&fvc::grad(faiPos_()))
-                        + sigmaNeg_*(fvc::grad(faiNeg_())&fvc::grad(faiNeg_()));
+    volScalarField Qohm = sigmaPos_*(fvc::grad(phiPos_())&fvc::grad(phiPos_()))
+                        + sigmaNeg_*(fvc::grad(phiNeg_())&fvc::grad(phiNeg_()));
 
     ST_() = (QEch + Qohm);
 }
@@ -213,8 +213,8 @@ Foam::tmp<fvScalarMatrix> Foam::regionTypes::NTGK::jPos()
 {
     return
     (
-      - fvm::Sp((1/Dp_)*Y_(), faiPos_())
-      + (1/Dp_)*Y_()*(faiNeg_() + U_())
+      - fvm::Sp((1/Dp_)*Y_(), phiPos_())
+      + (1/Dp_)*Y_()*(phiNeg_() + U_())
     );
 }
 
@@ -222,8 +222,8 @@ Foam::tmp<fvScalarMatrix> Foam::regionTypes::NTGK::jNeg()
 {
     return
     (
-      - fvm::Sp((1/Dn_)*Y_(), faiNeg_())
-      + (1/Dn_)*Y_()*(faiPos_() - U_())
+      - fvm::Sp((1/Dn_)*Y_(), phiNeg_())
+      + (1/Dn_)*Y_()*(phiPos_() - U_())
     );
 }
 
@@ -362,8 +362,8 @@ Foam::regionTypes::NTGK::NTGK
     RELE_(nullptr),
     Tdummy_(nullptr),
     ST_(nullptr),
-    faiPos_(nullptr),
-    faiNeg_(nullptr),
+    phiPos_(nullptr),
+    phiNeg_(nullptr),
     cSEI_(nullptr),
     cNE_(nullptr),
     tSEI_(nullptr),
@@ -453,10 +453,10 @@ Foam::regionTypes::NTGK::NTGK
     );
 
     // set positive electrode potential field
-    faiPos_ = lookupOrRead<volScalarField>(mesh(), "faiPos");
+    phiPos_ = lookupOrRead<volScalarField>(mesh(), "phiPos");
 
     // set negative electrode potential field
-    faiNeg_ = lookupOrRead<volScalarField>(mesh(), "faiNeg");
+    phiNeg_ = lookupOrRead<volScalarField>(mesh(), "phiNeg");
 
     // set dimensionless amount of Li-containing meta-stable species in SEI field
     cSEI_ = lookupOrRead<volScalarField>
@@ -557,17 +557,17 @@ Foam::scalar Foam::regionTypes::NTGK::getMinDeltaT()
 
 void Foam::regionTypes::NTGK::setCoupledEqns()
 {
-	faiPosEqn =
+	phiPosEqn =
     (
-        fvm::laplacian(sigmaPos_, faiPos(), "laplacian(sigma,fai)")
+        fvm::laplacian(sigmaPos_, phiPos(), "laplacian(sigma,fai)")
       ==
         // -(1/Dp_)*j_()
         jPos()
     );
 
-    faiNegEqn =
+    phiNegEqn =
     (
-        fvm::laplacian(sigmaNeg_, faiNeg(), "laplacian(sigma,fai)")
+        fvm::laplacian(sigmaNeg_, phiNeg(), "laplacian(sigma,fai)")
       ==
         //(1/Dn_)*j_()
         jNeg()
@@ -583,20 +583,20 @@ void Foam::regionTypes::NTGK::setCoupledEqns()
 
     fvScalarMatrices.set
     (
-        faiPos_().name()
+        phiPos_().name()
       + mesh().name() + "Mesh"
       + NTGK::typeName + "Type"
       + "Eqn",
-        &faiPosEqn()
+        &phiPosEqn()
     );
 
     fvScalarMatrices.set
     (
-        faiNeg_().name()
+        phiNeg_().name()
       + mesh().name() + "Mesh"
       + NTGK::typeName + "Type"
       + "Eqn",
-        &faiNegEqn()
+        &phiNegEqn()
     );
 
     fvScalarMatrices.set
