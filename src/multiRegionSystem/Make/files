@@ -91,14 +91,6 @@ $(regions)/icoFluid/icoFluid.C
 $(regions)/pimpleFluid/pimpleFluid.C
 $(regions)/buoyantPimpleFluid/buoyantPimpleFluid.C
 $(regions)/pUCoupledIcoFluid/pUCoupledIcoFluid.C
-$(regions)/anodicGDL/anodicGDL.C
-$(regions)/anodicCL/anodicCL.C
-$(regions)/cathodicCL/cathodicCL.C
-$(regions)/cathodicGDL/cathodicGDL.C
-$(regions)/ionomer/ionomer.C
-$(regions)/intercalationCathode/intercalationCathode.C
-$(regions)/intercalationAnode/intercalationAnode.C
-$(regions)/separator/separator.C
 $(regions)/NTGK/NTGK.C
 $(regions)/conductPosPotentialTemperature/conductPosPotentialTemperature.C
 $(regions)/conductNegPotentialTemperature/conductNegPotentialTemperature.C
