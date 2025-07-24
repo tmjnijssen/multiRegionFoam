@@ -34,6 +34,7 @@ boundaryField
         secondOrder             false;
         nonOrthCorr             false;
         gradient                uniform 0.1266;
+        value                   $internalField;
     }
     toNegTab
     {
