@@ -133,8 +133,7 @@ void Foam::regionTypes::conductNegPotentialTemperature::setCoupledEqns()
 {
 	phiNegEqn =
     (
-         C_*fvm::ddt(phiNeg(), "fai")
-       - fvm::laplacian(sigmaNeg_, phiNeg(), "laplacian(sigma,fai)")
+        fvm::laplacian(sigmaNeg_, phiNeg(), "laplacian(sigma,fai)")
     );
 
     TEqn =
