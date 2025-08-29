@@ -85,6 +85,7 @@ $(regions)/transportTemperature/transportTemperature.C
 
 $(regions)/transportSpecie/transportSpecie.C
 $(regions)/diffuseSpecie/diffuseSpecie.C
+$(regions)/diffuseAdsorbSpecie/diffuseAdsorbSpecie.C
 
 $(regions)/transportCO2/transportCO2.C
 $(regions)/transportH2O/transportH2O.C
