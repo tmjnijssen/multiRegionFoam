@@ -93,18 +93,19 @@ Foam::regionTypes::diffuseAdsorbSpecie::diffuseAdsorbSpecie
         mesh(),
         dimensionedScalar(transportProperties_.lookup("eps"))
     ),
-    kCO2_(sorbentProperties_.lookup("kCO2")),
-    kH2O_(sorbentProperties_.lookup("kH2O")),
-    b0_(sorbentProperties_.lookup("b0")),
-    tau_(sorbentProperties_.lookup("tau")),
-    tau0_(sorbentProperties_.lookup("tau0")),
-    qCO2inf_(sorbentProperties_.lookup("qCO2inf")),
-    qCO2inf0_(sorbentProperties_.lookup("qCO2inf0")),
-    qH2Oinf_(sorbentProperties_.lookup("qH2Oinf")),
-    T0CO2_(sorbentProperties_.lookup("T0CO2")),
-    T0H2O_(sorbentProperties_.lookup("T0H2O")),
-    dH1_(sorbentProperties_.lookup("dH1")),
-    dH2_(sorbentProperties_.lookup("dH2")),
+    rho_
+    (
+        IOobject
+        (
+            "rho",
+            mesh().time().timeName(),
+            mesh(),
+            IOobject::READ_IF_PRESENT,
+            IOobject::NO_WRITE
+        ),
+        mesh(),
+        dimensionedScalar(transportProperties_.lookup("rho"))
+    ),
     A_(sorbentProperties_.lookup("A")),
     B_(sorbentProperties_.lookup("B")),
     C_(sorbentProperties_.lookup("C")),
@@ -115,8 +116,19 @@ Foam::regionTypes::diffuseAdsorbSpecie::diffuseAdsorbSpecie
     J_(sorbentProperties_.lookup("J")),
     chi_(sorbentProperties_.lookup("chi")),
     alpha_(sorbentProperties_.lookup("alpha")),
-    Ea1_(sorbentProperties_.lookup("Ea1")),
-    
+    b0_(sorbentProperties_.lookup("b0")),
+    tau0_(sorbentProperties_.lookup("tau0")),
+    qCO2inf0_(sorbentProperties_.lookup("qCO2inf0")),
+    dH0CO2_(sorbentProperties_.lookup("dH0CO2")),
+    T0CO2_(sorbentProperties_.lookup("T0CO2")),
+    kCO2_(sorbentProperties_.lookup("kCO2")),
+    CH2O_(sorbentProperties_.lookup("CH2O")),
+    DH2O_(sorbentProperties_.lookup("DH2O")),
+    FH2O_(sorbentProperties_.lookup("FH2O")),
+    GH2O_(sorbentProperties_.lookup("GH2O")),
+    qmH2O_(sorbentProperties_.lookup("qmH2O")),
+    dH0H2O_(sorbentProperties_.lookup("dH0H2O")),
+    kH2O_(sorbentProperties_.lookup("kH2O")),   
     DporeCO2_
     (
         IOobject
@@ -143,7 +155,6 @@ Foam::regionTypes::diffuseAdsorbSpecie::diffuseAdsorbSpecie
         mesh(),
         dimensionedScalar(transportProperties_.lookup("DporeH2O"))
     ),
-
     dqdtCO2_
     (
         IOobject
@@ -222,33 +233,32 @@ Foam::regionTypes::diffuseAdsorbSpecie::diffuseAdsorbSpecie
         mesh(),
         dimensionedScalar("dqdtH2Oim", dimless/dimTime, 0.0)
     ), 
-    qCO2ads_
+    qCO2_
     (
         IOobject
         (
-            "qCO2ads",
+            "qCO2",
             mesh().time().timeName(),
             mesh(),
             IOobject::READ_IF_PRESENT,
             IOobject::AUTO_WRITE
         ),
         mesh(),
-        dimensionedScalar("qCO2ads", dimMoles/dimMass, 0.0)
+        dimensionedScalar("qCO2", dimMoles/dimMass, 0.0)
     ),    
-    qH2Oads_
+    qH2O_
     (
         IOobject
         (
-            "qH2Oads",
+            "qH2O",
             mesh().time().timeName(),
             mesh(),
             IOobject::READ_IF_PRESENT,
             IOobject::AUTO_WRITE
         ),
         mesh(),
-        dimensionedScalar("qH2Oads", dimMoles/dimMass, 0.0)
+        dimensionedScalar("qH2O", dimMoles/dimMass, 0.0)
     ),    
-    
     T_(nullptr),
     heatSource_(nullptr),
     CO2_(nullptr),
@@ -306,10 +316,10 @@ void Foam::regionTypes::diffuseAdsorbSpecie::setCoupledEqns(word fieldName)
             fvm::laplacian(DporeCO2_, CO2_())
           - fvm::SuSp
             (
-                (1-eps_)/eps_* dqdtCO2im_, 
+                (1-eps_)/eps_*rho_*dqdtCO2im_, 
                 CO2_()
             )
-          - ((1-eps_)/eps_)*dqdtCO2ex_ 
+          - ((1-eps_)/eps_)*rho_*dqdtCO2ex_ 
         );
 
         fvScalarMatrices.set
@@ -335,10 +345,10 @@ void Foam::regionTypes::diffuseAdsorbSpecie::setCoupledEqns(word fieldName)
             fvm::laplacian(DporeH2O_, H2O_())
           - fvm::SuSp
             (
-                ((1-eps_)/eps_)*dqdtH2Oim_,
+                ((1-eps_)/eps_)*rho_*dqdtH2Oim_,
                  H2O_()
             )
-          - ((1-eps_)/eps_) * dqdtH2Oex_
+          - ((1-eps_)/eps_)*rho_*dqdtH2Oex_
 
         );
 
@@ -363,59 +373,40 @@ void Foam::regionTypes::diffuseAdsorbSpecie::solveRegion()
     dimensionedScalar R = dimensionedScalar("R", dimEnergy/dimMoles/dimTemperature, 8.314);
     volScalarField invRT = (1./(R*T_()));
 
-    // reaction rates
-    //volScalarField k2 = A2_ * exp(-Ea2_ * invRT);
-    //volScalarField dG2 = dH2_ - T_() * dS2_;
-
-    // Equilibrium constants
-    // volScalarField K1 = exp(-dG1 * invRT);
-    // volScalarField K2 = exp(-dG2 * invRT);
-
-    // Calculate Relative Humidity and water equilibrium loading
-    volScalarField Ctot = 101325*invRT;
-    volScalarField pH2O = H2O_()/(Ctot*101325);
-    volScalarField pH2Osat = 0.61078*exp((17.27*T_()/(T_()+237.3)));
+    // Calculate relative humidity
+    volScalarField pH2O = R*T_()*H2O_(); // water vapour pressure from ideal gas law, Pa
+    volScalarField pH2Osat = 611.21*exp((18.678-(T_()-273.15)/234.5)*((T_()-273.15)/(T_()-16.01))); // Buck equation, Pa
     volScalarField RH = pH2O/pH2Osat;
 
-    // CO2 rate implementation  --> Piscina 2024 
-    volScalarField tauT = ((C_*RH*RH + D_*RH+F_)*qCO2inf_ + tau0_) + ((G_*RH*RH + H_*RH + J_ + alpha_))*(1-(T0CO2_/T_()));   // 
-    volScalarField bT = (A_*RH*exp(B_*RH)+ b0_)*exp(-dH1_*invRT);
-    volScalarField qCO2infT = qCO2inf0_*exp(chi_*(1-(T_()/T0CO2_)));
+    // Humidity-dependent CO2 adsorption parameters, Piscina et al. 2024 http://doi.org/10.2139/ssrn.5068012
+    volScalarField tau = ((C_*RH*RH + D_*RH + F_)*RH + tau0_) + ((G_*RH*RH + H_*RH + J_)*RH + alpha_)*(1-(T0CO2_/T_()));
+    volScalarField b = (A_*RH*exp(B_*RH)+ b0_)*exp(-dH0CO2_*invRT);
+    volScalarField qCO2inf = qCO2inf0_*exp(chi_*(1-(T_()/T0CO2_)));
+
+    // CO2 adsorption rate, Driessen et al. 2020 https://doi.org/10.1021/acs.iecr.9b05503
+    dqdtCO2ex_ = -kCO2_*qCO2_/(b*qCO2inf);                             // explicit part
+    dqdtCO2im_ = kCO2_*pow(pow(1-(qCO2_/qCO2inf),tau),1/tau)*(R*T_()); // implicit part
+    dqdtCO2_   = dqdtCO2ex_ + dqdtCO2im_*CO2_();                       // total CO2 adsorption rate
     
+    // H2O adsorption parameters --> Low et al. 2025 https://doi.org/10.1021/acs.jced.3c00401
+    volScalarField E1 = CH2O_ - exp(DH2O_*T_());
+    volScalarField E29 = FH2O_ + GH2O_*T_();
+    volScalarField E10 = 57220-44.38*T_();
+    volScalarField c = exp((E1-E10)*invRT);
+    volScalarField k = exp((E29-E10)*invRT);
+    volScalarField qH2Oeq = (qmH2O_*k*c*RH)/((1-k*RH)*(1+(k*RH)*(c-1)));
 
-
-    // H2O rate implementation --> Low et al. 2025 https://doi.org/10.1016/j.cherd.2025.01.048 and young 2021 
-    volScalarField Ea2 = cH2O_ - exp(dH2O_*T_());
-    volScalarField Ea29 = fH2O_ + gH2O_*T_();
-    volScalarField c = exp(Ea2 -(57220-44.38*T_())*invRT);
-    volScalarField k = exp(Ea29);
-    volScalarField qH2Oads = (qmH2O_*k*c*RH)/((1-k*RH)*(1+(k*RH)*(c-1)));
-
-    // CO2 reaction rate
-    volScalarField R1ex = -kCO2_*(qCO2ads_/bT_*qCO2infT); // explicit part
-    volScalarField R1im = kCO2_*pow(pow(1-(qCO2ads_/qCO2infT),tauT_),1/tauT_)*(R*T_());            // implicit part
-    volScalarField R1   = R1ex + R1im*CO2_();                // total carbamate rate
-
-    // physical adsorption water
-    volScalarField R2ex = -kH2O_ * (qH2Oads_);                // explicit part
-    volScalarField R2im = kH2O_*(qH2Oinf_/H2O_());                                // implicit part
-    volScalarField R2   = R2ex + R2im*H2O_();           // total water adsorption rate
+    // H2O adsorption rate
+    dqdtH2Oex_ = -kH2O_ * (qH2O_);               // explicit part
+    dqdtH2Oim_ = kH2O_*(qH2Oeq/H2O_());          // implicit part
+    dqdtH2O_   = dqdtH2Oex_ + dqdtH2Oim_*H2O_(); // total water adsorption rate
 
     // solve adsorbed species
-    solve(fvm::ddt(qCO2ads_ )  ==  R1 );
-    solve(fvm::ddt(qH2Oads_ ) ==  R2 );
-
-    // total adsorption rate
-    dqdtCO2im_ = R1im;
-    dqdtCO2ex_ = R1ex;;
-    dqdtCO2_   = R1;
-
-    dqdtH2Oim_ = R2im;
-    dqdtH2Oex_ = R2ex;
-    dqdtH2O_   = R2;
+    solve(fvm::ddt(qCO2_ ) ==  dqdtCO2_);
+    solve(fvm::ddt(qH2O_ ) ==  dqdtH2O_);
 
     // heat source
-    heatSource_() = -(R1 * dH1_ + R2 * dH2_);
+    heatSource_() = -rho_*(dqdtCO2_ * dH0CO2_ + dqdtH2O_ * dH0H2O_);
 
     CO2_().correctBoundaryConditions();
     H2O_().correctBoundaryConditions();

@@ -105,59 +105,42 @@ class diffuseAdsorbSpecie
         //- porosity
         volScalarField eps_;
 
-        //- 1: carbamate reaction
-        //- 2: carbonate reaction
+        //- solid density
+        volScalarField rho_;
 
-        //- Coefficients adsorption equations
-        dimensionedScalar A_;   // Fitting parameter Piscina 2024
-        dimensionedScalar B_;   // Fitting parameter Piscina 2024 
-        dimensionedScalar C_;   // Fitting parameter Piscina 2024  set to zero in sorbentProperties
-        dimensionedScalar D_;  // Fitting parameter Piscina 2024
-        dimensionedScalar F_;  // Fitting parameter Piscina 2024
-        dimensionedScalar G_;  // Fitting parameter Piscina 2024
-        dimensionedScalar H_;  // Fitting parameter Piscina 2024
-        dimensionedScalar J_;  // Fitting parameter Piscina 2024  set to zero in sorbentProperties
-        dimensionedScalar chi_;  // Fitting parameter Piscina 2024
-        dimensionedScalar alpha_;  // Fitting parameter Piscina 2024
-        dimensionedScalar bT_;     // Temperature dependent affinity Toth parameter Piscina 2024
-        dimensionedScalar b0_;     // affinity parameter Toth at reference temperature
-        dimensionedScalar tauT_; // Temperature dependent surface heterogenity Toth parameter Piscina 2024
-        dimensionedScalar tau0_;  // Reference surface heterogenity at reference temperature 
-        dimensionedScalar qCO2inf_;  // Saturation loading Piscina 2024
-        dimensionedScalar qH2Oinf_;  // Saturation loading water Young 2021
-        dimensionedScalar qCO2inf0_; // Maximum CO2 loading at reference temperature 
-        dimensionedScalar dH2O_;        // fitting parameter GAB isotherm Young 2021
-        dimensionedScalar fH2O_;     // fitting parameter GAB isotherm Young 2021
-        dimensionedScalar gH2O_;        // fitting parameter GAB isotherm Young 2021
-        dimensionedScalar qmH2O_;    // Monolayer H2O loading Young 2021 for GAB isotherm
+        //- CO2 adsorption 
+        //- Piscina et al. 2024 http://doi.org/10.2139/ssrn.5068012
+        dimensionedScalar A_;           // Fitting parameter, 1/Pa
+        dimensionedScalar B_;           // Fitting parameter, -
+        dimensionedScalar C_;           // Fitting parameter, -
+        dimensionedScalar D_;           // Fitting parameter, -
+        dimensionedScalar F_;           // Fitting parameter, -
+        dimensionedScalar G_;           // Fitting parameter, -
+        dimensionedScalar H_;           // Fitting parameter, -
+        dimensionedScalar J_;           // Fitting parameter, -
+        dimensionedScalar chi_;         // Fitting parameter, -
+        dimensionedScalar alpha_;       // Fitting parameter, -
+        dimensionedScalar b0_;          // Affinity parameter Toth at reference temperature, 1/Pa
+        dimensionedScalar tau0_;        // Reference surface heterogenity at reference temperature, - 
+        dimensionedScalar qCO2inf0_;    // Maximum CO2 loading at reference temperature, mol/kg
+        dimensionedScalar dH0CO2_;      // Enthalpy of adsorption CO2, J/mol
+        dimensionedScalar T0CO2_;       // Reference temperature CO2, K
+        //- Driessen et al. 2020 https://doi.org/10.1021/acs.iecr.9b05503
+        dimensionedScalar kCO2_;        // Kinetic constant CO2, mol/(kg Pa s)
 
-        // Kinetic constants
-        dimensionedScalar kCO2_;      // Kinetic Constant CO2 Driessen
-        dimensionedScalar kH2O_;      // Kinetic Constant H2O Driessen 2020
-        
-
-        // Activation energy
-        dimensionedScalar Ea1_;
-        dimensionedScalar cH2O_;
-        dimensionedScalar dH2O_;
-
-        // Enthalpy of reaction
-        dimensionedScalar dH1_;
-        dimensionedScalar dH2_;
-
-        // Reference temperature
-        dimensionedScalar T0H2O_;
-        dimensionedScalar T0CO2_;
+        //- H2O adsorption
+        //- Low et al. 2025 https://doi.org/10.1021/acs.jced.3c00401
+        dimensionedScalar CH2O_;        // Fitting parameter GAB isotherm, J/mol
+        dimensionedScalar DH2O_;        // Fitting parameter GAB isotherm, 1/K
+        dimensionedScalar FH2O_;        // Fitting parameter GAB isotherm, J/mol
+        dimensionedScalar GH2O_;        // Fitting parameter GAB isotherm, J/(mol K)
+        dimensionedScalar qmH2O_;       // Monolayer H2O loading for GAB isotherm, mol/kg
+        dimensionedScalar dH0H2O_;      // Enthalpy of adsorption H2O, J/mol
+        dimensionedScalar kH2O_;        // Kinetic constant H2O, 1/s
 
         //- pore diffusion coefficients
         volScalarField DporeCO2_;
         volScalarField DporeH2O_;
-
-        //- Relative Humidity
-        volScalarField RH_;
-        volScalarField pCO2_;
-        volScalarField pCO2sat_;
-        volScalarField Ctot_;
 
         //- Adsorption rates
         volScalarField dqdtCO2_;
@@ -167,9 +150,9 @@ class diffuseAdsorbSpecie
         volScalarField dqdtH2Oex_;
         volScalarField dqdtH2Oim_;
 
-        //- Concentrations in solid
-        volScalarField  qH2Oads_;
-        volScalarField  qCO2ads_;
+        //- Loadings
+        volScalarField qCO2_;
+        volScalarField qH2O_;
 
         //- Temperature
         autoPtr<volScalarField> T_;
