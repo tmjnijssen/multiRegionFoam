@@ -286,7 +286,7 @@ Foam::regionTypes::diffuseAdsorbSpecie::diffuseAdsorbSpecie
 
 Foam::regionTypes::diffuseAdsorbSpecie::~diffuseAdsorbSpecie()
 {   
-
+    
 }
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
@@ -378,7 +378,7 @@ void Foam::regionTypes::diffuseAdsorbSpecie::solveRegion()
     // Calculate relative humidity
     volScalarField pH2O = R*T_()*H2O_(); // water vapour pressure from ideal gas law, Pa
     volScalarField pH2Osat = Z*exp((18.678-((T_()-(273.15*Z1)))/(234.5*Z1))*((T_()-273.15*Z1)/(T_()-16.01*Z1))); // Buck equation, Pa
-    volScalarField RH = pH2O/Z;
+    volScalarField RH = pH2O/pH2Osat;
     // Humidity-dependent CO2 adsorption parameters, Piscina et al. 2024 http://doi.org/10.2139/ssrn.5068012
     volScalarField tau = ((C_*RH*RH + D_*RH + F_)*RH + tau0_) + ((G_*RH*RH + H_*RH + J_)*RH + alpha_)*(1-(T0CO2_/T_()));
     volScalarField b = (A_*RH*exp(B_*RH)+ b0_)*exp(-dH0CO2_*invRT);
@@ -396,12 +396,10 @@ void Foam::regionTypes::diffuseAdsorbSpecie::solveRegion()
     volScalarField c = exp((E1-E10)*invRT);
     volScalarField k = exp((E29-E10)*invRT);
     volScalarField qH2Oeq = (qmH2O_*k*c*RH)/((1-k*RH)*(1+(k*RH)*(c-1)));
-
     // H2O adsorption rate
     dqdtH2Oex_ = -kH2O_ * (qH2O_);               // explicit part
     dimensionedScalar mm3 = dimensionedScalar("mm3", dimMoles/dimVolume, 1);
     dqdtH2Oim_ = kH2O_*(qH2Oeq/(H2O_()+SMALL*mm3));          // implicit part
-
     dqdtH2O_   = dqdtH2Oex_ + dqdtH2Oim_*H2O_(); // total water adsorption rate
     // solve adsorbed species
     solve(fvm::ddt(qCO2_ ) ==  dqdtCO2_);
