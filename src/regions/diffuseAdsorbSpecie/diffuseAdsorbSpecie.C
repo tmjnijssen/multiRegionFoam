@@ -381,8 +381,15 @@ void Foam::regionTypes::diffuseAdsorbSpecie::solveRegion()
     volScalarField RH = pH2O/pH2Osat;
     // Humidity-dependent CO2 adsorption parameters, Piscina et al. 2024 http://doi.org/10.2139/ssrn.5068012
     volScalarField tau = ((C_*RH*RH + D_*RH + F_)*RH + tau0_) + ((G_*RH*RH + H_*RH + J_)*RH + alpha_)*(1-(T0CO2_/T_()));
-    volScalarField b = (A_*RH*exp(B_*RH)+ b0_)*exp(-dH0CO2_*invRT);
+    volScalarField b = (A_*RH*exp(B_*RH) + b0_)*exp(-dH0CO2_*invRT);
+    Info << "b" << endl;
+    Info << b << endl;
     volScalarField qCO2inf = qCO2inf0_*exp(chi_*(1-(T_()/T0CO2_)));
+    Info << "qCO2inf" << endl;
+    Info << qCO2inf << endl;
+    volScalarField qCO22 = (qCO2inf*b*R*T_()*CO2_())/pow(1+pow(b*R*T_()*CO2_(),tau),1/tau);  
+    Info << "qCO22" << endl;
+    Info << qCO22 << endl;                        // CO2 loading piscina
     // CO2 adsorption rate, Driessen et al. 2020 https://doi.org/10.1021/acs.iecr.9b05503
     dqdtCO2ex_ = -kCO2_*qCO2_/(b*qCO2inf);                             // explicit part
     dqdtCO2im_ = kCO2_*pow(pow(1-(qCO2_/qCO2inf),tau),1/tau)*(R*T_()); // implicit part
