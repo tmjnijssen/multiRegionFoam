@@ -431,22 +431,22 @@ void Foam::regionTypes::diffuseAdsorbSpecie::solveRegion()
 
 void Foam::regionTypes::diffuseAdsorbSpecie::prePredictor()
 {
-
+    // do nothing, add as required
 }
 
 void Foam::regionTypes::diffuseAdsorbSpecie::momentumPredictor()
 {
-        
+    // do nothing, add as required
 }
 
 void Foam::regionTypes::diffuseAdsorbSpecie::pressureCorrector()
 {
-        
+    // do nothing, add as required
 }
 
 void Foam::regionTypes::diffuseAdsorbSpecie::meshMotionCorrector()
 {
-        
+    // do nothing, add as required
 }
 
 // ************************************************************************* //
