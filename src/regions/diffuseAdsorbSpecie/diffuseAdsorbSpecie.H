@@ -152,8 +152,9 @@ class diffuseAdsorbSpecie
 
         //- Loadings
         volScalarField qCO2_;
+        volScalarField qCO2eq_;
         volScalarField qH2O_;
-
+        volScalarField qH2Oeq_;
         //- Temperature
         autoPtr<volScalarField> T_;
 
