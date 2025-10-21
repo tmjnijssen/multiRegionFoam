@@ -141,6 +141,11 @@ class diffuseAdsorbSpecie
         //- pore diffusion coefficients
         volScalarField DporeCO2_;
         volScalarField DporeH2O_;
+        //volScalarField bdry_;
+        //volScalarField taudry_;
+        //dimensionedScalar bwet_;
+        //dimensionedScalar tauwet_;
+        
 
         //- Adsorption rates
         volScalarField dqdtCO2_;
@@ -153,6 +158,8 @@ class diffuseAdsorbSpecie
         //- Loadings
         volScalarField qCO2_;
         volScalarField qCO2eq_;
+        //volScalarField qCO2eqD_;
+        //volScalarField qCO2eqW_;
         volScalarField qH2O_;
         volScalarField qH2Oeq_;
         //- Temperature
