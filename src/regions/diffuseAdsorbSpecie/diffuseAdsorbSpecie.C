@@ -414,16 +414,16 @@ void Foam::regionTypes::diffuseAdsorbSpecie::solveRegion()
 
     
     volScalarField qCO2inf = qCO2inf0_*exp(chi_*(1-(T_()/T0CO2_)));
-    volScalarField qCO2eqD = qCO2inf*bdry*(R*T_()*CO2_()/pow(1+pow(bdry*R*T_()*CO2_(),taudry),1/taudry));  // Dry equilibrium loading
-    volScalarField qCO2eq = qCO2inf*bwet*(R*T_()*CO2_()/pow(1+pow(bwet*R*T_()*CO2_(),tauwet),1/tauwet));  // Wet equilibrium loading
-    volScalarField psi = qCO2eq/qCO2eqD;                                                   // Enhance
+    volScalarField qCO2eqD = qCO2inf*(bdry*R*T_()*CO2_()/pow(1+pow(bdry*R*T_()*CO2_(),taudry),1/taudry));  // Dry equilibrium loading
+    volScalarField qCO2eq = qCO2inf*(bwet*R*T_()*CO2_()/pow(1+pow(bwet*R*T_()*CO2_(),tauwet),1/tauwet));  // Wet equilibrium loading
+    volScalarField psi = qCO2eq/qCO2eqD;                                                   // Enhancement factor
 
-    //Info << qCO2eq << endl;                        // CO2 loading piscina
+    // Info << qCO2eq << endl;                        // CO2 loading piscina
     // CO2 adsorption rate, Driessen et al. 2020 https://doi.org/10.1021/acs.iecr.9b05503
     dqdtCO2ex_ = -kCO2_*qCO2_/(bdry*qCO2inf*psi);                             // explicit part
-    dqdtCO2im_ = kCO2_*pow(1-pow(qCO2_/qCO2inf*psi,taudry),1/taudry)*(R*T_()); // implicit part
+    dqdtCO2im_ = kCO2_*pow(1-pow(qCO2_/(qCO2inf*psi),taudry),1/taudry)*(R*T_()); // implicit part
     dqdtCO2_   = dqdtCO2ex_ + dqdtCO2im_*CO2_();                       // total CO2 adsorption rate
-    Info << dqdtCO2_ << endl;
+    // Info << dqdtCO2_ << endl;
     // H2O adsorption parameters --> Low et al. 2025 https://doi.org/10.1021/acs.jced.3c00401
     dimensionedScalar Jm = dimensionedScalar("Jm", dimEnergy/dimMoles, 1);
     dimensionedScalar Jmk = dimensionedScalar("Jmk", dimEnergy/dimMoles/dimTemperature, 1);
@@ -439,7 +439,7 @@ void Foam::regionTypes::diffuseAdsorbSpecie::solveRegion()
     
     dqdtH2Oim_ = kH2O_*(qH2Oeq/(H2O_()+SMALL*mm3));          // implicit part
     dqdtH2O_   = dqdtH2Oex_ + dqdtH2Oim_*H2O_(); // total water adsorption rate
-    Info << dqdtH2O_ << endl;
+    // Info << dqdtH2O_ << endl;
     // solve adsorbed species
     solve(fvm::ddt(qCO2_ ) ==  dqdtCO2_);
     solve(fvm::ddt(qH2O_ ) ==  dqdtH2O_);
